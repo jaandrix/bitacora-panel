@@ -32,7 +32,8 @@ def cifra(d):
 
 
 def visitas_del_dia(dia):
-    ini, fin = dia.isoformat(), (dia + dt.timedelta(days=1)).isoformat()
+    # La API pide horas exactas (RFC 3339); con solo la fecha responde 404.
+    ini, fin = f'{dia.isoformat()}T00:00:00Z', f'{(dia + dt.timedelta(days=1)).isoformat()}T00:00:00Z'
     total = api('stats/total', start=ini, end=fin).get('total', 0) or 0
     filas, vistos, offset = {}, 0, 0
     while True:
