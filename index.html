@@ -477,6 +477,7 @@ function pintarResumen(r) {
   const el = document.getElementById('vista-resumen');
   el.innerHTML = `<div class="rejilla">
     ${tarjetasKPI(r)}
+    ${bloqueWeb(r, 5, true)}
     <div class="tarjeta c8">
       <div class="tarjeta-cab"><div><h2>Alcance e interacción</h2><p class="sub">Visitas acumuladas por red</p></div><div class="leyenda" id="leyenda"></div></div>
       <div class="grafica-envoltura" id="grafica-envoltura"></div>
@@ -640,21 +641,24 @@ function pintarBiblioteca(r) {
   el.innerHTML = `<div class="rejilla">${bloque('Por tipo de vídeo', 'Visitas medias por vídeo (explicativo, consejo, curiosidad…)', 'tipo')}${bloque('Por personaje', 'Visitas medias por vídeo según el peep', 'personaje')}</div>`;
 }
 
-function pintarCampanas(r) {
-  const el = document.getElementById('vista-campanas');
+function bloqueWeb(r, limite, resumen) {
   const web = estado.datos.web.filter(w => dentro(w.fecha, r));
-  if (!estado.datos.web.length) { el.innerHTML = vacioGrande('Cuando haya un web.csv (export de GoatCounter con el origen ?ref=) en datos/ aparecerá aquí.'); return; }
   const prev = estado.datos.web.filter(w => dentro(w.fecha, rangoPrevio(r)));
   const vis = suma(web, 'visitas'), visP = suma(prev, 'visitas'), alt = suma(web, 'altas'), altP = suma(prev, 'altas');
   const g = {}; web.forEach(w => { const k = w.ref; g[k] = g[k] || { visitas: 0, altas: 0 }; g[k].visitas += w.visitas || 0; g[k].altas += w.altas || 0; });
   const vidPorRef = Object.fromEntries(estado.datos.videos.filter(v => v.ref).map(v => [v.ref, v]));
-  const items = Object.entries(g).sort((a, b) => b[1].visitas - a[1].visitas).slice(0, 15).map(([ref, d]) => ({ nombre: ref, detalle: `${vidPorRef[ref] ? esc(vidPorRef[ref].titulo) + ', ' : ''}${nf(d.altas)} alta${d.altas === 1 ? '' : 's'}`, valor: d.visitas }));
-  el.innerHTML = `<div class="rejilla">
+  const items = Object.entries(g).sort((a, b) => b[1].visitas - a[1].visitas).slice(0, limite).map(([ref, d]) => ({ nombre: ref, detalle: `${vidPorRef[ref] ? esc(vidPorRef[ref].titulo) + ', ' : ''}${nf(d.altas)} alta${d.altas === 1 ? '' : 's'}`, valor: d.visitas }));
+  return `
     <div class="tarjeta kpi c4"><span class="etq">Visitas a la web</span><div class="fila">${vis != null ? `<span class="valor">${compacto(vis)}</span>${variacion(vis, visP)}` : sinDatos()}</div></div>
     <div class="tarjeta kpi c4"><span class="etq">Altas en la app</span><div class="fila">${alt != null ? `<span class="valor">${nf(alt)}</span>${variacion(alt, altP)}` : sinDatos()}</div></div>
     <div class="tarjeta kpi c4"><span class="etq">Conversión</span><div class="fila">${vis && alt != null ? `<span class="valor">${pct(alt / vis)}</span>` : sinDatos()}</div></div>
-    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Origen de las visitas</h2><p class="sub">Visitas a appbitacora.es por marca de enlace (?ref=), con el vídeo al que corresponde</p></div></div>${items.length ? filasBarras(items, v => compacto(v), true) : sinDatos('No hay visitas en este periodo')}</div>
-  </div>`;
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Origen de las visitas</h2><p class="sub">Visitas a appbitacora.es por marca de enlace (?ref=), con el vídeo al que corresponde</p></div>${resumen ? '<button class="boton" type="button" data-ir="campanas">ver campañas</button>' : ''}</div>${items.length ? filasBarras(items, v => compacto(v), true) : sinDatos(estado.datos.web.length ? 'No hay visitas en este periodo' : 'Sin datos todavía')}</div>`;
+}
+
+function pintarCampanas(r) {
+  const el = document.getElementById('vista-campanas');
+  if (!estado.datos.web.length) { el.innerHTML = vacioGrande('Cuando haya un web.csv (visitas de GoatCounter con el origen ?ref=) en datos/ aparecerá aquí.'); return; }
+  el.innerHTML = `<div class="rejilla">${bloqueWeb(r, 15)}</div>`;
 }
 
 function pintarAjustes() {
