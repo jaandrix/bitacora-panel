@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulso del proyecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fondo: #EEF1E8; --superficie: #F5F6F0; --superficie-2: #E4E8DF; --tinta: #242625;
+  --texto-2: #6E746E; --linea: #B8BDB5; --azul: #557A8C; --coral: #C46B5D; --azul-palido: #B9D3D0;
+  --coral-palido: #F1DDD8; --azul-fondo: #E3ECEB;
+  --titulo: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+  --texto: "Inter", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fondo); color: var(--tinta); font: 400 14px/1.45 var(--texto); }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.app { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1440px; margin: 0 auto; min-height: 100vh; gap: 24px; padding: 24px 32px; }
+
+/* Barra lateral */
+.lateral { position: sticky; top: 24px; align-self: start; height: calc(100vh - 48px); background: var(--superficie-2); border: 1px solid var(--linea); border-radius: 20px; padding: 24px 16px; display: flex; flex-direction: column; gap: 24px; }
+.marca { padding: 0 8px; }
+.marca b { display: block; font: 600 20px/1.1 var(--titulo); letter-spacing: -.01em; }
+.marca span { font: 500 12px/1.2 var(--mono); color: var(--texto-2); }
+.nav { display: flex; flex-direction: column; gap: 4px; }
+.nav button { all: unset; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 14px; font: 500 14px/1.2 var(--texto); }
+.nav button:hover { background: var(--superficie); }
+.nav button[aria-current="page"] { background: var(--tinta); color: var(--superficie); }
+.nav button:focus-visible { outline: 2px solid var(--azul); }
+.nav small { font: 400 12px var(--mono); opacity: .7; }
+.estado-sync { margin-top: auto; padding: 16px; border-top: 1px solid var(--linea); font: 400 12px/1.5 var(--mono); color: var(--texto-2); }
+.estado-sync .punto { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--linea); margin-right: 8px; vertical-align: 1px; }
+.estado-sync .punto.vivo { background: var(--azul); }
+.estado-sync .punto.aviso { background: var(--coral); }
+
+/* Cabecera */
+main { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.cabecera { position: sticky; top: 0; z-index: 5; background: var(--fondo); padding: 8px 0 16px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; border-bottom: 1px solid transparent; }
+.cabecera.pegada { border-bottom-color: var(--linea); }
+.cabecera h1 { margin: 0; font: 600 32px/1.1 var(--titulo); letter-spacing: -.02em; }
+.cabecera p { margin: 8px 0 0; color: var(--texto-2); }
+.filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.control { height: 44px; padding: 0 40px 0 20px; border: 1px solid var(--tinta); border-radius: 999px; background: var(--superficie) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23242625'/%3E%3C/svg%3E") no-repeat right 18px center / 10px; appearance: none; font: 500 14px var(--texto); cursor: pointer; }
+.boton { height: 44px; padding: 0 20px; border: 1px solid var(--tinta); border-radius: 999px; background: transparent; font-weight: 500; cursor: pointer; }
+.boton:hover { background: var(--tinta); color: var(--superficie); }
+.boton.activo { background: var(--tinta); color: var(--superficie); }
+
+/* Rejilla y tarjetas */
+.rejilla { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; }
+.c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; } .c6 { grid-column: span 6; } .c7 { grid-column: span 7; } .c8 { grid-column: span 8; } .c12 { grid-column: span 12; }
+.tarjeta { background: var(--superficie); border: 1px solid var(--linea); border-radius: 20px; padding: 24px; min-width: 0; }
+.tarjeta h2 { margin: 0; font: 600 18px/1.2 var(--titulo); }
+.tarjeta .sub { margin: 4px 0 0; color: var(--texto-2); }
+.tarjeta-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+.kpi { display: flex; flex-direction: column; gap: 24px; min-height: 152px; }
+.kpi.atencion { border-color: var(--coral); }
+.kpi.oscura { background: var(--tinta); border-color: var(--tinta); color: var(--superficie); }
+.kpi .etq { font: 500 12px/1.2 var(--mono); color: var(--texto-2); }
+.kpi.oscura .etq { color: var(--azul-palido); }
+.kpi .fila { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.kpi .valor { font: 600 40px/1 var(--titulo); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kpi .valor.texto { font-size: 32px; }
+.kpi .extra { font: 400 12px var(--mono); color: var(--texto-2); }
+.kpi.oscura .extra { color: var(--azul-palido); }
+.var { font: 500 13px var(--mono); white-space: nowrap; }
+.var.sube { color: var(--azul); } .var.baja { color: var(--coral); } .var.igual { color: var(--texto-2); }
+.kpi.oscura .var.sube { color: var(--azul-palido); }
+.sin-datos { color: var(--texto-2); font: 400 13px var(--mono); }
+.kpi .sin-datos { font-size: 14px; }
+
+/* Gráfica */
+.leyenda { display: flex; flex-wrap: wrap; gap: 16px; font: 400 12px var(--mono); color: var(--texto-2); }
+.leyenda span { display: inline-flex; align-items: center; gap: 8px; }
+.leyenda i { width: 16px; height: 2px; background: currentColor; display: inline-block; }
+.grafica-envoltura { overflow-x: auto; position: relative; }
+.grafica { min-width: 560px; position: relative; }
+.grafica svg { display: block; width: 100%; height: auto; overflow: visible; }
+.grafica .eje { font: 400 12px var(--mono); fill: var(--texto-2); }
+.grafica .reticula { stroke: var(--linea); stroke-opacity: .45; stroke-width: 1; }
+.grafica .guia { stroke: var(--tinta); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0; }
+.grafica .punto { opacity: 0; }
+.grafica.activa .guia, .grafica.activa .punto { opacity: 1; }
+.tooltip { position: absolute; top: 0; pointer-events: none; background: var(--tinta); color: var(--superficie); border-radius: 14px; padding: 12px 16px; font: 400 12px/1.5 var(--mono); min-width: 240px; opacity: 0; transform: translateY(4px); transition: opacity .12s ease-out, transform .12s ease-out; z-index: 3; }
+.tooltip.visible { opacity: 1; transform: none; }
+.tooltip b { font: 600 13px var(--titulo); display: block; margin-bottom: 8px; }
+.tooltip table { border-collapse: collapse; width: 100%; }
+.tooltip td { padding: 2px 0 2px 12px; text-align: right; }
+.tooltip td:first-child { padding-left: 0; text-align: left; }
+.tooltip thead td { color: var(--azul-palido); }
+
+/* Ritmo: deslizadores de instrumento */
+.instrumentos { display: flex; justify-content: space-around; gap: 16px; padding-top: 8px; }
+.instrumento { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.carril { position: relative; width: 28px; height: 176px; border: 1px solid var(--tinta); border-radius: 999px; background: var(--fondo); }
+.carril .marcas { position: absolute; inset: 12px 0; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+.carril .marcas i { width: 8px; height: 1px; background: var(--linea); }
+.carril .mando { position: absolute; left: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--azul); border: 2px solid var(--superficie); box-shadow: 0 0 0 1px var(--azul); transition: top .5s cubic-bezier(.2, .8, .2, 1); }
+.carril .mando.vacio { background: var(--superficie); box-shadow: 0 0 0 1px var(--linea); }
+.instrumento b { font: 500 12px var(--mono); }
+.instrumento span { font: 400 12px var(--mono); color: var(--texto-2); text-align: center; }
+.escala-ritmo { margin-top: 16px; font: 400 12px var(--mono); color: var(--texto-2); text-align: center; }
+
+/* Tablas */
+.tabla-envoltura { overflow-x: auto; }
+table.datos { width: 100%; border-collapse: collapse; font: 400 13px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+table.datos th { text-align: left; font: 500 12px var(--mono); color: var(--texto-2); padding: 0 12px 12px; border-bottom: 1px solid var(--linea); white-space: nowrap; }
+table.datos th.num, table.datos td.num { text-align: right; }
+table.datos th button { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+table.datos th button:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; border-radius: 4px; }
+table.datos th[aria-sort] button::after { content: ""; width: 0; height: 0; border: 4px solid transparent; }
+table.datos th[aria-sort="descending"] button::after { border-top-color: currentColor; margin-top: 4px; }
+table.datos th[aria-sort="ascending"] button::after { border-bottom-color: currentColor; margin-bottom: 4px; }
+table.datos td { padding: 14px 12px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+table.datos td.titulo { font-family: var(--texto); font-size: 14px; min-width: 200px; }
+table.datos tr:last-child td { border-bottom: 0; }
+table.datos tr.en-alza td { background: var(--azul-fondo); }
+table.datos tr.revisar td { background: var(--coral-palido); }
+.estado { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.estado::before { font: 500 12px var(--mono); }
+.estado.en-alza { color: var(--azul); } .estado.en-alza::before { content: "↑"; }
+.estado.estable::before { content: "="; color: var(--texto-2); }
+.estado.revisar { color: var(--coral); } .estado.revisar::before { content: "!"; }
+
+/* Filas de barras (redes, formatos, campañas) */
+.barras { display: flex; flex-direction: column; gap: 16px; }
+.barra-fila { display: grid; grid-template-columns: minmax(120px, 1.2fr) 3fr minmax(80px, auto); gap: 16px; align-items: center; }
+.barra-fila .nombre { font-weight: 500; }
+.barra-fila .nombre small { display: block; font: 400 12px var(--mono); color: var(--texto-2); }
+.pista { height: 10px; border-radius: 999px; background: var(--superficie-2); overflow: hidden; }
+.pista i { display: block; height: 100%; background: var(--tinta); border-radius: 999px; transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+.pista i.azul { background: var(--azul); }
+.barra-fila .cifra { font: 500 13px var(--mono); text-align: right; white-space: nowrap; }
+
+/* Mapa de horas */
+.horas { display: grid; grid-template-columns: 40px repeat(6, minmax(0, 1fr)); gap: 4px; font: 400 12px var(--mono); }
+.horas .eti { color: var(--texto-2); display: flex; align-items: center; }
+.horas .eti.cab { justify-content: center; }
+.horas .celda { height: 40px; border-radius: 8px; border: 1px solid var(--linea); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+
+/* Ajustes */
+.ajuste { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--linea); }
+.ajuste:last-child { border-bottom: 0; }
+.ajuste b { display: block; font-weight: 600; }
+.ajuste span { color: var(--texto-2); }
+.interruptor { position: relative; width: 52px; height: 32px; border-radius: 999px; background: var(--superficie-2); border: 1px solid var(--linea); cursor: pointer; padding: 0; }
+.interruptor::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--superficie); border: 1px solid var(--linea); transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+.interruptor[aria-checked="true"] { background: var(--azul); border-color: var(--azul); }
+.interruptor[aria-checked="true"]::after { transform: translateX(20px); border-color: var(--azul); }
+.campo { height: 44px; padding: 0 16px; border: 1px solid var(--linea); border-radius: 12px; background: var(--fondo); min-width: 0; width: 100%; }
+pre.formato { background: var(--fondo); border: 1px solid var(--linea); border-radius: 14px; padding: 16px; overflow-x: auto; font: 400 12px/1.6 var(--mono); margin: 8px 0 0; }
+.aviso-ejemplo { display: none; background: var(--coral-palido); border: 1px solid var(--coral); border-radius: 14px; padding: 12px 16px; font: 500 13px var(--mono); color: var(--tinta); }
+.aviso-ejemplo.visible { display: block; }
+.vacio-grande { padding: 48px 24px; text-align: center; color: var(--texto-2); }
+.vacio-grande b { display: block; font: 600 18px var(--titulo); color: var(--tinta); margin-bottom: 8px; }
+.oculto { display: none !important; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 1180px) {
+  .c3 { grid-column: span 6; } .c4, .c5, .c7, .c8 { grid-column: span 12; }
+}
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); padding: 16px 20px 96px; }
+  .lateral { position: fixed; inset: auto 0 0 0; top: auto; height: auto; border-radius: 20px 20px 0 0; padding: 8px; z-index: 10; flex-direction: row; gap: 0; }
+  .marca, .estado-sync { display: none; }
+  .nav { flex-direction: row; width: 100%; overflow-x: auto; }
+  .nav button { flex: 1 0 auto; justify-content: center; padding: 12px; }
+  .nav small { display: none; }
+  .c3, .c6 { grid-column: span 12; }
+  .cabecera h1 { font-size: 26px; }
+  .barra-fila { grid-template-columns: 1fr auto; }
+  .barra-fila .pista { grid-column: span 2; grid-row: 2; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="lateral" aria-label="Navegación">
+    <div class="marca"><b>Bitácora</b><span>monitor de proyecto</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="estado-sync" aria-live="polite"><span class="punto" id="sync-punto"></span><span id="sync-texto">Cargando datos…</span></div>
+  </aside>
+
+  <main>
+    <header class="cabecera" id="cabecera">
+      <div>
+        <h1 id="titulo">Pulso del proyecto</h1>
+        <p id="subtitulo">Seguimiento de publicaciones y rendimiento</p>
+      </div>
+      <div class="filtros">
+        <label class="vh" for="periodo">Periodo</label>
+        <select class="control" id="periodo"></select>
+        <label class="vh" for="red">Red</label>
+        <select class="control" id="red"></select>
+      </div>
+    </header>
+
+    <div class="aviso-ejemplo" id="aviso-ejemplo" role="status">Estás viendo datos ficticios de ejemplo. Desactívalos en Ajustes.</div>
+
+    <section id="vista-resumen" class="vista"></section>
+    <section id="vista-redes" class="vista oculto"></section>
+    <section id="vista-videos" class="vista oculto"></section>
+    <section id="vista-campanas" class="vista oculto"></section>
+    <section id="vista-biblioteca" class="vista oculto"></section>
+    <section id="vista-ajustes" class="vista oculto"></section>
+  </main>
+</div>
+
+<script>
+// Fuente de los datos: los CSV de datos/ en este repositorio (ver la pestaña Ajustes).
+// El panel se sirve desde la raíz del cerebro (abrir el enlace de GitHub Pages) para poder leerlos;
+// si se abre con doble clic, el navegador no deja leer archivos y se ofrece elegirlos a mano.
+const RUTA_DATOS = 'datos/';
+const ARCHIVOS = { videos: 'videos.csv', web: 'web.csv', seguidores: 'seguidores.csv' };
+const REFRESCO_MS = 60000;
+const REDES = {
+  tiktok: { nombre: 'TikTok', corto: 'TK', color: 'var(--azul)', trazo: '' },
+  instagram: { nombre: 'Instagram', corto: 'IG', color: 'var(--tinta)', trazo: '' },
+  youtube: { nombre: 'YouTube', corto: 'YT', color: 'var(--coral)', trazo: '' },
+  x: { nombre: 'X', corto: 'X', color: 'var(--texto-2)', trazo: '4 4' },
+};
+const VISTAS = [['resumen', 'Resumen'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
+
+const guardado = (k, v) => { try { if (v === undefined) return localStorage.getItem('panel-' + k); localStorage.setItem('panel-' + k, v); } catch (e) { return null; } };
+const estado = {
+  vista: guardado('vista') || 'resumen',
+  ejemplo: guardado('ejemplo') === '1',
+  periodo: null, red: 'todas',
+  orden: { campo: 'fecha', dir: 'descending' },
+  datos: { videos: [], web: [], seguidores: [] },
+  origen: 'ninguno', actualizado: null, error: null,
+};
+
+// ------------------------------------------------------------ formato
+const nf = (n, d = 0) => n.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: 'always' });
+function compacto(n) {
+  if (n == null || isNaN(n)) return null;
+  if (Math.abs(n) >= 1e6) return nf(n / 1e6, n >= 1e7 ? 0 : 1) + ' M';
+  if (Math.abs(n) >= 1e4) return nf(n / 1e3, n >= 1e5 ? 0 : 1) + ' K';
+  return nf(n);
+}
+const pct = (x, d = 1) => x == null || !isFinite(x) ? null : nf(x * 100, d) + ' %';
+function variacion(actual, previo) {
+  if (actual == null || previo == null || !previo) return '';
+  const v = (actual - previo) / previo;
+  const clase = Math.abs(v) < 0.005 ? 'igual' : v > 0 ? 'sube' : 'baja';
+  const signo = v > 0 ? '+' : v < 0 ? '−' : '';
+  return `<span class="var ${clase}" title="frente al periodo anterior">${signo}${nf(Math.abs(v) * 100, Math.abs(v) < 0.1 ? 1 : 0)} %</span>`;
+}
+function variacionPuntos(actual, previo) {
+  if (actual == null || previo == null) return '';
+  const v = (actual - previo) * 100;
+  const clase = Math.abs(v) < 0.05 ? 'igual' : v > 0 ? 'sube' : 'baja';
+  return `<span class="var ${clase}" title="puntos frente al periodo anterior">${v > 0 ? '+' : v < 0 ? '−' : ''}${nf(Math.abs(v), 1)} pt</span>`;
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fechaCorta = d => `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`;
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const sinDatos = (txt = 'Sin datos todavía') => `<span class="sin-datos">${txt}</span>`;
+
+// ------------------------------------------------------------ CSV
+function leerCSV(texto) {
+  const filas = []; let fila = [], campo = '', comillas = false;
+  texto = texto.replace(/^﻿/, '');
+  const sep = (texto.split('\n')[0].match(/;/g) || []).length > (texto.split('\n')[0].match(/,/g) || []).length ? ';' : ',';
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (comillas) {
+      if (c === '"' && texto[i + 1] === '"') { campo += '"'; i++; }
+      else if (c === '"') comillas = false;
+      else campo += c;
+    } else if (c === '"') comillas = true;
+    else if (c === sep) { fila.push(campo); campo = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && texto[i + 1] === '\n') i++;
+      fila.push(campo); campo = '';
+      if (fila.some(x => x.trim() !== '')) filas.push(fila);
+      fila = [];
+    } else campo += c;
+  }
+  fila.push(campo); if (fila.some(x => x.trim() !== '')) filas.push(fila);
+  if (!filas.length) return [];
+  const cab = filas[0].map(h => h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '_'));
+  return filas.slice(1).map(f => Object.fromEntries(cab.map((h, i) => [h, (f[i] ?? '').trim()])));
+}
+function numero(v) {
+  if (v == null || v === '') return null;
+  let s = String(v).trim().replace(/\s/g, '');
+  const k = /k$/i.test(s) ? 1e3 : /m$/i.test(s) ? 1e6 : 1; s = s.replace(/[kKmM]$/, '');
+  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+  else s = s.replace(',', '.');
+  const n = parseFloat(s); return isNaN(n) ? null : n * k;
+}
+function fecha(v) {
+  if (!v) return null;
+  let m = v.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/);
+  if (m) return new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 12), +(m[5] || 0));
+  m = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+  if (m) return new Date(+m[3], m[2] - 1, +m[1], +(m[4] || 12), +(m[5] || 0));
+  return null;
+}
+const redClave = v => { const s = (v || '').toLowerCase(); return s.startsWith('tik') ? 'tiktok' : s.startsWith('ins') ? 'instagram' : s.startsWith('you') ? 'youtube' : (s === 'x' || s.startsWith('twit')) ? 'x' : s || 'otra'; };
+
+function normalizar(crudo) {
+  const videos = (crudo.videos || []).map((r, i) => {
+    const f = fecha(r.fecha + (r.hora ? ' ' + r.hora : ''));
+    return {
+      id: r.id || 'v' + i, fecha: f, hora: r.hora ? f.getHours() : null, red: redClave(r.red), titulo: r.titulo || '(sin título)',
+      tipo: r.tipo || '', personaje: r.personaje || '', duracion: numero(r.duracion_s),
+      visitas: numero(r.visitas), meGusta: numero(r.me_gusta), compartidos: numero(r.compartidos),
+      comentarios: numero(r.comentarios), guardados: numero(r.guardados), seguidores: numero(r.seguidores_nuevos),
+      ref: r.ref || '', enlace: r.enlace || '',
+    };
+  }).filter(v => v.fecha);
+  const web = (crudo.web || []).map(r => ({ fecha: fecha(r.fecha), ref: r.ref || '(directo)', visitas: numero(r.visitas), altas: numero(r.altas) })).filter(w => w.fecha);
+  const seguidores = (crudo.seguidores || []).map(r => ({ fecha: fecha(r.fecha), red: redClave(r.red), total: numero(r.seguidores) })).filter(s => s.fecha);
+  return { videos, web, seguidores };
+}
+
+// ------------------------------------------------------------ datos de ejemplo (ficticios, solo para ver el panel)
+function datosEjemplo() {
+  const hoy = new Date(); const videos = []; const web = []; const seguidores = [];
+  let s = 7; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  const titulos = ['Tres cosas fuera de tu cabeza', 'Cómo revisar tu semana', 'Bitácora en 30 segundos', 'Apuntar como hablas', 'Tu dinero sin hojas de cálculo', 'El examen que no se te olvida', 'La despensa que se apunta sola', 'Un viaje entero en una pantalla', 'Hábitos sin rachas que agobian', 'Sin conexión, también'];
+  const tipos = ['explicativo', 'consejo', 'curiosidad', 'novedad']; const pers = ['peep-52', 'peep-estudiante', 'peep-profe'];
+  for (let d = 74; d >= 0; d--) {
+    const dia = new Date(hoy); dia.setDate(hoy.getDate() - d); dia.setHours(12, 0, 0, 0);
+    Object.keys(REDES).forEach((red, ri) => {
+      const prob = [0.62, 0.42, 0.22, 0.5][ri];
+      if (rnd() < prob) {
+        const base = [5200, 2100, 1300, 600][ri] * (1 + (74 - d) / 60);
+        const visitas = Math.round(base * (0.35 + rnd() * 1.9));
+        const h = [9, 13, 18, 20, 21][Math.floor(rnd() * 5)];
+        const ref = `${red}-v${videos.length + 1}`;
+        videos.push({ id: 'e' + videos.length, fecha: `${iso(dia)} ${h}:${rnd() < .5 ? '00' : '30'}`, red, titulo: titulos[Math.floor(rnd() * titulos.length)],
+          tipo: tipos[Math.floor(rnd() * tipos.length)], personaje: pers[Math.floor(rnd() * pers.length)], duracion_s: String(15 + Math.floor(rnd() * 70)),
+          visitas: String(visitas), me_gusta: String(Math.round(visitas * (0.04 + rnd() * 0.06))), compartidos: String(Math.round(visitas * (0.004 + rnd() * 0.01))),
+          comentarios: String(Math.round(visitas * (0.002 + rnd() * 0.006))), guardados: String(Math.round(visitas * (0.003 + rnd() * 0.01))),
+          seguidores_nuevos: String(Math.round(visitas * (0.002 + rnd() * 0.005))), ref });
+        web.push({ fecha: iso(dia), ref, visitas: String(Math.round(visitas * (0.004 + rnd() * 0.01))), altas: String(Math.round(rnd() * 3)) });
+      }
+    });
+    web.push({ fecha: iso(dia), ref: '(directo)', visitas: String(20 + Math.round(rnd() * 30)), altas: String(Math.round(rnd() * 2)) });
+    if (d % 7 === 0) web.push({ fecha: iso(dia), ref: 'qr-cartel', visitas: String(5 + Math.round(rnd() * 15)), altas: '1' });
+    if (d % 7 === 0) Object.keys(REDES).forEach((red, ri) => seguidores.push({ fecha: iso(dia), red, seguidores: String(Math.round([900, 450, 210, 160][ri] * (1 + (74 - d) / 40))) }));
+  }
+  return { videos, web, seguidores };
+}
+
+// ------------------------------------------------------------ carga
+async function cargar() {
+  if (estado.ejemplo) {
+    estado.datos = normalizar(datosEjemplo()); estado.origen = 'ejemplo'; estado.error = null; estado.actualizado = new Date();
+    return pintar();
+  }
+  if (location.protocol === 'file:') {
+    estado.origen = 'archivo'; estado.error = 'Abierto con doble clic: usa abrir el enlace de GitHub Pages para que se actualice solo, o elige los CSV en Ajustes.';
+    return pintar();
+  }
+  const crudo = {}; let alguno = false;
+  for (const [k, f] of Object.entries(ARCHIVOS)) {
+    try {
+      const r = await fetch(RUTA_DATOS + f + '?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) { crudo[k] = leerCSV(await r.text()); alguno = true; }
+    } catch (e) { /* sin ese archivo */ }
+  }
+  estado.datos = normalizar(crudo); estado.origen = alguno ? 'carpeta' : 'ninguno';
+  estado.error = alguno ? null : `No hay CSV en datos/ todavía (${Object.values(ARCHIVOS).join(', ')}).`;
+  estado.actualizado = new Date();
+  pintar();
+}
+async function cargarElegidos(files) {
+  const crudo = {};
+  for (const file of files) {
+    const k = Object.keys(ARCHIVOS).find(k => file.name.toLowerCase().startsWith(k));
+    if (k) crudo[k] = leerCSV(await file.text());
+  }
+  estado.datos = normalizar(crudo); estado.origen = 'elegidos'; estado.error = null; estado.actualizado = new Date();
+  estado.ejemplo = false; guardado('ejemplo', '0'); pintar();
+}
+
+// ------------------------------------------------------------ periodo y filtros
+function periodos() {
+  const fechas = estado.datos.videos.map(v => v.fecha).concat(estado.datos.web.map(w => w.fecha));
+  const lista = [{ id: '30', etq: 'últimos 30 días' }, { id: '90', etq: 'últimos 90 días' }];
+  const meses = [...new Set(fechas.map(f => f.getFullYear() * 12 + f.getMonth()))].sort((a, b) => b - a);
+  meses.forEach(m => {
+    const a = Math.floor(m / 12), mes = m % 12, fin = new Date(a, mes + 1, 0).getDate();
+    lista.push({ id: 'm' + m, etq: `01–${fin} ${MESES[mes]}${a !== new Date().getFullYear() ? ' ' + a : ''}` });
+  });
+  lista.push({ id: 'todo', etq: 'todo el histórico' });
+  return lista;
+}
+function rango(id) {
+  const hoy = new Date(); hoy.setHours(23, 59, 59, 999);
+  if (id === '30' || id === '90') { const n = +id; const ini = new Date(hoy); ini.setDate(ini.getDate() - n + 1); ini.setHours(0, 0, 0, 0); return [ini, hoy]; }
+  if (id && id[0] === 'm') { const m = +id.slice(1); const a = Math.floor(m / 12), mes = m % 12; return [new Date(a, mes, 1), new Date(a, mes + 1, 0, 23, 59, 59, 999)]; }
+  const f = estado.datos.videos.map(v => v.fecha).concat(estado.datos.web.map(w => w.fecha));
+  if (!f.length) return [hoy, hoy];
+  const ini = new Date(Math.min(...f)); ini.setHours(0, 0, 0, 0); return [ini, hoy];
+}
+function rangoPrevio([ini, fin]) { const largo = fin - ini; return [new Date(ini - largo - 1), new Date(ini - 1)]; }
+const dentro = (f, [a, b]) => f >= a && f <= b;
+const filtroRed = v => estado.red === 'todas' || v.red === estado.red;
+const videosEn = r => estado.datos.videos.filter(v => dentro(v.fecha, r) && filtroRed(v));
+const suma = (lista, k) => { const vals = lista.map(x => x[k]).filter(x => x != null); return vals.length ? vals.reduce((a, b) => a + b, 0) : null; };
+function interaccion(lista) {
+  const vis = suma(lista, 'visitas'); if (!vis) return null;
+  return ((suma(lista, 'meGusta') || 0) + (suma(lista, 'comentarios') || 0) + (suma(lista, 'compartidos') || 0) + (suma(lista, 'guardados') || 0)) / vis;
+}
+const redesPresentes = () => { const r = [...new Set(estado.datos.videos.map(v => v.red))]; return Object.keys(REDES).filter(k => r.includes(k)).concat(r.filter(k => !REDES[k])); };
+const infoRed = k => REDES[k] || { nombre: k, corto: k.slice(0, 2).toUpperCase(), color: 'var(--texto-2)', trazo: '2 3' };
+function estadoVideo(v) {
+  const misma = estado.datos.videos.filter(o => o.red === v.red && o.visitas != null).map(o => o.visitas).sort((a, b) => a - b);
+  if (v.visitas == null || misma.length < 3) return 'estable';
+  const med = misma[Math.floor(misma.length / 2)];
+  return v.visitas >= med * 1.3 ? 'en-alza' : v.visitas <= med * 0.6 ? 'revisar' : 'estable';
+}
+const ESTADOS = { 'en-alza': 'En alza', estable: 'Estable', revisar: 'Revisar' };
+
+// ------------------------------------------------------------ pintado
+function pintar() {
+  const lista = periodos();
+  if (!estado.periodo || !lista.some(p => p.id === estado.periodo)) estado.periodo = lista.find(p => p.id[0] === 'm')?.id || '30';
+  const selP = document.getElementById('periodo');
+  selP.innerHTML = lista.map(p => `<option value="${p.id}"${p.id === estado.periodo ? ' selected' : ''}>${p.etq}</option>`).join('');
+  const redes = redesPresentes();
+  if (estado.red !== 'todas' && !redes.includes(estado.red)) estado.red = 'todas';
+  document.getElementById('red').innerHTML = `<option value="todas">todas las redes</option>` + redes.map(r => `<option value="${r}"${r === estado.red ? ' selected' : ''}>${infoRed(r).nombre}</option>`).join('');
+
+  const r = rango(estado.periodo); const p = lista.find(x => x.id === estado.periodo);
+  const etqRango = estado.periodo[0] === 'm' ? `${MESES[r[0].getMonth()][0].toUpperCase() + MESES[r[0].getMonth()].slice(1)} ${r[0].getFullYear()}` : p.etq[0].toUpperCase() + p.etq.slice(1);
+  document.getElementById('subtitulo').textContent = `Seguimiento de publicaciones y rendimiento, ${etqRango}`;
+  document.getElementById('aviso-ejemplo').classList.toggle('visible', estado.ejemplo);
+
+  document.getElementById('nav').innerHTML = VISTAS.map(([id, etq]) => `<button type="button" data-vista="${id}"${id === estado.vista ? ' aria-current="page"' : ''}>${etq}</button>`).join('');
+  VISTAS.forEach(([id]) => document.getElementById('vista-' + id).classList.toggle('oculto', id !== estado.vista));
+  document.getElementById('titulo').textContent = estado.vista === 'resumen' ? 'Pulso del proyecto' : VISTAS.find(v => v[0] === estado.vista)[1];
+
+  const punto = document.getElementById('sync-punto');
+  punto.className = 'punto ' + (estado.error ? 'aviso' : estado.origen === 'carpeta' ? 'vivo' : '');
+  document.getElementById('sync-texto').innerHTML = estado.error ? esc(estado.error) :
+    `${estado.origen === 'carpeta' ? 'En vivo, se actualiza cada minuto' : estado.origen === 'ejemplo' ? 'Datos ficticios de ejemplo' : 'Archivos elegidos a mano'}<br>Última actualización: ${estado.actualizado.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+
+  ({ resumen: pintarResumen, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
+}
+
+function hayVideos() { return estado.datos.videos.length > 0; }
+function vacioGrande(txt) {
+  return `<div class="tarjeta vacio-grande"><b>Sin datos todavía</b>${txt || 'Cuando haya un CSV en datos/ aparecerá aquí. El formato está en Ajustes.'}</div>`;
+}
+
+function tarjetasKPI(r) {
+  const act = videosEn(r), prev = videosEn(rangoPrevio(r));
+  const nAct = act.length, nPrev = prev.length;
+  const vis = suma(act, 'visitas'), visP = suma(prev, 'visitas');
+  const int = interaccion(act), intP = interaccion(prev);
+  const porRed = {}; act.forEach(v => { if (v.visitas != null) porRed[v.red] = (porRed[v.red] || 0) + v.visitas; });
+  const mejor = Object.entries(porRed).sort((a, b) => b[1] - a[1])[0];
+  const caeInt = int != null && intP != null && int < intP - 0.005;
+  return `
+    <div class="tarjeta kpi c3"><span class="etq">Publicaciones</span><div class="fila">${nAct ? `<span class="valor">${nf(nAct)}</span>${variacion(nAct, nPrev)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3"><span class="etq">Visitas totales</span><div class="fila">${vis != null ? `<span class="valor">${compacto(vis)}</span>${variacion(vis, visP)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3${caeInt ? ' atencion' : ''}"><span class="etq">Tasa de interacción</span><div class="fila">${int != null ? `<span class="valor">${pct(int)}</span>${variacionPuntos(int, intP)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3 oscura"><span class="etq">Mejor red</span><div class="fila">${mejor ? `<span class="valor texto">${esc(infoRed(mejor[0]).nombre)}</span><span class="extra">${compacto(mejor[1])} visitas</span>` : sinDatos()}</div></div>`;
+}
+
+function pintarResumen(r) {
+  const el = document.getElementById('vista-resumen');
+  el.innerHTML = `<div class="rejilla">
+    ${tarjetasKPI(r)}
+    <div class="tarjeta c8">
+      <div class="tarjeta-cab"><div><h2>Alcance e interacción</h2><p class="sub">Visitas acumuladas por red</p></div><div class="leyenda" id="leyenda"></div></div>
+      <div class="grafica-envoltura" id="grafica-envoltura"></div>
+    </div>
+    <div class="tarjeta c4">
+      <div class="tarjeta-cab"><div><h2>Ritmo de publicación</h2><p class="sub">Publicaciones por red y semana</p></div></div>
+      <div id="ritmo"></div>
+    </div>
+    <div class="tarjeta c12">
+      <div class="tarjeta-cab"><div><h2>Vídeos recientes</h2><p class="sub">Últimas publicaciones y señales de rendimiento</p></div><button class="boton" type="button" data-ir="videos">ver todos</button></div>
+      <div id="tabla-reciente"></div>
+    </div>
+  </div>`;
+  pintarGrafica(r, document.getElementById('grafica-envoltura'), document.getElementById('leyenda'));
+  pintarRitmo(r, document.getElementById('ritmo'));
+  pintarTabla(videosEn(r), document.getElementById('tabla-reciente'), 6);
+}
+
+function pintarGrafica(r, cont, leyenda) {
+  const vids = videosEn(r).filter(v => v.visitas != null);
+  if (!vids.length) { cont.innerHTML = `<div class="vacio-grande">${sinDatos()}</div>`; leyenda.innerHTML = ''; return; }
+  const redes = redesPresentes().filter(k => vids.some(v => v.red === k)).slice(0, 4);
+  const dias = []; for (let d = new Date(r[0]); d <= r[1] && d <= new Date(); d.setDate(d.getDate() + 1)) dias.push(iso(d));
+  const porDia = {}; vids.forEach(v => { const k = iso(v.fecha); (porDia[k] = porDia[k] || []).push(v); });
+  const series = redes.map(red => { let acc = 0; return { red, pts: dias.map(d => { acc += (porDia[d] || []).filter(v => v.red === red).reduce((a, v) => a + v.visitas, 0); return acc; }) }; });
+  const max = Math.max(1, ...series.flatMap(s => s.pts));
+  const paso = Math.pow(10, Math.floor(Math.log10(max))); const tope = Math.ceil(max / paso) * paso;
+  const W = 760, H = 300, mi = 56, md = 16, ms = 16, mb = 32, ancho = W - mi - md, alto = H - ms - mb;
+  const x = i => mi + (dias.length < 2 ? ancho / 2 : i / (dias.length - 1) * ancho);
+  const y = v => ms + alto - v / tope * alto;
+  const lineas = [0, .25, .5, .75, 1].map(f => `<line class="reticula" x1="${mi}" x2="${W - md}" y1="${y(tope * f)}" y2="${y(tope * f)}"/><text class="eje" x="${mi - 8}" y="${y(tope * f) + 4}" text-anchor="end">${compacto(tope * f)}</text>`).join('');
+  const nEt = Math.min(6, dias.length); const ejeX = Array.from({ length: nEt }, (_, k) => Math.round(k * (dias.length - 1) / Math.max(1, nEt - 1))).map(i => `<text class="eje" x="${x(i)}" y="${H - 8}" text-anchor="middle">${fechaCorta(new Date(dias[i] + 'T12:00'))}</text>`).join('');
+  const caminos = series.map(s => `<path d="${s.pts.map((v, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' ')}" fill="none" stroke="${infoRed(s.red).color}" stroke-width="${s.red === redes[0] ? 2.5 : 1.75}" stroke-dasharray="${infoRed(s.red).trazo}" stroke-linejoin="round" stroke-linecap="round"/>`).join('');
+  const puntos = series.map((s, k) => `<circle class="punto" id="pt-${k}" r="4.5" fill="${infoRed(s.red).color}" stroke="var(--superficie)" stroke-width="2" cx="-20" cy="-20"/>`).join('');
+  cont.innerHTML = `<div class="grafica" id="grafica"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Visitas acumuladas por red">${lineas}${ejeX}${caminos}<line class="guia" id="guia" y1="${ms}" y2="${ms + alto}" x1="-10" x2="-10"/>${puntos}<rect id="zona" x="${mi}" y="${ms}" width="${ancho}" height="${alto}" fill="transparent"/></svg><div class="tooltip" id="tooltip" role="tooltip"></div></div>`;
+  leyenda.innerHTML = series.map(s => `<span style="color:${infoRed(s.red).color}"><i style="${infoRed(s.red).trazo ? 'background:none;border-top:2px dashed' : ''}"></i><span style="color:var(--texto-2)">${infoRed(s.red).nombre}</span></span>`).join('');
+
+  const g = document.getElementById('grafica'), svg = g.querySelector('svg'), tip = document.getElementById('tooltip');
+  const mostrar = i => {
+    g.classList.add('activa');
+    const gx = x(i); document.getElementById('guia').setAttribute('x1', gx); document.getElementById('guia').setAttribute('x2', gx);
+    series.forEach((s, k) => { const c = document.getElementById('pt-' + k); c.setAttribute('cx', gx); c.setAttribute('cy', y(s.pts[i])); });
+    const delDia = porDia[dias[i]] || [];
+    const filas = series.map(s => {
+      const vs = delDia.filter(v => v.red === s.red);
+      return `<tr><td>${infoRed(s.red).nombre}</td><td>${vs.length ? nf(vs.length) : '–'}</td><td>${vs.length ? compacto(suma(vs, 'visitas')) : '–'}</td><td>${vs.length ? compacto(suma(vs, 'meGusta') || 0) : '–'}</td><td>${vs.length ? compacto(suma(vs, 'compartidos') || 0) : '–'}</td><td>${vs.length ? compacto(suma(vs, 'comentarios') || 0) : '–'}</td></tr>`;
+    }).join('');
+    const d = new Date(dias[i] + 'T12:00');
+    tip.innerHTML = `<b>${d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</b><table><thead><tr><td>red</td><td>publ.</td><td>visitas</td><td>me gusta</td><td>compart.</td><td>coment.</td></tr></thead><tbody>${filas}</tbody></table><div style="margin-top:8px;color:var(--azul-palido)">Acumulado: ${series.map(s => infoRed(s.red).corto + ' ' + compacto(s.pts[i])).join(', ')}</div>`;
+    const caja = svg.getBoundingClientRect(), escala = caja.width / W, px = gx * escala;
+    tip.classList.add('visible');
+    tip.style.left = Math.min(Math.max(0, px + 16), caja.width - tip.offsetWidth) + 'px';
+    if (px + 16 + tip.offsetWidth > caja.width) tip.style.left = Math.max(0, px - tip.offsetWidth - 16) + 'px';
+  };
+  const ocultar = () => { g.classList.remove('activa'); tip.classList.remove('visible'); };
+  const indice = ev => { const c = svg.getBoundingClientRect(); const px = (ev.clientX - c.left) / c.width * W; return Math.max(0, Math.min(dias.length - 1, Math.round((px - mi) / ancho * (dias.length - 1)))); };
+  svg.addEventListener('pointermove', ev => mostrar(indice(ev)));
+  svg.addEventListener('pointerleave', ocultar);
+  svg.setAttribute('tabindex', '0');
+  let foco = dias.length - 1;
+  svg.addEventListener('keydown', ev => {
+    if (ev.key === 'ArrowLeft') foco = Math.max(0, foco - 1); else if (ev.key === 'ArrowRight') foco = Math.min(dias.length - 1, foco + 1); else if (ev.key === 'Escape') return ocultar(); else return;
+    ev.preventDefault(); mostrar(foco);
+  });
+  svg.addEventListener('focus', () => mostrar(foco)); svg.addEventListener('blur', ocultar);
+}
+
+function pintarRitmo(r, cont) {
+  const vids = videosEn(r); const semanas = Math.max(1, (Math.min(r[1], new Date()) - r[0]) / (7 * 864e5));
+  const redes = redesPresentes().slice(0, 4);
+  if (!redes.length) { cont.innerHTML = `<div class="vacio-grande">${sinDatos()}</div>`; return; }
+  const MAX = 7;
+  cont.innerHTML = `<div class="instrumentos">${redes.map(red => {
+    const n = vids.filter(v => v.red === red).length; const sem = n / semanas;
+    const top = 12 + (1 - Math.min(sem, MAX) / MAX) * (176 - 24);
+    return `<div class="instrumento" role="meter" aria-valuemin="0" aria-valuemax="${MAX}" aria-valuenow="${sem.toFixed(1)}" aria-label="${infoRed(red).nombre}: ${nf(sem, 1)} publicaciones por semana">
+      <div class="carril"><div class="marcas">${'<i></i>'.repeat(8)}</div><div class="mando${n ? '' : ' vacio'}" style="top:${top}px"></div></div>
+      <b>${infoRed(red).corto}</b><span>${n ? nf(sem, 1) + '/sem' : 'sin publicar'}<br>${nf(n)} en total</span></div>`;
+  }).join('')}</div><p class="escala-ritmo">escala de 0 a ${MAX} por semana</p>`;
+}
+
+function pintarTabla(lista, cont, limite) {
+  if (!lista.length) { cont.innerHTML = `<div class="vacio-grande">${sinDatos(hayVideos() ? 'No hay vídeos en este periodo' : 'Sin datos todavía')}</div>`; return; }
+  const { campo, dir } = estado.orden; const s = dir === 'descending' ? -1 : 1;
+  const val = v => campo === 'fecha' ? +v.fecha : campo === 'interaccion' ? (interaccion([v]) ?? -1) : (v[campo] ?? -1);
+  const filas = [...lista].sort((a, b) => (val(a) - val(b)) * s).slice(0, limite || Infinity);
+  const th = (k, etq, num) => `<th scope="col" class="${num ? 'num' : ''}"${campo === k ? ` aria-sort="${dir}"` : ''}><button type="button" data-orden="${k}">${etq}</button></th>`;
+  cont.innerHTML = `<div class="tabla-envoltura"><table class="datos">
+    <caption class="vh">Vídeos, ordenados por ${campo}</caption>
+    <thead><tr>${th('fecha', 'Fecha')}<th scope="col">Red</th><th scope="col">Título</th>${th('visitas', 'Visitas', 1)}<th scope="col" class="num">Me gusta</th>${th('compartidos', 'Compartidos', 1)}<th scope="col" class="num">Comentarios</th>${th('interaccion', 'Interacción', 1)}<th scope="col">Estado</th></tr></thead>
+    <tbody>${filas.map(v => { const e = estadoVideo(v); return `<tr class="${e}">
+      <td>${fechaCorta(v.fecha)}${v.hora != null ? ', ' + String(v.fecha.getHours()).padStart(2, '0') + ':' + String(v.fecha.getMinutes()).padStart(2, '0') : ''}</td>
+      <td>${esc(infoRed(v.red).nombre)}</td>
+      <td class="titulo">${v.enlace && /^https?:\/\//.test(v.enlace) ? `<a href="${esc(v.enlace)}" target="_blank" rel="noopener" style="color:inherit">${esc(v.titulo)}</a>` : esc(v.titulo)}</td>
+      <td class="num">${v.visitas != null ? compacto(v.visitas) : '–'}</td><td class="num">${v.meGusta != null ? nf(v.meGusta) : '–'}</td>
+      <td class="num">${v.compartidos != null ? nf(v.compartidos) : '–'}</td><td class="num">${v.comentarios != null ? nf(v.comentarios) : '–'}</td>
+      <td class="num">${pct(interaccion([v])) || '–'}</td>
+      <td><span class="estado ${e}">${ESTADOS[e]}</span></td></tr>`; }).join('')}</tbody></table></div>`;
+}
+
+function filasBarras(items, fmt, azul) {
+  const max = Math.max(1, ...items.map(i => i.valor || 0));
+  return `<div class="barras">${items.map(i => `<div class="barra-fila"><span class="nombre">${esc(i.nombre)}${i.detalle ? `<small>${i.detalle}</small>` : ''}</span><div class="pista" aria-hidden="true"><i class="${azul ? 'azul' : ''}" style="width:${(i.valor || 0) / max * 100}%"></i></div><span class="cifra">${i.valor != null ? fmt(i.valor) : '–'}</span></div>`).join('')}</div>`;
+}
+
+function pintarRedes(r) {
+  const el = document.getElementById('vista-redes');
+  if (!hayVideos()) { el.innerHTML = vacioGrande(); return; }
+  const act = estado.datos.videos.filter(v => dentro(v.fecha, r)), prev = estado.datos.videos.filter(v => dentro(v.fecha, rangoPrevio(r)));
+  const redes = redesPresentes();
+  const segUlt = red => { const s = estado.datos.seguidores.filter(x => x.red === red && x.fecha <= r[1]).sort((a, b) => b.fecha - a.fecha); return s[0]?.total ?? null; };
+  el.innerHTML = `<div class="rejilla">${redes.map(red => {
+    const a = act.filter(v => v.red === red), p = prev.filter(v => v.red === red);
+    const mejor = [...a].sort((x, y) => (y.visitas || 0) - (x.visitas || 0))[0];
+    const seg = segUlt(red);
+    return `<div class="tarjeta c6">
+      <div class="tarjeta-cab"><div><h2>${esc(infoRed(red).nombre)}</h2><p class="sub">${seg != null ? nf(seg) + ' seguidores' : 'Seguidores: sin datos todavía'}</p></div></div>
+      <div class="rejilla" style="gap:16px">
+        <div class="c4"><span class="etq" style="font:500 12px var(--mono);color:var(--texto-2)">Publicaciones</span><div style="font:600 28px var(--titulo)">${a.length ? nf(a.length) : sinDatos('–')}</div>${variacion(a.length, p.length)}</div>
+        <div class="c4"><span class="etq" style="font:500 12px var(--mono);color:var(--texto-2)">Visitas</span><div style="font:600 28px var(--titulo)">${compacto(suma(a, 'visitas')) ?? '–'}</div>${variacion(suma(a, 'visitas'), suma(p, 'visitas'))}</div>
+        <div class="c4"><span class="etq" style="font:500 12px var(--mono);color:var(--texto-2)">Interacción</span><div style="font:600 28px var(--titulo)">${pct(interaccion(a)) ?? '–'}</div>${variacionPuntos(interaccion(a), interaccion(p))}</div>
+      </div>
+      <p class="sub" style="margin-top:24px">${mejor ? `Mejor vídeo: <b style="color:var(--tinta)">${esc(mejor.titulo)}</b>, ${compacto(mejor.visitas)} visitas` : 'Sin vídeos en este periodo'}</p>
+      ${a.length ? `<p class="sub">Seguidores nuevos por vídeos: ${nf(suma(a, 'seguidores') || 0)}</p>` : ''}
+    </div>`; }).join('')}</div>`;
+}
+
+function pintarVideos(r) {
+  const el = document.getElementById('vista-videos');
+  if (!hayVideos()) { el.innerHTML = vacioGrande(); return; }
+  const vids = videosEn(r);
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Todos los vídeos</h2><p class="sub">${nf(vids.length)} en el periodo. Ordena por fecha, visitas, compartidos o interacción.</p></div></div><div id="tabla-todos"></div></div>
+    <div class="tarjeta c7"><div class="tarjeta-cab"><div><h2>Mejores horas</h2><p class="sub">Visitas medias por vídeo según el día y la hora de publicación</p></div></div><div id="horas"></div></div>
+    <div class="tarjeta c5"><div class="tarjeta-cab"><div><h2>Por duración</h2><p class="sub">Visitas medias por vídeo</p></div></div><div id="duracion"></div></div>
+  </div>`;
+  pintarTabla(vids, document.getElementById('tabla-todos'));
+  const conHora = vids.filter(v => v.hora != null && v.visitas != null);
+  const cHoras = document.getElementById('horas');
+  if (conHora.length < 3) cHoras.innerHTML = sinDatos('Sin datos todavía: añade la columna hora al CSV');
+  else {
+    const celdas = {}; conHora.forEach(v => { const d = (v.fecha.getDay() + 6) % 7; const h = v.hora < 6 ? v.hora + 24 : v.hora; const f = FRANJAS.findIndex(([a, b]) => h >= a && h < b); if (f < 0) return; const k = d + '-' + f; (celdas[k] = celdas[k] || []).push(v.visitas); });
+    const medias = Object.fromEntries(Object.entries(celdas).map(([k, l]) => [k, l.reduce((a, b) => a + b, 0) / l.length]));
+    const max = Math.max(...Object.values(medias));
+    cHoras.innerHTML = `<div class="horas"><span></span>${FRANJAS.map(f => `<span class="eti cab">${f[2]}</span>`).join('')}${DIAS.map((d, di) => `<span class="eti">${d}</span>${FRANJAS.map((_, fi) => { const m = medias[di + '-' + fi]; const n = (celdas[di + '-' + fi] || []).length; const a = m ? 0.12 + 0.88 * m / max : 0; return `<span class="celda" title="${m ? `${n} vídeo${n > 1 ? 's' : ''}, ${compacto(Math.round(m))} visitas de media` : 'sin publicaciones'}" style="background:${m ? `rgba(85,122,140,${a.toFixed(2)})` : 'transparent'};color:${a > .55 ? 'var(--superficie)' : 'var(--texto-2)'}">${m ? compacto(Math.round(m)) : ''}</span>`; }).join('')}`).join('')}</div><p class="sub" style="margin-top:16px">Con pocos vídeos por casilla es una pista, no una regla.</p>`;
+  }
+  const tramos = [[0, 20, 'hasta 20 s'], [20, 40, '20–40 s'], [40, 60, '40–60 s'], [60, 9999, 'más de 60 s']];
+  const items = tramos.map(([a, b, n]) => { const l = vids.filter(v => v.duracion != null && v.duracion >= a && v.duracion < b && v.visitas != null); return { nombre: n, detalle: l.length ? `${l.length} vídeos, ${pct(interaccion(l))} de interacción` : 'sin vídeos', valor: l.length ? suma(l, 'visitas') / l.length : null }; });
+  document.getElementById('duracion').innerHTML = items.some(i => i.valor != null) ? filasBarras(items, v => compacto(Math.round(v)), true) : sinDatos('Sin datos todavía: añade la columna duracion_s');
+}
+
+function agrupado(vids, campo) {
+  const g = {}; vids.forEach(v => { const k = v[campo] || '(sin indicar)'; (g[k] = g[k] || []).push(v); });
+  return Object.entries(g).map(([k, l]) => { const conV = l.filter(v => v.visitas != null); return { nombre: k, detalle: `${l.length} vídeo${l.length > 1 ? 's' : ''}, ${pct(interaccion(l)) || '–'} de interacción`, valor: conV.length ? suma(conV, 'visitas') / conV.length : null }; }).sort((a, b) => (b.valor || 0) - (a.valor || 0));
+}
+function pintarBiblioteca(r) {
+  const el = document.getElementById('vista-biblioteca');
+  if (!hayVideos()) { el.innerHTML = vacioGrande(); return; }
+  const vids = videosEn(r);
+  const bloque = (t, sub, campo) => `<div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>${t}</h2><p class="sub">${sub}</p></div></div>${vids.some(v => v[campo]) ? filasBarras(agrupado(vids, campo), v => compacto(Math.round(v))) : sinDatos(`Sin datos todavía: añade la columna ${campo} al CSV`)}</div>`;
+  el.innerHTML = `<div class="rejilla">${bloque('Por tipo de vídeo', 'Visitas medias por vídeo (explicativo, consejo, curiosidad…)', 'tipo')}${bloque('Por personaje', 'Visitas medias por vídeo según el peep', 'personaje')}</div>`;
+}
+
+function pintarCampanas(r) {
+  const el = document.getElementById('vista-campanas');
+  const web = estado.datos.web.filter(w => dentro(w.fecha, r));
+  if (!estado.datos.web.length) { el.innerHTML = vacioGrande('Cuando haya un web.csv (export de GoatCounter con el origen ?ref=) en datos/ aparecerá aquí.'); return; }
+  const prev = estado.datos.web.filter(w => dentro(w.fecha, rangoPrevio(r)));
+  const vis = suma(web, 'visitas'), visP = suma(prev, 'visitas'), alt = suma(web, 'altas'), altP = suma(prev, 'altas');
+  const g = {}; web.forEach(w => { const k = w.ref; g[k] = g[k] || { visitas: 0, altas: 0 }; g[k].visitas += w.visitas || 0; g[k].altas += w.altas || 0; });
+  const vidPorRef = Object.fromEntries(estado.datos.videos.filter(v => v.ref).map(v => [v.ref, v]));
+  const items = Object.entries(g).sort((a, b) => b[1].visitas - a[1].visitas).slice(0, 15).map(([ref, d]) => ({ nombre: ref, detalle: `${vidPorRef[ref] ? esc(vidPorRef[ref].titulo) + ', ' : ''}${nf(d.altas)} alta${d.altas === 1 ? '' : 's'}`, valor: d.visitas }));
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta kpi c4"><span class="etq">Visitas a la web</span><div class="fila">${vis != null ? `<span class="valor">${compacto(vis)}</span>${variacion(vis, visP)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c4"><span class="etq">Altas en la app</span><div class="fila">${alt != null ? `<span class="valor">${nf(alt)}</span>${variacion(alt, altP)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c4"><span class="etq">Conversión</span><div class="fila">${vis && alt != null ? `<span class="valor">${pct(alt / vis)}</span>` : sinDatos()}</div></div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Origen de las visitas</h2><p class="sub">Visitas a appbitacora.es por marca de enlace (?ref=), con el vídeo al que corresponde</p></div></div>${items.length ? filasBarras(items, v => compacto(v), true) : sinDatos('No hay visitas en este periodo')}</div>
+  </div>`;
+}
+
+function pintarAjustes() {
+  const el = document.getElementById('vista-ajustes');
+  const n = estado.datos;
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>Datos</h2><p class="sub">De dónde lee el panel y cuándo se actualiza</p></div></div>
+      <div class="ajuste"><div><b>Origen</b><span>${{ carpeta: 'Carpeta datos/, se vuelve a leer cada minuto', ejemplo: 'Datos ficticios de ejemplo', elegidos: 'Archivos elegidos a mano (no se actualizan solos)', archivo: 'Ninguno: el panel está abierto con doble clic', ninguno: 'Carpeta datos/, todavía vacía' }[estado.origen]}</span></div></div>
+      <div class="ajuste"><div><b>Leído ahora</b><span>${nf(n.videos.length)} vídeos, ${nf(n.web.length)} filas de web, ${nf(n.seguidores.length)} de seguidores</span></div><button class="boton" type="button" id="recargar">recargar</button></div>
+      <div class="ajuste"><div><b>Elegir los CSV a mano</b><span>Para abrir el panel sin servidor. Nombres: videos.csv, web.csv, seguidores.csv</span></div><label class="boton" style="display:inline-flex;align-items:center">elegir<input type="file" id="elegir" accept=".csv,text/csv" multiple class="vh"></label></div>
+      <div class="ajuste"><div><b>Datos de ejemplo</b><span>Ficticios, solo para ver cómo queda el panel. Nunca mezclan con los reales.</span></div><button class="interruptor" type="button" role="switch" id="ejemplo" aria-checked="${estado.ejemplo}" aria-label="Datos de ejemplo"></button></div>
+    </div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>Formato de los CSV</h2><p class="sub">En datos/. Separador coma o punto y coma; los números pueden ir como 1.820 o 24,3K.</p></div></div>
+      <b>videos.csv</b> (uno por vídeo y red; se actualiza con el export semanal)
+      <pre class="formato">fecha,hora,red,titulo,tipo,personaje,duracion_s,visitas,me_gusta,compartidos,comentarios,guardados,seguidores_nuevos,ref,enlace
+2026-10-23,20:30,tiktok,Apuntar como hablas,explicativo,peep-52,60,24300,1820,214,86,140,35,tiktok-v01,https://…</pre>
+      <p class="sub">Obligatorias: fecha, red, titulo y visitas. Las demás, si se tienen. Sin dato, la casilla vacía (nunca 0).</p>
+      <b>web.csv</b> (visitas a appbitacora.es por origen, de GoatCounter)
+      <pre class="formato">fecha,ref,visitas,altas
+2026-10-23,tiktok-v01,182,3</pre>
+      <b>seguidores.csv</b> (opcional, foto semanal)
+      <pre class="formato">fecha,red,seguidores
+2026-10-26,tiktok,1240</pre>
+    </div>
+  </div>`;
+}
+
+// ------------------------------------------------------------ eventos
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-vista],[data-ir],[data-orden],#recargar,#ejemplo'); if (!b) return;
+  if (b.dataset.vista || b.dataset.ir) { estado.vista = b.dataset.vista || b.dataset.ir; guardado('vista', estado.vista); pintar(); window.scrollTo({ top: 0 }); document.querySelector(`[data-vista="${estado.vista}"]`)?.focus(); }
+  else if (b.dataset.orden) { const k = b.dataset.orden; estado.orden = { campo: k, dir: estado.orden.campo === k && estado.orden.dir === 'descending' ? 'ascending' : 'descending' }; pintar(); document.querySelector(`[data-orden="${k}"]`)?.focus(); }
+  else if (b.id === 'recargar') cargar();
+  else if (b.id === 'ejemplo') { estado.ejemplo = !estado.ejemplo; guardado('ejemplo', estado.ejemplo ? '1' : '0'); cargar(); }
+});
+document.addEventListener('change', ev => {
+  if (ev.target.id === 'periodo') { estado.periodo = ev.target.value; pintar(); }
+  else if (ev.target.id === 'red') { estado.red = ev.target.value; pintar(); }
+  else if (ev.target.id === 'elegir' && ev.target.files.length) cargarElegidos([...ev.target.files]);
+});
+const cab = document.getElementById('cabecera');
+addEventListener('scroll', () => cab.classList.toggle('pegada', scrollY > 8), { passive: true });
+let redimension; addEventListener('resize', () => { clearTimeout(redimension); redimension = setTimeout(pintar, 150); });
+
+cargar();
+setInterval(() => { if (estado.origen === 'carpeta' || estado.origen === 'ninguno') cargar(); }, REFRESCO_MS);
+</script>
+</body>
+</html>
