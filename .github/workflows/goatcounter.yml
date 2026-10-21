@@ -1,0 +1,37 @@
+name: visitas de GoatCounter
+
+on:
+  schedule:
+    - cron: '20 3 * * *'   # cada noche, 5:20 en Madrid (hora de verano)
+  workflow_dispatch:
+    inputs:
+      dias:
+        description: 'Días hacia atrás que se rehacen'
+        default: '7'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos
+  cancel-in-progress: false
+
+jobs:
+  traer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: traer visitas
+        env:
+          GOATCOUNTER_TOKEN: ${{ secrets.GOATCOUNTER_TOKEN }}
+          DIAS: ${{ inputs.dias || '7' }}
+        run: python scripts/goatcounter.py
+      - name: guardar si hay cambios
+        run: |
+          git config user.name "panel-bitacora"
+          git config user.email "actions@users.noreply.github.com"
+          git add datos/web.csv
+          git diff --cached --quiet || (git commit -m "Visitas de GoatCounter $(date +%F)" && git push)
