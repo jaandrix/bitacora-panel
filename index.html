@@ -194,6 +194,44 @@ a.boton:hover { color: var(--superficie); }
 .directo .origen.commit { color: var(--coral); }
 .directo li.nuevo { animation: entra .5s cubic-bezier(.2, .8, .2, 1); }
 @keyframes entra { from { opacity: 0; transform: translateY(-4px); } }
+/* Sugerencias */
+.sugerencias { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.sug { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 10px; min-height: 196px; padding: 18px; border: 1px solid var(--linea); border-radius: 16px; background: var(--fondo); transition: border-color .15s ease-out, transform .15s ease-out; }
+.sug:hover { border-color: var(--tinta); }
+.sug:active { transform: scale(.98); }
+.sug:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.sug .area { font: 500 11px var(--mono); color: var(--texto-2); display: flex; justify-content: space-between; gap: 8px; }
+.sug b { font: 600 15px/1.3 var(--titulo); }
+.sug .porque { font-size: 13px; color: var(--texto-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sug .voto { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; font: 500 12px var(--mono); color: var(--texto-2); }
+.sug .voto svg { width: 14px; height: 14px; }
+.sug.si { border-color: var(--azul); background: var(--azul-fondo); }
+.sug.si .voto { color: var(--azul); }
+.sug.no { opacity: .55; }
+.sug.no b { text-decoration: line-through; text-decoration-color: var(--texto-2); }
+dialog.eleccion { width: min(520px, calc(100vw - 32px)); border: 1px solid var(--tinta); border-radius: 20px; padding: 28px; background: var(--superficie); color: var(--tinta); }
+dialog.eleccion::backdrop { background: rgba(36,38,37,.35); }
+dialog.eleccion[open] { animation: dialogo .18s cubic-bezier(.2, .8, .2, 1); }
+@keyframes dialogo { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+dialog.eleccion h3 { margin: 6px 0 12px; font: 600 22px/1.2 var(--titulo); }
+dialog.eleccion .area { font: 500 12px var(--mono); color: var(--texto-2); }
+dialog.eleccion p { margin: 0 0 12px; }
+dialog.eleccion .que { background: var(--fondo); border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px; font-size: 13px; }
+dialog.eleccion textarea { width: 100%; min-height: 64px; resize: vertical; margin-top: 4px; padding: 10px 12px; border: 1px solid var(--linea); border-radius: 12px; background: var(--fondo); font: 400 13px var(--texto); }
+dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
+.botones-eleccion { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.boton-voto { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 14px; border: 1px solid var(--tinta); background: transparent; font: 600 15px var(--texto); cursor: pointer; transition: transform .12s ease-out; }
+.boton-voto:active { transform: scale(.97); }
+.boton-voto svg { width: 20px; height: 20px; }
+.boton-voto.si { background: var(--tinta); color: var(--superficie); }
+.boton-voto.si[aria-pressed="true"] { background: var(--azul); border-color: var(--azul); }
+.boton-voto.no[aria-pressed="true"] { background: var(--coral-palido); border-color: var(--coral); color: var(--coral); }
+.pie-eleccion { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; font: 400 12px var(--mono); color: var(--texto-2); }
+.pie-eleccion button { all: unset; cursor: pointer; text-decoration: underline; }
+.clave-fila { display: flex; gap: 8px; margin-top: 4px; }
+.clave-fila input { flex: 1; height: 40px; padding: 0 12px; border: 1px solid var(--linea); border-radius: 10px; background: var(--fondo); }
+@media (max-width: 1180px) { .sugerencias { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .sugerencias { grid-template-columns: minmax(0, 1fr); } .sug { min-height: 0; } }
 .nota-tareas { margin: 16px 0 0; font: 400 12px/1.5 var(--mono); color: var(--texto-2); }
 
 @media (max-width: 1180px) {
@@ -731,6 +769,23 @@ function pintarAjustes() {
 // registro de Claude con los últimos commits de la app. GitHub deja 60 consultas por hora sin sesión: por eso
 // esas dos se piden cada 3 minutos.
 const REPO_PANEL = 'jaandrix/bitacora-panel', REPO_APP = 'jaandrix/agenda';
+// Los votos de las sugerencias van a Supabase por funciones con clave (supabase/sql/panel_sugerencias.sql en la
+// app). La clave anónima es pública (es la misma de la web); sin la clave de Alejandro no se puede votar.
+const SB_URL = 'https://avdqtnukgbejorieuunj.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2ZHF0bnVrZ2Jlam9yaWV1dW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUzMjcyOTUsImV4cCI6MjEwMDkwMzI5NX0.sq1cepXuBaNT6qygyxKEAhVHJh7G9LZyzaeJBhc7s7s';
+const ICONO_SI = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+const ICONO_NO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+async function rpc(nombre, cuerpo) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${nombre}`, { method: 'POST', headers: { apikey: SB_ANON, Authorization: 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo || {}) });
+  const datos = await r.json().catch(() => null);
+  if (!r.ok) throw new Error(datos?.message || 'error ' + r.status);
+  return datos;
+}
+const votos = { lista: {}, error: null };
+async function cargarVotos() {
+  try { votos.lista = Object.fromEntries((await rpc('panel_votos_lista')).map(v => [v.id, v])); votos.error = null; }
+  catch (e) { votos.error = 'Los votos aún no funcionan: falta ejecutar panel_sugerencias.sql en Supabase.'; }
+}
 const tareas = { datos: null, recordatorios: null, commits: null, ultimaGitHub: 0, vistos: new Set(), error: null };
 async function cargarTareas(forzar) {
   try {
@@ -738,6 +793,7 @@ async function cargarTareas(forzar) {
     if (r.ok) { tareas.datos = await r.json(); tareas.error = null; }
     else tareas.error = 'Todavía no hay datos/tareas.json.';
   } catch (e) { tareas.error = 'No se pudo leer datos/tareas.json.'; }
+  await cargarVotos();
   if (forzar || Date.now() - tareas.ultimaGitHub > 180000) {
     tareas.ultimaGitHub = Date.now();
     const gh = async ruta => { const r = await fetch('https://api.github.com/repos/' + ruta, { headers: { Accept: 'application/vnd.github+json' } }); if (!r.ok) throw new Error(r.status); return r.json(); };
@@ -776,8 +832,13 @@ function pintarTareas() {
     ...(tareas.commits || []).map(c => ({ cuando: c.commit.author.date, texto: c.commit.message.split('\n')[0], origen: 'commit', url: c.html_url }))]
     .sort((a, b) => new Date(b.cuando) - new Date(a.cuando)).slice(0, 30);
   const primeraVez = !tareas.vistos.size;
+  const sugs = (d.sugerencias || []).slice(0, 5);
+  const bloqueSug = `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Sugerencias</h2><p class="sub">Lo que Claude cree que Bitácora necesita. Tócalas para aceptarlas o rechazarlas; cuando se lo pidas, trabajará en las aceptadas y pondrá otras nuevas.</p></div></div>
+      ${sugs.length ? `<div class="sugerencias">${sugs.map(g => { const v = votos.lista[g.id]?.voto; return `<button type="button" class="sug ${v || ''}" data-sug="${esc(g.id)}"><span class="area"><span>${esc(g.area || '')}</span><span>${esc(g.esfuerzo || '')}</span></span><b>${esc(g.titulo)}</b><span class="porque">${esc(g.porque || '')}</span><span class="voto">${v === 'si' ? ICONO_SI + 'aceptada' : v === 'no' ? ICONO_NO + 'rechazada' : 'sin decidir'}</span></button>`; }).join('')}</div>` : sinDatos('Sin sugerencias todavía')}
+      ${votos.error ? `<p class="nota-tareas">${esc(votos.error)}</p>` : ''}</div>`;
   el.innerHTML = `<div class="rejilla">
     <div class="tarjeta c12" style="padding:18px 24px"><div class="sesion"><span class="punto ${viva ? 'vivo' : ses.estado === 'esperando' && reciente ? 'espera' : ''}"></span><span>${fraseSesion}${d.actualizado ? `, ${hace(d.actualizado)}` : ''}</span></div></div>
+    ${bloqueSug}
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>En curso</h2><p class="sub">Lo que Claude está haciendo en el chat, en el orden en que va</p></div></div>
       ${curso.length ? `<ul class="lista-tareas">${[...curso].sort((a, b) => (orden[a.estado] ?? 2) - (orden[b.estado] ?? 2)).map(filaTarea).join('')}</ul>` : sinDatos(tareas.error || 'Nada en curso')}</div>
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>En directo</h2><p class="sub">Cada paso de Claude y cada cambio que se sube a la app</p></div></div>
@@ -789,6 +850,46 @@ function pintarTareas() {
       <p class="nota-tareas">También puedes decírselo a Claude en el chat. Para quitar uno, ciérralo en GitHub. Este repositorio es público: nada privado aquí.</p></div>
   </div>`;
 }
+
+function abrirSugerencia(id) {
+  const g = (tareas.datos?.sugerencias || []).find(x => x.id === id); if (!g) return;
+  const v = votos.lista[id];
+  let dlg = document.getElementById('eleccion');
+  if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'eleccion'; dlg.className = 'eleccion'; document.body.appendChild(dlg); dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); }); }
+  const clave = guardado('clave');
+  dlg.innerHTML = `<div class="area">${esc(g.area || '')}${g.esfuerzo ? ', ' + esc(g.esfuerzo) : ''}</div>
+    <h3>${esc(g.titulo)}</h3>
+    ${g.porque ? `<p>${esc(g.porque)}</p>` : ''}
+    ${g.que ? `<div class="que"><b>Lo que haría:</b> ${esc(g.que)}</div>` : ''}
+    <label class="etq" for="sug-nota" style="display:block;margin-top:14px">nota para Claude (opcional)</label>
+    <textarea id="sug-nota" placeholder="Matices, prioridad, lo que no quieres…">${esc(v?.nota || '')}</textarea>
+    ${clave ? '' : `<label class="etq" for="sug-clave" style="display:block;margin-top:12px">tu clave del panel (se recuerda en este navegador)</label><div class="clave-fila"><input id="sug-clave" type="password" autocomplete="current-password"></div>`}
+    <div class="botones-eleccion">
+      <button type="button" class="boton-voto no" data-votar="no" aria-pressed="${v?.voto === 'no'}">${ICONO_NO}rechazar</button>
+      <button type="button" class="boton-voto si" data-votar="si" aria-pressed="${v?.voto === 'si'}">${ICONO_SI}aceptar</button>
+    </div>
+    <div class="pie-eleccion"><span id="sug-estado">${v ? (v.voto === 'si' ? 'aceptada' : 'rechazada') + ' ' + hace(v.cuando) : 'sin decidir'}</span><span>${v ? '<button type="button" data-votar="">dejar sin decidir</button>' : ''}${clave ? ' <button type="button" id="olvidar-clave">olvidar clave</button>' : ''}</span></div>`;
+  dlg.dataset.id = id;
+  dlg.showModal();
+}
+async function votarSugerencia(voto) {
+  const dlg = document.getElementById('eleccion'); const id = dlg.dataset.id;
+  const clave = guardado('clave') || document.getElementById('sug-clave')?.value || '';
+  const estadoEl = document.getElementById('sug-estado');
+  if (!clave) { estadoEl.textContent = 'escribe tu clave'; document.getElementById('sug-clave')?.focus(); return; }
+  estadoEl.textContent = 'guardando…';
+  try {
+    const ok = await rpc('panel_votar', { p_clave: clave, p_id: id, p_voto: voto, p_nota: document.getElementById('sug-nota').value.trim() || null });
+    if (!ok) { guardado('clave', ''); estadoEl.textContent = 'clave incorrecta'; return; }
+    guardado('clave', clave);
+    await cargarVotos(); pintarTareas(); dlg.close();
+  } catch (e) { estadoEl.textContent = e.message.includes('intentos') ? e.message : 'no se pudo guardar: ¿está ejecutado panel_sugerencias.sql?'; }
+}
+document.addEventListener('click', ev => {
+  const s = ev.target.closest('[data-sug]'); if (s) return abrirSugerencia(s.dataset.sug);
+  const v = ev.target.closest('[data-votar]'); if (v) return votarSugerencia(v.dataset.votar);
+  if (ev.target.id === 'olvidar-clave') { guardado('clave', ''); document.getElementById('eleccion').close(); }
+});
 
 // ------------------------------------------------------------ eventos
 document.addEventListener('click', ev => {

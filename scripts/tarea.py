@@ -13,11 +13,14 @@
     log <texto>                       una línea en «en directo»
     pendiente <id> <alta|media|baja> <area> <titulo> [detalle] [quien]
     resuelto <id>                     quita un pendiente
+    sugerencia <id> <titulo> <porque> <que> <esfuerzo> <area>   añade o cambia una sugerencia (siempre 5)
+    sin-sugerencia <id>               quita una sugerencia (hecha o rechazada)
+    votos                             enseña lo que Alejandro ha marcado (no sube nada)
 Opciones: --sin-subir (solo escribe el archivo).
 
 Nunca se apunta aquí nada privado ni fallos de seguridad sin arreglar: el repositorio es público.
 """
-import datetime, json, subprocess, sys
+import datetime, json, re, subprocess, sys
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -78,11 +81,34 @@ def aplicar(d, orden, a):
         p = buscar(d['pendientes'], a[0])
         d['pendientes'] = [x for x in d['pendientes'] if x['id'] != a[0]]
         if p: resumen = f'resuelto: {p["titulo"]}'
+    elif orden == 'sugerencia':
+        lista = d.setdefault('sugerencias', [])
+        g = buscar(lista, a[0]) or {'id': a[0]}
+        g.update(dict(zip(['titulo', 'porque', 'que', 'esfuerzo', 'area'], a[1:6])))
+        if g not in lista: lista.append(g)
+    elif orden == 'sin-sugerencia':
+        g = buscar(d.get('sugerencias', []), a[0])
+        d['sugerencias'] = [x for x in d.get('sugerencias', []) if x['id'] != a[0]]
+        if g: resumen = f'sugerencia cerrada: {g["titulo"]}'
     else:
         sys.exit(f'orden desconocida: {orden}')
     if resumen:
         d['registro'] = ([{'hora': ahora(), 'texto': resumen}] + d.get('registro', []))[:MAX_REGISTRO]
     return resumen or orden
+
+
+def votos():
+    import urllib.request
+    html = (RAIZ / 'index.html').read_text(encoding='utf-8')
+    url = re.search(r"const SB_URL = '([^']+)'", html).group(1)
+    anon = re.search(r"const SB_ANON = '([^']+)'", html).group(1)
+    req = urllib.request.Request(url + '/rest/v1/rpc/panel_votos_lista', data=b'{}', method='POST',
+                                 headers={'apikey': anon, 'Authorization': 'Bearer ' + anon, 'Content-Type': 'application/json'})
+    lista = {v['id']: v for v in json.loads(urllib.request.urlopen(req, timeout=20).read())}
+    for g in cargar().get('sugerencias', []):
+        v = lista.get(g['id'])
+        nota = f"\n{'':30}nota: {v['nota']}" if v and v.get('nota') else ''
+        print(f"{(v['voto'] if v else 'sin decidir'):12} {g['id']:16} {g['titulo']}{nota}")
 
 
 def git(*args):
@@ -94,6 +120,7 @@ def main():
     subir = '--sin-subir' not in args
     args = [x for x in args if x != '--sin-subir']
     if not args: sys.exit(__doc__)
+    if args == ['votos']: return votos()
     grupos, actual = [], []
     for x in args:
         if x == '+':

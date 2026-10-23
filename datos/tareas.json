@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T16:16:30+02:00",
+ "actualizado": "2026-10-23T16:19:49+02:00",
  "sesion": {
   "estado": "esperando",
   "titulo": "que despliegues bitacora-mcp y pruebes en el iPhone"
@@ -168,6 +168,48 @@
   {
    "hora": "2026-10-23T16:09:26+02:00",
    "texto": "empiezo: Pestaña Tareas en el pulso del proyecto"
+  }
+ ],
+ "sugerencias": [
+  {
+   "id": "pruebas-humo",
+   "titulo": "Una prueba automática antes de cada subida",
+   "porque": "Una llave suelta ya dejó la app en blanco y hoy la comprobación es a mano.",
+   "que": "Una acción de GitHub que abre la app con datos de ejemplo en Chrome, recorre cada apartado en escritorio y en móvil y para la publicación si algo falla.",
+   "esfuerzo": "medio",
+   "area": "app"
+  },
+  {
+   "id": "arranque",
+   "titulo": "Que la app arranque más rápido",
+   "porque": "Antes de enseñar nada carga 2,2 MB de JavaScript en 46 archivos y 600 KB de estilos; con mala cobertura se nota.",
+   "que": "Unir y comprimir los archivos al publicar, sin cambiar cómo se programa, y cargar los apartados opcionales solo cuando se abren.",
+   "esfuerzo": "medio",
+   "area": "rendimiento"
+  },
+  {
+   "id": "primer-dia",
+   "titulo": "Un primer día que no empiece en blanco",
+   "porque": "Quien llega por un vídeo tiene 14 días, y con la app vacía no ve las conexiones que la hacen distinta.",
+   "que": "En la bienvenida, según el perfil, una semana de ejemplo que se borra con un botón: eventos, gastos, un examen, para ver «tu día» y conexiones desde el primer minuto.",
+   "esfuerzo": "medio",
+   "area": "crecimiento"
+  },
+  {
+   "id": "landing-perfil",
+   "titulo": "Portadas por perfil para los vídeos",
+   "porque": "Cada vídeo habla a alguien concreto (estudiante, profe, quien lleva sus cuentas) y todos aterrizan en la misma portada.",
+   "que": "appbitacora.es/estudiantes, /profes y /finanzas, con su titular y sus capturas, midiendo cada una en el panel con su ?ref=.",
+   "esfuerzo": "pequeño",
+   "area": "marketing"
+  },
+  {
+   "id": "uso-anonimo",
+   "titulo": "Saber qué apartados se usan",
+   "porque": "Hay unos 30 apartados y no sabemos cuáles usa la gente: cada mejora se decide a ciegas.",
+   "que": "Contar de forma anónima, sin datos personales, qué apartados se abren cada día (con GoatCounter, que ya se usa en la web) y enseñarlo en el panel.",
+   "esfuerzo": "pequeño",
+   "area": "producto"
   }
  ]
 }
