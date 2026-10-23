@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T17:31:32+02:00",
+ "actualizado": "2026-10-23T17:31:59+02:00",
  "sesion": {
-  "estado": "trabajando",
-  "titulo": "revisar sugerencias"
+  "estado": "esperando",
+  "titulo": "que despliegues y votes las sugerencias nuevas"
  },
  "en_curso": [
   {
@@ -240,6 +240,10 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:31:59+02:00",
+   "texto": "cinco sugerencias nuevas para votar"
+  },
   {
    "hora": "2026-10-23T17:31:32+02:00",
    "texto": "las cinco sugerencias, hechas; el correo espera a Resend"
@@ -557,5 +561,46 @@
    "texto": "empiezo: Pestaña Tareas en el pulso del proyecto"
   }
  ],
- "sugerencias": []
+ "sugerencias": [
+  {
+   "id": "doble-paso",
+   "titulo": "Doble verificación al iniciar sesión",
+   "porque": "Bitácora guarda tu vida entera, también tu dinero; una contraseña filtrada bastaría para entrar.",
+   "que": "Opcional en Ajustes: un código de la app de autenticación del móvil (Google Authenticator, 1Password...) al entrar en un dispositivo nuevo. Supabase ya lo trae; es enchufarlo bien.",
+   "esfuerzo": "medio",
+   "area": "seguridad"
+  },
+  {
+   "id": "vengo-de",
+   "titulo": "«Vengo de...»: traer tus cosas de otras apps",
+   "porque": "Lo que más frena a empezar es tener años de cosas en otra app y no querer copiarlas a mano.",
+   "que": "En la bienvenida y en Ajustes, elegir de dónde vienes (Google Calendar, Notion, Goodreads, el banco...) y una guía corta con el importador que ya existe para cada caso.",
+   "esfuerzo": "medio",
+   "area": "crecimiento"
+  },
+  {
+   "id": "comparar-precio",
+   "titulo": "Cuánto te ahorras frente a las apps que sustituye",
+   "porque": "1,99 € al mes se entiende mejor al lado de lo que cuestan juntas las apps que hacen cada cosa por separado.",
+   "que": "Una sección sobria en la portada y en la pantalla de pago: calendario, tareas, finanzas, hábitos, lecturas... con su precio típico y la suma, frente a Bitácora.",
+   "esfuerzo": "pequeño",
+   "area": "marketing"
+  },
+  {
+   "id": "datos-grandes",
+   "titulo": "Que no se ralentice con años de datos",
+   "porque": "Cada guardado lee y escribe todos tus datos de una vez; con varios años de uso, guardar y abrir irá cada vez más lento.",
+   "que": "Medir cuánto ocupa una cuenta de uso intenso, y si hace falta, guardar aparte lo antiguo (movimientos y eventos de años pasados) para que lo diario vaya ligero.",
+   "esfuerzo": "medio",
+   "area": "rendimiento"
+  },
+  {
+   "id": "instalar-iphone",
+   "titulo": "Que instalarla en el iPhone salga a la primera",
+   "porque": "En el iPhone hay que tocar Compartir y luego «Añadir a pantalla de inicio»: mucha gente no lo encuentra y se queda en Safari, sin avisos.",
+   "que": "Si abres Bitácora en Safari del iPhone, una tarjeta con una flecha que señala el botón de compartir y los dos pasos, que no vuelve a salir al instalarla.",
+   "esfuerzo": "pequeño",
+   "area": "crecimiento"
+  }
+ ]
 }
