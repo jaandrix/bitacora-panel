@@ -1,5 +1,6 @@
 """Trae de GoatCounter las visitas a appbitacora.es de los últimos días, por origen (?ref=),
-y las escribe en datos/web.csv. Lo ejecuta cada noche .github/workflows/goatcounter.yml.
+y las escribe en datos/web.csv; y el uso anónimo de la app (las marcas «apartado/<vista>» y «uso/...» que
+cuenta la app al abrir cada apartado) en datos/apartados.csv. Lo ejecuta cada noche .github/workflows/goatcounter.yml.
 
 Necesita el secreto GOATCOUNTER_TOKEN (clave de API con permiso de lectura de estadísticas).
 Cada ejecución rehace los últimos DIAS días (GoatCounter puede tardar en cerrar un día) y deja
@@ -11,6 +12,7 @@ SITIO = os.environ.get('GOATCOUNTER_SITE', 'https://appbitacora.goatcounter.com'
 TOKEN = os.environ.get('GOATCOUNTER_TOKEN')
 DIAS = int(os.environ.get('DIAS', '7'))
 CSV = os.path.join(os.path.dirname(__file__), '..', 'datos', 'web.csv')
+CSV_USO = os.path.join(os.path.dirname(__file__), '..', 'datos', 'apartados.csv')
 
 
 def api(ruta, **params):
@@ -49,6 +51,43 @@ def visitas_del_dia(dia):
     return filas
 
 
+def uso_del_dia(dia):
+    """Visitantes de cada marca de la app ese día: {ruta: (titulo, visitantes)}."""
+    ini, fin = f'{dia.isoformat()}T00:00:00Z', f'{(dia + dt.timedelta(days=1)).isoformat()}T00:00:00Z'
+    filas, vistos = {}, []
+    while True:
+        params = dict(start=ini, end=fin, limit=100)
+        if vistos: params['exclude_paths'] = ','.join(map(str, vistos))
+        r = api('stats/hits', **params)
+        hits = r.get('hits', []) or []
+        for h in hits:
+            vistos.append(h.get('path_id'))
+            ruta = (h.get('path') or '').lstrip('/')
+            if ruta.startswith(('apartado/', 'uso/')):
+                filas[ruta] = ((h.get('title') or '').strip(), cifra(h))
+        if not r.get('more') or not hits: break
+        time.sleep(0.3)
+    return filas
+
+
+def guardar_uso(dias):
+    rehechos = {d.isoformat() for d in dias}
+    previas = []
+    if os.path.exists(CSV_USO):
+        with open(CSV_USO, encoding='utf-8') as f:
+            previas = [r for r in csv.DictReader(f) if r['fecha'] not in rehechos]
+    nuevas = []
+    for d in dias:
+        for ruta, (titulo, n) in sorted(uso_del_dia(d).items()):
+            if n: nuevas.append({'fecha': d.isoformat(), 'ruta': ruta, 'titulo': titulo, 'visitantes': str(n)})
+        time.sleep(0.3)
+    filas = sorted(previas + nuevas, key=lambda r: (r['fecha'], r['ruta']))
+    with open(CSV_USO, 'w', encoding='utf-8', newline='') as f:
+        w = csv.DictWriter(f, fieldnames=['fecha', 'ruta', 'titulo', 'visitantes'])
+        w.writeheader(); w.writerows(filas)
+    print(f'uso de la app: {len(nuevas)} filas nuevas; {len(filas)} en total')
+
+
 def main():
     if not TOKEN: sys.exit('Falta el secreto GOATCOUNTER_TOKEN')
     hoy = dt.date.today()
@@ -78,6 +117,7 @@ def main():
         w = csv.DictWriter(f, fieldnames=['fecha', 'ref', 'visitas', 'altas'])
         w.writeheader(); w.writerows(filas)
     print(f'{len(nuevas)} filas de {DIAS} días; {len(filas)} en total')
+    guardar_uso(dias)
 
 
 if __name__ == '__main__':

@@ -161,6 +161,12 @@ pre.formato { background: var(--fondo); border: 1px solid var(--linea); border-r
 .oculto { display: none !important; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+/* Uso de la app */
+.dias-uso { display: flex; align-items: flex-end; gap: 3px; height: 120px; }
+.dias-uso i { flex: 1; min-width: 2px; background: var(--tinta); border-radius: 3px 3px 0 0; opacity: .85; }
+.dias-uso i.vacio { background: var(--superficie-2); opacity: 1; }
+.dias-eje { display: flex; justify-content: space-between; margin-top: 8px; font: 400 12px var(--mono); color: var(--texto-2); }
+
 /* Tareas */
 .sesion { display: flex; align-items: center; gap: 12px; font: 500 13px var(--mono); color: var(--texto-2); }
 .sesion .punto { width: 10px; height: 10px; border-radius: 50%; background: var(--linea); flex: none; }
@@ -278,6 +284,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 
     <section id="vista-resumen" class="vista"></section>
     <section id="vista-tareas" class="vista oculto"></section>
+    <section id="vista-uso" class="vista oculto"></section>
     <section id="vista-redes" class="vista oculto"></section>
     <section id="vista-videos" class="vista oculto"></section>
     <section id="vista-campanas" class="vista oculto"></section>
@@ -291,7 +298,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 // El panel se sirve desde la raíz del cerebro (abrir el enlace de GitHub Pages) para poder leerlos;
 // si se abre con doble clic, el navegador no deja leer archivos y se ofrece elegirlos a mano.
 const RUTA_DATOS = 'datos/';
-const ARCHIVOS = { videos: 'videos.csv', web: 'web.csv', seguidores: 'seguidores.csv' };
+const ARCHIVOS = { videos: 'videos.csv', web: 'web.csv', seguidores: 'seguidores.csv', uso: 'apartados.csv' };
 const REFRESCO_MS = 60000;
 const REDES = {
   tiktok: { nombre: 'TikTok', corto: 'TK', color: 'var(--azul)', trazo: '' },
@@ -299,7 +306,7 @@ const REDES = {
   youtube: { nombre: 'YouTube', corto: 'YT', color: 'var(--coral)', trazo: '' },
   x: { nombre: 'X', corto: 'X', color: 'var(--texto-2)', trazo: '4 4' },
 };
-const VISTAS = [['resumen', 'Resumen'], ['tareas', 'Tareas'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
+const VISTAS = [['resumen', 'Resumen'], ['tareas', 'Tareas'], ['uso', 'Uso de la app'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
@@ -310,7 +317,7 @@ const estado = {
   ejemplo: guardado('ejemplo') === '1',
   periodo: null, red: 'todas',
   orden: { campo: 'fecha', dir: 'descending' },
-  datos: { videos: [], web: [], seguidores: [] },
+  datos: { videos: [], web: [], seguidores: [], uso: [] },
   origen: 'ninguno', actualizado: null, error: null,
 };
 
@@ -397,7 +404,8 @@ function normalizar(crudo) {
   }).filter(v => v.fecha);
   const web = (crudo.web || []).map(r => ({ fecha: fecha(r.fecha), ref: r.ref || '(directo)', visitas: numero(r.visitas), altas: numero(r.altas) })).filter(w => w.fecha);
   const seguidores = (crudo.seguidores || []).map(r => ({ fecha: fecha(r.fecha), red: redClave(r.red), total: numero(r.seguidores) })).filter(s => s.fecha);
-  return { videos, web, seguidores };
+  const uso = (crudo.uso || []).map(r => ({ fecha: fecha(r.fecha), ruta: r.ruta || '', titulo: r.titulo || '', visitantes: numero(r.visitantes) })).filter(u => u.fecha && u.ruta);
+  return { videos, web, seguidores, uso };
 }
 
 // ------------------------------------------------------------ datos de ejemplo (ficticios, solo para ver el panel)
@@ -526,8 +534,10 @@ function pintar() {
     `${estado.origen === 'carpeta' ? 'En vivo, se actualiza cada minuto' : estado.origen === 'ejemplo' ? 'Datos ficticios de ejemplo' : 'Archivos elegidos a mano'}<br>Última actualización: ${estado.actualizado.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
 
   document.querySelector('.filtros').classList.toggle('oculto', estado.vista === 'tareas');
+  document.getElementById('red').classList.toggle('oculto', estado.vista === 'uso');
+  if (estado.vista === 'uso') document.getElementById('subtitulo').textContent = `Qué apartados se abren, de forma anónima, ${etqRango}`;
   if (estado.vista === 'tareas') { document.getElementById('subtitulo').textContent = 'Lo que Claude está haciendo para Bitácora, lo pendiente y tus recordatorios'; return pintarTareas(); }
-  ({ resumen: pintarResumen, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
+  ({ resumen: pintarResumen, uso: pintarUso, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
 }
 
 function hayVideos() { return estado.datos.videos.length > 0; }
@@ -760,6 +770,40 @@ function pintarAjustes() {
       <pre class="formato">fecha,red,seguidores
 2026-10-26,tiktok,1240</pre>
     </div>
+  </div>`;
+}
+
+// ------------------------------------------------------------ uso de la app
+// datos/apartados.csv: visitantes por día de cada marca que cuenta la app (GoatCounter, anónimo). «uso/activo» es
+// quien abre la app ese día; «apartado/<vista>», quien abre ese apartado. Los dispositivos del creador no cuentan.
+function pintarUso(r) {
+  const el = document.getElementById('vista-uso');
+  const todo = estado.datos.uso || [];
+  if (!todo.length) { el.innerHTML = vacioGrande('La app empezó a contar el 23 de octubre de 2026. Tras la primera noche (el resumen llega a las 5:20) aparecerán aquí los apartados que más se abren.'); return; }
+  const act = todo.filter(u => dentro(u.fecha, r)), prev = todo.filter(u => dentro(u.fecha, rangoPrevio(r)));
+  const de = (lista, ruta) => lista.filter(u => u.ruta === ruta).reduce((a, u) => a + (u.visitantes || 0), 0);
+  const dias = []; for (let d = new Date(r[0]); d <= r[1] && d <= new Date(); d.setDate(d.getDate() + 1)) dias.push(iso(d));
+  const porDia = Object.fromEntries(dias.map(k => [k, 0])); act.filter(u => u.ruta === 'uso/activo').forEach(u => { const k = iso(u.fecha); if (k in porDia) porDia[k] += u.visitantes || 0; });
+  const conDatos = Object.values(porDia).filter(v => v > 0);
+  const media = conDatos.length ? conDatos.reduce((a, b) => a + b, 0) / conDatos.length : null;
+  const diasPrev = new Set(prev.filter(u => u.ruta === 'uso/activo').map(u => iso(u.fecha)));
+  const mediaPrev = diasPrev.size ? de(prev, 'uso/activo') / diasPrev.size : null;
+  const activos = de(act, 'uso/activo'), movil = de(act, 'uso/movil'), escritorio = de(act, 'uso/escritorio');
+  const g = {}; act.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); g[k] = g[k] || { titulo: u.titulo || k, n: 0 }; g[k].n += u.visitantes || 0; });
+  const gp = {}; prev.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); gp[k] = (gp[k] || 0) + (u.visitantes || 0); });
+  const orden = Object.entries(g).sort((a, b) => b[1].n - a[1].n);
+  const max = Math.max(1, ...Object.values(porDia));
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta kpi c3 oscura"><span class="etq">Personas al día</span><div class="fila">${media != null ? `<span class="valor">${nf(media, media < 10 ? 1 : 0)}</span>${variacion(media, mediaPrev)}` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3"><span class="etq">Desde el móvil</span><div class="fila">${movil + escritorio ? `<span class="valor">${pct(movil / (movil + escritorio), 0)}</span><span class="extra">${nf(escritorio)} en escritorio</span>` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3"><span class="etq">Apartados usados</span><div class="fila">${orden.length ? `<span class="valor">${nf(orden.length)}</span>` : sinDatos()}</div></div>
+    <div class="tarjeta kpi c3"><span class="etq">El más abierto</span><div class="fila">${orden.length ? `<span class="valor texto">${esc(orden[0][1].titulo)}</span>` : sinDatos()}</div></div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Personas que abren la app</h2><p class="sub">Cada día del periodo; sin contar los dispositivos del creador</p></div></div>
+      <div class="dias-uso" role="img" aria-label="Personas por día">${dias.map(k => `<i class="${porDia[k] ? '' : 'vacio'}" style="height:${porDia[k] ? Math.max(4, porDia[k] / max * 100) : 2}%" title="${fechaCorta(new Date(k + 'T12:00'))}: ${nf(porDia[k])}"></i>`).join('')}</div>
+      <div class="dias-eje"><span>${dias.length ? fechaCorta(new Date(dias[0] + 'T12:00')) : ''}</span><span>${dias.length ? fechaCorta(new Date(dias[dias.length - 1] + 'T12:00')) : ''}</span></div></div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Qué apartados se abren</h2><p class="sub">Personas que abren cada apartado, sumando los días del periodo. El porcentaje es sobre las que abren la app.</p></div></div>
+      ${orden.length ? filasBarras(orden.map(([k, v]) => ({ nombre: v.titulo, detalle: `${activos ? pct(v.n / activos, 0) + ' de quien entra' : ''}${gp[k] != null ? (activos ? ', ' : '') + (v.n >= gp[k] ? '+' : '') + nf(v.n - gp[k]) + ' frente al periodo anterior' : ''}`, valor: v.n })), v => nf(v)) : sinDatos('Nadie ha abierto apartados en este periodo')}
+      <p class="sub" style="margin-top:16px">Anónimo: GoatCounter no guarda nombres, correos ni direcciones; la app solo envía el nombre del apartado. Cada persona cuenta una vez por apartado cada 30 minutos.</p></div>
   </div>`;
 }
 
