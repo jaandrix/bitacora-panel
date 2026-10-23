@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T16:42:07+02:00",
+ "actualizado": "2026-10-23T16:46:25+02:00",
  "sesion": {
-  "estado": "trabajando",
-  "titulo": "primer día con ejemplo"
+  "estado": "parado",
+  "titulo": "sugerencias hechas"
  },
  "en_curso": [
   {
@@ -58,8 +58,8 @@
    "id": "primer-dia",
    "titulo": "Primer día con ejemplo",
    "detalle": "Opcional en la bienvenida, marcado, y «empezar con lo mío.» borra solo el ejemplo",
-   "estado": "curso",
-   "cuando": "2026-10-23T16:42:07+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T16:46:25+02:00"
   }
  ],
  "pendientes": [
@@ -153,6 +153,18 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T16:46:25+02:00",
+   "texto": "primer día con semana de ejemplo publicado; nueva sugerencia en su lugar"
+  },
+  {
+   "hora": "2026-10-23T16:46:25+02:00",
+   "texto": "sugerencia cerrada: Un primer día que no empiece en blanco"
+  },
+  {
+   "hora": "2026-10-23T16:46:25+02:00",
+   "texto": "hecho: Primer día con ejemplo"
+  },
   {
    "hora": "2026-10-23T16:42:07+02:00",
    "texto": "vamos con el primer día: semana de ejemplo opcional y botón para quitarla"
@@ -284,14 +296,6 @@
  ],
  "sugerencias": [
   {
-   "id": "primer-dia",
-   "titulo": "Un primer día que no empiece en blanco",
-   "porque": "Quien llega por un vídeo tiene 14 días, y con la app vacía no ve las conexiones que la hacen distinta.",
-   "que": "En la bienvenida, según el perfil, una semana de ejemplo que se borra con un botón: eventos, gastos, un examen, para ver «tu día» y conexiones desde el primer minuto.",
-   "esfuerzo": "medio",
-   "area": "crecimiento"
-  },
-  {
    "id": "resumen-mes",
    "titulo": "Tu mes en una tarjeta para compartir",
    "porque": "Cada persona que comparte su resumen es publicidad gratis y creíble, como el resumen anual de Spotify.",
@@ -322,6 +326,14 @@
    "que": "Contar de forma anónima en qué tramo cae cada apertura (menos de 1 s, 1 a 3 s, más de 3 s) en móvil y escritorio, y verlo en «Uso de la app».",
    "esfuerzo": "pequeño",
    "area": "rendimiento"
+  },
+  {
+   "id": "ejemplo-ajustes",
+   "titulo": "Volver a ver el ejemplo desde Ajustes",
+   "porque": "Quien dijo que no en la bienvenida, o lo quitó pronto, no tiene forma de verlo otra vez.",
+   "que": "Un botón en Ajustes, «ver una semana de ejemplo.», que carga la misma semana marcada y se quita igual, sin tocar lo suyo.",
+   "esfuerzo": "pequeño",
+   "area": "crecimiento"
   }
  ]
 }
