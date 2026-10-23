@@ -779,6 +779,7 @@ function pintarAjustes() {
 function pintarUso(r) {
   const el = document.getElementById('vista-uso');
   const todo = estado.datos.uso || [];
+  const fallos = bloqueFallos(r, todo);
   if (!todo.length) { el.innerHTML = vacioGrande('La app empezó a contar el 23 de octubre de 2026. Tras la primera noche (el resumen llega a las 5:20) aparecerán aquí los apartados que más se abren.'); return; }
   const act = todo.filter(u => dentro(u.fecha, r)), prev = todo.filter(u => dentro(u.fecha, rangoPrevio(r)));
   const de = (lista, ruta) => lista.filter(u => u.ruta === ruta).reduce((a, u) => a + (u.visitantes || 0), 0);
@@ -804,7 +805,20 @@ function pintarUso(r) {
     <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>Qué apartados se abren</h2><p class="sub">Personas que abren cada apartado, sumando los días del periodo. El porcentaje es sobre las que abren la app.</p></div></div>
       ${orden.length ? filasBarras(orden.map(([k, v]) => ({ nombre: v.titulo, detalle: `${activos ? pct(v.n / activos, 0) + ' de quien entra' : ''}${gp[k] != null ? (activos ? ', ' : '') + (v.n >= gp[k] ? '+' : '') + nf(v.n - gp[k]) + ' frente al periodo anterior' : ''}`, valor: v.n })), v => nf(v)) : sinDatos('Nadie ha abierto apartados en este periodo')}
       <p class="sub" style="margin-top:16px">Anónimo: GoatCounter no guarda nombres, correos ni direcciones; la app solo envía el nombre del apartado. Cada persona cuenta una vez por apartado cada 30 minutos.</p></div>
+    ${fallos}
   </div>`;
+}
+// Fallos: «error/<archivo>/<mensaje>» (errores sin capturar) y «aviso/app/<mensaje>» (avisos de error que ve la
+// persona). Nuevo = visto por primera vez hace 3 días o menos.
+function bloqueFallos(r, todo) {
+  const lista = todo.filter(u => u.ruta.startsWith('error/') || u.ruta.startsWith('aviso/'));
+  const primera = {}; lista.forEach(u => { if (!primera[u.ruta] || u.fecha < primera[u.ruta]) primera[u.ruta] = u.fecha; });
+  const g = {}; lista.filter(u => dentro(u.fecha, r)).forEach(u => { g[u.ruta] = g[u.ruta] || { titulo: u.titulo, n: 0, ultima: u.fecha }; g[u.ruta].n += u.visitantes || 0; if (u.fecha > g[u.ruta].ultima) { g[u.ruta].ultima = u.fecha; g[u.ruta].titulo = u.titulo; } });
+  const orden = Object.entries(g).sort((a, b) => (primera[b[0]] - primera[a[0]]) || b[1].n - a[1].n);
+  const nuevo = k => Date.now() - primera[k] < 3 * 864e5;
+  const nuevos = orden.filter(([k]) => nuevo(k)).length;
+  return `<div class="tarjeta c12${nuevos ? ' atencion' : ''}" style="${nuevos ? 'border-color:var(--coral)' : ''}"><div class="tarjeta-cab"><div><h2>Fallos que ven los usuarios</h2><p class="sub">${nuevos ? `<b style="color:var(--coral)">${nuevos} nuevo${nuevos > 1 ? 's' : ''} en los últimos 3 días.</b> ` : ''}Errores de la app y avisos de error, sin datos de nadie. Personas que lo vieron en el periodo.</p></div></div>
+    ${orden.length ? `<div class="tabla-envoltura"><table class="datos"><thead><tr><th>Fallo</th><th>Dónde</th><th class="num">Personas</th><th>Desde</th></tr></thead><tbody>${orden.map(([k, v]) => { const [tipo, archivo] = k.split('/'); const [vista, ...resto] = (v.titulo || '').split(': '); return `<tr class="${nuevo(k) ? 'revisar' : ''}"><td class="titulo">${esc(resto.join(': ') || k)}</td><td>${esc(tipo === 'aviso' ? 'aviso en ' + vista : archivo + '.js, en ' + vista)}</td><td class="num">${nf(v.n)}</td><td>${fechaCorta(primera[k])}${nuevo(k) ? ' (nuevo)' : ''}</td></tr>`; }).join('')}</tbody></table></div>` : sinDatos('Ningún fallo en este periodo')}</div>`;
 }
 
 // ------------------------------------------------------------ tareas

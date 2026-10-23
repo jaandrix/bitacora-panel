@@ -1,6 +1,6 @@
 """Trae de GoatCounter las visitas a appbitacora.es de los últimos días, por origen (?ref=),
 y las escribe en datos/web.csv; y el uso anónimo de la app (las marcas «apartado/<vista>» y «uso/...» que
-cuenta la app al abrir cada apartado) en datos/apartados.csv. Lo ejecuta cada noche .github/workflows/goatcounter.yml.
+cuenta la app al abrir cada apartado) y los fallos («error/...», «aviso/...») en datos/apartados.csv. Lo ejecuta cada noche .github/workflows/goatcounter.yml.
 
 Necesita el secreto GOATCOUNTER_TOKEN (clave de API con permiso de lectura de estadísticas).
 Cada ejecución rehace los últimos DIAS días (GoatCounter puede tardar en cerrar un día) y deja
@@ -63,7 +63,7 @@ def uso_del_dia(dia):
         for h in hits:
             vistos.append(h.get('path_id'))
             ruta = (h.get('path') or '').lstrip('/')
-            if ruta.startswith(('apartado/', 'uso/')):
+            if ruta.startswith(('apartado/', 'uso/', 'error/', 'aviso/')):
                 filas[ruta] = ((h.get('title') or '').strip(), cifra(h))
         if not r.get('more') or not hits: break
         time.sleep(0.3)
