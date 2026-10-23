@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T16:37:15+02:00",
+ "actualizado": "2026-10-23T16:42:07+02:00",
  "sesion": {
-  "estado": "esperando",
-  "titulo": "que decidas cómo hacer el primer día con ejemplo"
+  "estado": "trabajando",
+  "titulo": "primer día con ejemplo"
  },
  "en_curso": [
   {
@@ -56,10 +56,10 @@
   },
   {
    "id": "primer-dia",
-   "titulo": "Primer día con ejemplo y botón «iniciar mi cuenta»",
-   "detalle": "Te he dado mi opinión sobre el botón «iniciar mi cuenta»: falta que decidas",
-   "estado": "esperando",
-   "cuando": "2026-10-23T16:37:15+02:00"
+   "titulo": "Primer día con ejemplo",
+   "detalle": "Opcional en la bienvenida, marcado, y «empezar con lo mío.» borra solo el ejemplo",
+   "estado": "curso",
+   "cuando": "2026-10-23T16:42:07+02:00"
   }
  ],
  "pendientes": [
@@ -153,6 +153,14 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T16:42:07+02:00",
+   "texto": "vamos con el primer día: semana de ejemplo opcional y botón para quitarla"
+  },
+  {
+   "hora": "2026-10-23T16:42:07+02:00",
+   "texto": "empiezo: Primer día con ejemplo"
+  },
   {
    "hora": "2026-10-23T16:37:15+02:00",
    "texto": "te espera: Primer día con ejemplo y botón «iniciar mi cuenta»"
