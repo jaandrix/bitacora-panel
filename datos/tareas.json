@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T17:12:36+02:00",
+ "actualizado": "2026-10-23T17:21:03+02:00",
  "sesion": {
-  "estado": "esperando",
-  "titulo": "invitaciones.sql y los colores del tema amigos"
+  "estado": "trabajando",
+  "titulo": "revisar sugerencias"
  },
  "en_curso": [
   {
@@ -186,17 +186,17 @@
    "titulo": "Ejecutar invitaciones.sql en Supabase",
    "detalle": "Sin él no hay códigos de amigo",
    "quien": "Alejandro"
-  },
-  {
-   "id": "tema-amigos",
-   "prioridad": "media",
-   "area": "app",
-   "titulo": "Colores del tema «amigos.»",
-   "detalle": "Se desbloquea al invitar o al entrar invitado",
-   "quien": "Alejandro"
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:21:03+02:00",
+   "texto": "tema «oliva.» añadido: lo desbloquean los dos al invitar"
+  },
+  {
+   "hora": "2026-10-23T17:21:03+02:00",
+   "texto": "resuelto: Colores del tema «amigos.»"
+  },
   {
    "hora": "2026-10-23T17:12:36+02:00",
    "texto": "invitar a un amigo hecho; el buscador de Ajustes ya no se monta bajo la barra"
