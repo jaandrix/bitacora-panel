@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T16:32:28+02:00",
+ "actualizado": "2026-10-23T16:35:06+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "las cuatro sugerencias aceptadas"
@@ -44,15 +44,15 @@
    "id": "arranque",
    "titulo": "Que la app arranque más rápido",
    "detalle": "",
-   "estado": "curso",
-   "cuando": "2026-10-23T16:32:28+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T16:35:06+02:00"
   },
   {
    "id": "landing-perfil",
    "titulo": "Portadas por perfil para los vídeos",
    "detalle": "",
-   "estado": "pendiente",
-   "cuando": "2026-10-23T16:28:42+02:00"
+   "estado": "curso",
+   "cuando": "2026-10-23T16:35:06+02:00"
   },
   {
    "id": "primer-dia",
@@ -153,6 +153,18 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T16:35:06+02:00",
+   "texto": "arranque: al abrir la app ya no se vuelven a bajar los 46 archivos, y jsPDF y pdf.js se cargan solo cuando hacen falta"
+  },
+  {
+   "hora": "2026-10-23T16:35:06+02:00",
+   "texto": "empiezo: Portadas por perfil para los vídeos"
+  },
+  {
+   "hora": "2026-10-23T16:35:06+02:00",
+   "texto": "hecho: Que la app arranque más rápido"
+  },
   {
    "hora": "2026-10-23T16:32:28+02:00",
    "texto": "la app ya cuenta qué apartados se abren y el pulso tiene la vista «Uso de la app»; sigo con el arranque"
