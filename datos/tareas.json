@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T16:55:05+02:00",
+ "actualizado": "2026-10-23T16:58:24+02:00",
  "sesion": {
-  "estado": "trabajando",
-  "titulo": "sugerencias de la segunda ronda"
+  "estado": "esperando",
+  "titulo": "que elijas la recompensa de invitar a un amigo"
  },
  "en_curso": [
   {
@@ -73,14 +73,14 @@
    "titulo": "Ejemplo desde Ajustes, Ajustes ordenado y con buscador",
    "detalle": "",
    "estado": "hecho",
-   "cuando": "2026-10-23T16:55:05+02:00"
+   "cuando": "2026-10-23T16:58:24+02:00"
   },
   {
    "id": "resumen-mes",
    "titulo": "Tu mes en una tarjeta para compartir",
    "detalle": "Pudiendo quitar lo que no quieras enseñar",
-   "estado": "curso",
-   "cuando": "2026-10-23T16:55:05+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T16:58:24+02:00"
   },
   {
    "id": "invitar",
@@ -181,6 +181,38 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "tu mes y Ajustes publicados; cuatro sugerencias nuevas"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "sugerencia cerrada: Tu mes en una tarjeta para compartir"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "sugerencia cerrada: Volver a ver el ejemplo desde Ajustes"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "sugerencia cerrada: Medir cuánto tarda en abrir la app"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "sugerencia cerrada: Enterarte de los fallos que ven los usuarios"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "hecho: Tu mes en una tarjeta para compartir"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "empiezo: Tu mes en una tarjeta para compartir"
+  },
+  {
+   "hora": "2026-10-23T16:58:24+02:00",
+   "texto": "hecho: Ejemplo desde Ajustes, Ajustes ordenado y con buscador"
+  },
   {
    "hora": "2026-10-23T16:55:05+02:00",
    "texto": "Ajustes con buscador, índice y grupos nuevos; la semana de ejemplo ya se pone desde ahí. Sigo con la tarjeta del mes"
@@ -360,14 +392,6 @@
  ],
  "sugerencias": [
   {
-   "id": "resumen-mes",
-   "titulo": "Tu mes en una tarjeta para compartir",
-   "porque": "Cada persona que comparte su resumen es publicidad gratis y creíble, como el resumen anual de Spotify.",
-   "que": "Al acabar cada mes, una tarjeta bonita con lo tuyo (días con planes, lo que leíste, a dónde fuiste, cuánto ahorraste, sin cifras privadas si no quieres) lista para guardar como imagen y subir a stories, con appbitacora.es pequeño.",
-   "esfuerzo": "medio",
-   "area": "marketing"
-  },
-  {
    "id": "invitar",
    "titulo": "Invita a un amigo: un mes gratis para los dos",
    "porque": "Quien ya usa Bitácora es quien mejor la vende, y ahora no tiene ningún motivo para recomendarla.",
@@ -376,28 +400,36 @@
    "area": "crecimiento"
   },
   {
-   "id": "errores",
-   "titulo": "Enterarte de los fallos que ven los usuarios",
-   "porque": "Si a alguien se le rompe algo, hoy solo lo sabes si te lo cuenta (como la vez de la pantalla en blanco).",
-   "que": "Contar de forma anónima los errores de la app (qué falla y en qué apartado, sin datos personales) y enseñarlos en el pulso, con un aviso si aparece uno nuevo.",
-   "esfuerzo": "pequeño",
-   "area": "calidad"
-  },
-  {
-   "id": "tiempo-arranque",
-   "titulo": "Medir cuánto tarda en abrir la app",
-   "porque": "Hoy se ha acelerado el arranque, pero no hay forma de saber cuánto tarda en el móvil de la gente.",
-   "que": "Contar de forma anónima en qué tramo cae cada apertura (menos de 1 s, 1 a 3 s, más de 3 s) en móvil y escritorio, y verlo en «Uso de la app».",
-   "esfuerzo": "pequeño",
-   "area": "rendimiento"
-  },
-  {
-   "id": "ejemplo-ajustes",
-   "titulo": "Volver a ver el ejemplo desde Ajustes",
-   "porque": "Quien dijo que no en la bienvenida, o lo quitó pronto, no tiene forma de verlo otra vez.",
-   "que": "Un botón en Ajustes, «ver una semana de ejemplo.», que carga la misma semana marcada y se quita igual, sin tocar lo suyo.",
-   "esfuerzo": "pequeño",
+   "id": "fin-prueba",
+   "titulo": "Que el final de la prueba convenza",
+   "porque": "El día 14 la app pasa sin más a la pantalla de pago: es el momento en que más gente se va.",
+   "que": "Tres días antes, un aviso y una pantalla con lo que ya has construido (cuántos planes, gastos ordenados, rutinas...) y lo que perderías de vista, con el precio claro y sin presión.",
+   "esfuerzo": "medio",
    "area": "crecimiento"
+  },
+  {
+   "id": "volver",
+   "titulo": "Un aviso suave a quien deja de entrar",
+   "porque": "Si alguien lleva días sin abrirla, se le olvida que existe; un recordatorio útil la trae de vuelta sin ser pesado.",
+   "que": "Tras 4 días sin abrirla, un solo aviso con algo suyo (lo que tiene mañana, un cumpleaños, un pago que viene) y nunca más de uno por semana; se puede apagar en Ajustes.",
+   "esfuerzo": "pequeño",
+   "area": "retención"
+  },
+  {
+   "id": "opinion",
+   "titulo": "Preguntar qué falta en el momento justo",
+   "porque": "Los que se van no dicen por qué, y los que se quedan saben qué les falta.",
+   "que": "A los 7 días de uso, una sola pregunta («¿qué echas en falta?») que se guarda en Sugerencias y sale en el pulso. Se contesta en 10 segundos o se cierra.",
+   "esfuerzo": "pequeño",
+   "area": "producto"
+  },
+  {
+   "id": "accesibilidad",
+   "titulo": "Que se lea y se use bien por todos",
+   "porque": "Hay textos grises pequeños y botones que solo son iconos; en el móvil y con la vista cansada cuesta.",
+   "que": "Una revisión de contraste, tamaños mínimos de toque, nombres de los botones para lectores de pantalla y uso con teclado, apartado por apartado, sin cambiar el estilo.",
+   "esfuerzo": "medio",
+   "area": "calidad"
   }
  ]
 }
