@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T17:21:03+02:00",
+ "actualizado": "2026-10-23T17:21:28+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "revisar sugerencias"
@@ -88,6 +88,41 @@
    "detalle": "Falta ejecutar invitaciones.sql y que me pases los colores del tema «amigos.»",
    "estado": "esperando",
    "cuando": "2026-10-23T17:12:36+02:00"
+  },
+  {
+   "id": "opinion",
+   "titulo": "Preguntar qué falta a los 7 días",
+   "detalle": "",
+   "estado": "curso",
+   "cuando": "2026-10-23T17:21:28+02:00"
+  },
+  {
+   "id": "fin-prueba",
+   "titulo": "Que el final de la prueba convenza",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T17:21:28+02:00"
+  },
+  {
+   "id": "volver",
+   "titulo": "Un aviso suave a quien deja de entrar",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T17:21:28+02:00"
+  },
+  {
+   "id": "accesibilidad",
+   "titulo": "Que se lea y se use bien por todos",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T17:21:28+02:00"
+  },
+  {
+   "id": "ritmo-semanal",
+   "titulo": "Un correo los domingos con tu semana",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T17:21:28+02:00"
   }
  ],
  "pendientes": [
@@ -189,6 +224,14 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:21:28+02:00",
+   "texto": "las cinco sugerencias aceptadas; empiezo por la pregunta de los 7 días"
+  },
+  {
+   "hora": "2026-10-23T17:21:28+02:00",
+   "texto": "empiezo: Preguntar qué falta a los 7 días"
+  },
   {
    "hora": "2026-10-23T17:21:03+02:00",
    "texto": "tema «oliva.» añadido: lo desbloquean los dos al invitar"
