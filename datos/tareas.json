@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T17:29:34+02:00",
+ "actualizado": "2026-10-23T17:31:32+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "revisar sugerencias"
@@ -121,8 +121,8 @@
    "id": "ritmo-semanal",
    "titulo": "Un correo los domingos con tu semana",
    "detalle": "Hace falta un servicio de correo (Resend) y su clave",
-   "estado": "esperando",
-   "cuando": "2026-10-23T17:29:34+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T17:31:32+02:00"
   }
  ],
  "pendientes": [
@@ -229,9 +229,45 @@
    "titulo": "Ejecutar actividad.sql y desplegar avisos-diarios",
    "detalle": "Para el aviso de volver y el de fin de prueba",
    "quien": "Alejandro"
+  },
+  {
+   "id": "resend",
+   "prioridad": "alta",
+   "area": "servidor",
+   "titulo": "Dar de alta Resend para el correo de los domingos",
+   "detalle": "Cuenta, dominio appbitacora.es en IONOS, secretos y despliegue",
+   "quien": "Alejandro"
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "las cinco sugerencias, hechas; el correo espera a Resend"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "sugerencia cerrada: Un correo los domingos con tu semana"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "sugerencia cerrada: Que se lea y se use bien por todos"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "sugerencia cerrada: Un aviso suave a quien deja de entrar"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "sugerencia cerrada: Que el final de la prueba convenza"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "sugerencia cerrada: Preguntar qué falta en el momento justo"
+  },
+  {
+   "hora": "2026-10-23T17:31:32+02:00",
+   "texto": "hecho: Un correo los domingos con tu semana"
+  },
   {
    "hora": "2026-10-23T17:29:34+02:00",
    "texto": "accesibilidad: de 7 tipos de fallo a 4, y los que quedan son a propósito o menores"
@@ -521,46 +557,5 @@
    "texto": "empiezo: Pestaña Tareas en el pulso del proyecto"
   }
  ],
- "sugerencias": [
-  {
-   "id": "fin-prueba",
-   "titulo": "Que el final de la prueba convenza",
-   "porque": "El día 14 la app pasa sin más a la pantalla de pago: es el momento en que más gente se va.",
-   "que": "Tres días antes, un aviso y una pantalla con lo que ya has construido (cuántos planes, gastos ordenados, rutinas...) y lo que perderías de vista, con el precio claro y sin presión.",
-   "esfuerzo": "medio",
-   "area": "crecimiento"
-  },
-  {
-   "id": "volver",
-   "titulo": "Un aviso suave a quien deja de entrar",
-   "porque": "Si alguien lleva días sin abrirla, se le olvida que existe; un recordatorio útil la trae de vuelta sin ser pesado.",
-   "que": "Tras 4 días sin abrirla, un solo aviso con algo suyo (lo que tiene mañana, un cumpleaños, un pago que viene) y nunca más de uno por semana; se puede apagar en Ajustes.",
-   "esfuerzo": "pequeño",
-   "area": "retención"
-  },
-  {
-   "id": "opinion",
-   "titulo": "Preguntar qué falta en el momento justo",
-   "porque": "Los que se van no dicen por qué, y los que se quedan saben qué les falta.",
-   "que": "A los 7 días de uso, una sola pregunta («¿qué echas en falta?») que se guarda en Sugerencias y sale en el pulso. Se contesta en 10 segundos o se cierra.",
-   "esfuerzo": "pequeño",
-   "area": "producto"
-  },
-  {
-   "id": "accesibilidad",
-   "titulo": "Que se lea y se use bien por todos",
-   "porque": "Hay textos grises pequeños y botones que solo son iconos; en el móvil y con la vista cansada cuesta.",
-   "que": "Una revisión de contraste, tamaños mínimos de toque, nombres de los botones para lectores de pantalla y uso con teclado, apartado por apartado, sin cambiar el estilo.",
-   "esfuerzo": "medio",
-   "area": "calidad"
-  },
-  {
-   "id": "ritmo-semanal",
-   "titulo": "Un correo los domingos con tu semana",
-   "porque": "Hay gente que no activa los avisos del móvil; el correo llega a todos y recuerda que la app existe.",
-   "que": "Opcional, los domingos: lo que viene, lo que gastaste y lo que hiciste, en cuatro líneas y con un botón para abrir la app. Se apaga desde el propio correo.",
-   "esfuerzo": "medio",
-   "area": "retención"
-  }
- ]
+ "sugerencias": []
 }
