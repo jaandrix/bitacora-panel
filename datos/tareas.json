@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-23T17:00:35+02:00",
+ "actualizado": "2026-10-23T17:12:36+02:00",
  "sesion": {
   "estado": "esperando",
-  "titulo": "que elijas la recompensa de invitar a un amigo"
+  "titulo": "invitaciones.sql y los colores del tema amigos"
  },
  "en_curso": [
   {
@@ -85,9 +85,9 @@
   {
    "id": "invitar",
    "titulo": "Invitar a un amigo",
-   "detalle": "Te propongo otras recompensas: falta que elijas",
+   "detalle": "Falta ejecutar invitaciones.sql y que me pases los colores del tema «amigos.»",
    "estado": "esperando",
-   "cuando": "2026-10-23T16:52:51+02:00"
+   "cuando": "2026-10-23T17:12:36+02:00"
   }
  ],
  "pendientes": [
@@ -178,9 +178,41 @@
    "titulo": "Ejecutar panel_sugerencias.sql y poner tu clave",
    "detalle": "Sin eso no se pueden votar las sugerencias",
    "quien": "Alejandro"
+  },
+  {
+   "id": "sql-invitar",
+   "prioridad": "alta",
+   "area": "servidor",
+   "titulo": "Ejecutar invitaciones.sql en Supabase",
+   "detalle": "Sin él no hay códigos de amigo",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "tema-amigos",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Colores del tema «amigos.»",
+   "detalle": "Se desbloquea al invitar o al entrar invitado",
+   "quien": "Alejandro"
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:12:36+02:00",
+   "texto": "invitar a un amigo hecho; el buscador de Ajustes ya no se monta bajo la barra"
+  },
+  {
+   "hora": "2026-10-23T17:12:36+02:00",
+   "texto": "sugerencia cerrada: Invita a un amigo: un mes gratis para los dos"
+  },
+  {
+   "hora": "2026-10-23T17:12:36+02:00",
+   "texto": "te espera: Invitar a un amigo"
+  },
+  {
+   "hora": "2026-10-23T17:12:36+02:00",
+   "texto": "empiezo: Invitar a un amigo"
+  },
   {
    "hora": "2026-10-23T17:00:35+02:00",
    "texto": "inicio del móvil: tareas sin día a la vista y las hechas se van a los 30 minutos"
@@ -396,14 +428,6 @@
  ],
  "sugerencias": [
   {
-   "id": "invitar",
-   "titulo": "Invita a un amigo: un mes gratis para los dos",
-   "porque": "Quien ya usa Bitácora es quien mejor la vende, y ahora no tiene ningún motivo para recomendarla.",
-   "que": "Un código por persona en Ajustes y en Social; quien se da de alta con él y paga, os da a los dos un mes. Se apoya en los códigos de regalo que ya existen.",
-   "esfuerzo": "medio",
-   "area": "crecimiento"
-  },
-  {
    "id": "fin-prueba",
    "titulo": "Que el final de la prueba convenza",
    "porque": "El día 14 la app pasa sin más a la pantalla de pago: es el momento en que más gente se va.",
@@ -434,6 +458,14 @@
    "que": "Una revisión de contraste, tamaños mínimos de toque, nombres de los botones para lectores de pantalla y uso con teclado, apartado por apartado, sin cambiar el estilo.",
    "esfuerzo": "medio",
    "area": "calidad"
+  },
+  {
+   "id": "ritmo-semanal",
+   "titulo": "Un correo los domingos con tu semana",
+   "porque": "Hay gente que no activa los avisos del móvil; el correo llega a todos y recuerda que la app existe.",
+   "que": "Opcional, los domingos: lo que viene, lo que gastaste y lo que hiciste, en cuatro líneas y con un botón para abrir la app. Se apaga desde el propio correo.",
+   "esfuerzo": "medio",
+   "area": "retención"
   }
  ]
 }
