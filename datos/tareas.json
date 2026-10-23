@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T16:52:51+02:00",
+ "actualizado": "2026-10-23T16:55:05+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "sugerencias de la segunda ronda"
@@ -72,15 +72,15 @@
    "id": "ejemplo-ajustes",
    "titulo": "Ejemplo desde Ajustes, Ajustes ordenado y con buscador",
    "detalle": "",
-   "estado": "curso",
-   "cuando": "2026-10-23T16:52:51+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T16:55:05+02:00"
   },
   {
    "id": "resumen-mes",
    "titulo": "Tu mes en una tarjeta para compartir",
    "detalle": "Pudiendo quitar lo que no quieras enseñar",
-   "estado": "pendiente",
-   "cuando": "2026-10-23T16:52:51+02:00"
+   "estado": "curso",
+   "cuando": "2026-10-23T16:55:05+02:00"
   },
   {
    "id": "invitar",
@@ -181,6 +181,18 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T16:55:05+02:00",
+   "texto": "Ajustes con buscador, índice y grupos nuevos; la semana de ejemplo ya se pone desde ahí. Sigo con la tarjeta del mes"
+  },
+  {
+   "hora": "2026-10-23T16:55:05+02:00",
+   "texto": "empiezo: Tu mes en una tarjeta para compartir"
+  },
+  {
+   "hora": "2026-10-23T16:55:05+02:00",
+   "texto": "hecho: Ejemplo desde Ajustes, Ajustes ordenado y con buscador"
+  },
   {
    "hora": "2026-10-23T16:52:51+02:00",
    "texto": "los fallos de la app ya se cuentan y salen en «Uso de la app»; sigo con Ajustes"
