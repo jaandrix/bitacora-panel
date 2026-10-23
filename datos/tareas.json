@@ -1,0 +1,121 @@
+{
+ "actualizado": "2026-10-23T16:09:26+02:00",
+ "sesion": {
+  "estado": "trabajando",
+  "titulo": "panel de tareas y cuatro cambios en la app"
+ },
+ "en_curso": [
+  {
+   "id": "panel",
+   "titulo": "Pestaña Tareas en el pulso del proyecto",
+   "detalle": "En curso, pendientes, recordatorios y en directo",
+   "estado": "curso",
+   "cuando": "2026-10-23T16:09:26+02:00"
+  },
+  {
+   "id": "gasto-movil",
+   "titulo": "Finanzas en el móvil: «en qué se va» más sobria y sin viajes",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T16:09:26+02:00"
+  },
+  {
+   "id": "bandeja",
+   "titulo": "Conector: tareas, exámenes y trabajos sin pasar por la bandeja",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T16:09:26+02:00"
+  },
+  {
+   "id": "editar-tarea",
+   "titulo": "Móvil: editar el nombre de una tarea abre el teclado",
+   "detalle": "",
+   "estado": "pendiente",
+   "cuando": "2026-10-23T16:09:26+02:00"
+  }
+ ],
+ "pendientes": [
+  {
+   "id": "sql-test",
+   "prioridad": "alta",
+   "area": "servidor",
+   "titulo": "Ejecutar tests_competitivos.sql en Supabase",
+   "detalle": "Sin él, jugar tests con amigos da error",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "prueba-real",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Prueba completa con dinero real en el iPhone",
+   "detalle": "Pago, avisos y la PWA de principio a fin",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "seguridad-real",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Cuatro comprobaciones de seguridad en la app real",
+   "detalle": "Las del 21-10",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "selects-ios",
+   "prioridad": "baja",
+   "area": "app",
+   "titulo": "Comprobar los desplegables propios en un iPhone",
+   "detalle": "",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "web-sola",
+   "prioridad": "media",
+   "area": "web",
+   "titulo": "Publicar en appbitacora.es solo los archivos de la web",
+   "detalle": "Hoy GitHub Pages sirve todo el repositorio",
+   "quien": "Claude"
+  },
+  {
+   "id": "tipografias",
+   "prioridad": "media",
+   "area": "videos",
+   "titulo": "Elegir las tipografías de la serie",
+   "detalle": "Muestrario en el cerebro, al menos tres",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "reparto",
+   "prioridad": "media",
+   "area": "videos",
+   "titulo": "Reparto fijo de 6 a 8 peeps con fondo transparente",
+   "detalle": "",
+   "quien": "Alejandro y Claude"
+  },
+  {
+   "id": "voz",
+   "prioridad": "alta",
+   "area": "videos",
+   "titulo": "Voz publicable para V01 y V02",
+   "detalle": "Grabada o con licencia",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "ios-nativa",
+   "prioridad": "baja",
+   "area": "app",
+   "titulo": "Retomar la app nativa de iOS",
+   "detalle": "Widgets, HealthKit y compartir",
+   "quien": "Claude"
+  }
+ ],
+ "registro": [
+  {
+   "hora": "2026-10-23T16:09:26+02:00",
+   "texto": "empiezo con la pestaña Tareas del panel"
+  },
+  {
+   "hora": "2026-10-23T16:09:26+02:00",
+   "texto": "empiezo: Pestaña Tareas en el pulso del proyecto"
+  }
+ ]
+}

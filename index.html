@@ -161,6 +161,41 @@ pre.formato { background: var(--fondo); border: 1px solid var(--linea); border-r
 .oculto { display: none !important; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+/* Tareas */
+.sesion { display: flex; align-items: center; gap: 12px; font: 500 13px var(--mono); color: var(--texto-2); }
+.sesion .punto { width: 10px; height: 10px; border-radius: 50%; background: var(--linea); flex: none; }
+.sesion .punto.vivo { background: var(--azul); animation: latido 2s ease-out infinite; }
+.sesion .punto.espera { background: var(--coral); }
+@keyframes latido { 0% { box-shadow: 0 0 0 0 rgba(85,122,140,.45); } 70% { box-shadow: 0 0 0 10px rgba(85,122,140,0); } 100% { box-shadow: 0 0 0 0 rgba(85,122,140,0); } }
+.lista-tareas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.lista-tareas li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--linea); }
+.lista-tareas li:last-child { border-bottom: 0; }
+.lista-tareas .marca-t { width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; border: 1.5px solid var(--tinta); }
+.lista-tareas .marca-t.curso { background: conic-gradient(var(--tinta) 0 50%, transparent 50% 100%); }
+.lista-tareas .marca-t.hecho { background: var(--tinta); }
+.lista-tareas .marca-t.esperando { border-color: var(--coral); border-style: dashed; }
+.lista-tareas .marca-t.alta { border-color: var(--coral); border-width: 3px; }
+.lista-tareas .marca-t.baja { border-color: var(--linea); }
+.lista-tareas li.hecho b { text-decoration: line-through; text-decoration-color: var(--texto-2); color: var(--texto-2); font-weight: 500; }
+.lista-tareas b { display: block; font-weight: 600; }
+.lista-tareas p { margin: 2px 0 0; color: var(--texto-2); font-size: 13px; }
+.lista-tareas .lado { font: 400 12px var(--mono); color: var(--texto-2); white-space: nowrap; text-align: right; }
+.lista-tareas a { color: inherit; }
+.directo { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; max-height: 520px; overflow-y: auto; }
+.directo li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--linea); font-size: 13px; }
+.directo li:last-child { border-bottom: 0; }
+.directo time { font: 400 12px var(--mono); color: var(--texto-2); padding-top: 1px; }
+.directo a, .lista-tareas a { color: inherit; text-decoration: none; }
+.directo a:hover, .lista-tareas a:hover { text-decoration: underline; }
+a.boton { color: var(--tinta); }
+a.boton:hover { color: var(--superficie); }
+.directo li { grid-template-columns: 76px minmax(0, 1fr) !important; }
+.directo .origen { font: 500 11px var(--mono); color: var(--azul); margin-right: 6px; }
+.directo .origen.commit { color: var(--coral); }
+.directo li.nuevo { animation: entra .5s cubic-bezier(.2, .8, .2, 1); }
+@keyframes entra { from { opacity: 0; transform: translateY(-4px); } }
+.nota-tareas { margin: 16px 0 0; font: 400 12px/1.5 var(--mono); color: var(--texto-2); }
+
 @media (max-width: 1180px) {
   .c3 { grid-column: span 6; } .c4, .c5, .c7, .c8 { grid-column: span 12; }
 }
@@ -204,6 +239,7 @@ pre.formato { background: var(--fondo); border: 1px solid var(--linea); border-r
     <div class="aviso-ejemplo" id="aviso-ejemplo" role="status">Estás viendo datos ficticios de ejemplo. Desactívalos en Ajustes.</div>
 
     <section id="vista-resumen" class="vista"></section>
+    <section id="vista-tareas" class="vista oculto"></section>
     <section id="vista-redes" class="vista oculto"></section>
     <section id="vista-videos" class="vista oculto"></section>
     <section id="vista-campanas" class="vista oculto"></section>
@@ -225,7 +261,7 @@ const REDES = {
   youtube: { nombre: 'YouTube', corto: 'YT', color: 'var(--coral)', trazo: '' },
   x: { nombre: 'X', corto: 'X', color: 'var(--texto-2)', trazo: '4 4' },
 };
-const VISTAS = [['resumen', 'Resumen'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
+const VISTAS = [['resumen', 'Resumen'], ['tareas', 'Tareas'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
@@ -451,6 +487,8 @@ function pintar() {
   document.getElementById('sync-texto').innerHTML = estado.error ? esc(estado.error) :
     `${estado.origen === 'carpeta' ? 'En vivo, se actualiza cada minuto' : estado.origen === 'ejemplo' ? 'Datos ficticios de ejemplo' : 'Archivos elegidos a mano'}<br>Última actualización: ${estado.actualizado.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
 
+  document.querySelector('.filtros').classList.toggle('oculto', estado.vista === 'tareas');
+  if (estado.vista === 'tareas') { document.getElementById('subtitulo').textContent = 'Lo que Claude está haciendo para Bitácora, lo pendiente y tus recordatorios'; return pintarTareas(); }
   ({ resumen: pintarResumen, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
 }
 
@@ -687,6 +725,71 @@ function pintarAjustes() {
   </div>`;
 }
 
+// ------------------------------------------------------------ tareas
+// datos/tareas.json lo escribe Claude desde el chat (scripts/tarea.py) y lo sube al momento; el panel lo vuelve a
+// leer cada 20 s. Los recordatorios son las incidencias abiertas de este repositorio, y «en directo» mezcla el
+// registro de Claude con los últimos commits de la app. GitHub deja 60 consultas por hora sin sesión: por eso
+// esas dos se piden cada 3 minutos.
+const REPO_PANEL = 'jaandrix/bitacora-panel', REPO_APP = 'jaandrix/agenda';
+const tareas = { datos: null, recordatorios: null, commits: null, ultimaGitHub: 0, vistos: new Set(), error: null };
+async function cargarTareas(forzar) {
+  try {
+    const r = await fetch('datos/tareas.json?t=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) { tareas.datos = await r.json(); tareas.error = null; }
+    else tareas.error = 'Todavía no hay datos/tareas.json.';
+  } catch (e) { tareas.error = 'No se pudo leer datos/tareas.json.'; }
+  if (forzar || Date.now() - tareas.ultimaGitHub > 180000) {
+    tareas.ultimaGitHub = Date.now();
+    const gh = async ruta => { const r = await fetch('https://api.github.com/repos/' + ruta, { headers: { Accept: 'application/vnd.github+json' } }); if (!r.ok) throw new Error(r.status); return r.json(); };
+    try { tareas.recordatorios = (await gh(REPO_PANEL + '/issues?state=open&per_page=50')).filter(i => !i.pull_request); } catch (e) { /* se queda lo último */ }
+    try { tareas.commits = await gh(REPO_APP + '/commits?per_page=15'); } catch (e) { /* idem */ }
+  }
+  if (estado.vista === 'tareas') pintarTareas();
+}
+const hace = f => {
+  const s = Math.round((Date.now() - new Date(f)) / 1000);
+  if (s < 60) return 'ahora'; if (s < 3600) return `hace ${Math.round(s / 60)} min`; if (s < 86400) return `hace ${Math.round(s / 3600)} h`;
+  return new Date(f).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+};
+const horaCorta = f => {
+  const d = new Date(f), h = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const dias = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
+  return dias === 0 ? h : dias === 1 ? 'ayer ' + h : d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+};
+const hoyLocal = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+function pintarTareas() {
+  const el = document.getElementById('vista-tareas');
+  const d = tareas.datos || {};
+  const ses = d.sesion || {};
+  const reciente = d.actualizado && Date.now() - new Date(d.actualizado) < 15 * 60000;
+  const viva = reciente && ses.estado === 'trabajando';
+  const fraseSesion = !d.actualizado ? 'Sin noticias de Claude todavía' : viva ? `Claude está trabajando${ses.titulo ? ': ' + esc(ses.titulo) : ''}` : ses.estado === 'esperando' ? `Claude espera tu respuesta${ses.titulo ? ': ' + esc(ses.titulo) : ''}` : 'Claude no está trabajando ahora';
+  const curso = d.en_curso || [];
+  const orden = { curso: 0, esperando: 1, pendiente: 2, hecho: 3 };
+  const filaTarea = t => `<li class="${esc(t.estado)}"><span class="marca-t ${esc(t.estado)}" aria-hidden="true"></span><div><b>${esc(t.titulo)}</b>${t.detalle ? `<p>${esc(t.detalle)}</p>` : ''}</div><span class="lado">${{ curso: 'en curso', esperando: 'te espera', pendiente: 'en cola', hecho: 'hecho' }[t.estado] || ''}${t.cuando ? '<br>' + hace(t.cuando) : ''}</span></li>`;
+  const prio = t => ({ alta: 0, media: 1, baja: 2 }[t.prioridad] ?? 1);
+  const pend = [...(d.pendientes || [])].sort((a, b) => prio(a) - prio(b));
+  const rec = tareas.recordatorios;
+  const fechaRec = i => { const m = /(\d{4}-\d{2}-\d{2})/.exec((i.title || '') + ' ' + (i.body || '')); return m ? m[1] : null; };
+  const recOrden = rec ? [...rec].sort((a, b) => (fechaRec(a) || '9999') < (fechaRec(b) || '9999') ? -1 : 1) : [];
+  const eventos = [...(d.registro || []).map(r => ({ cuando: r.hora, texto: r.texto, origen: 'claude' })),
+    ...(tareas.commits || []).map(c => ({ cuando: c.commit.author.date, texto: c.commit.message.split('\n')[0], origen: 'commit', url: c.html_url }))]
+    .sort((a, b) => new Date(b.cuando) - new Date(a.cuando)).slice(0, 30);
+  const primeraVez = !tareas.vistos.size;
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta c12" style="padding:18px 24px"><div class="sesion"><span class="punto ${viva ? 'vivo' : ses.estado === 'esperando' && reciente ? 'espera' : ''}"></span><span>${fraseSesion}${d.actualizado ? `, ${hace(d.actualizado)}` : ''}</span></div></div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>En curso</h2><p class="sub">Lo que Claude está haciendo en el chat, en el orden en que va</p></div></div>
+      ${curso.length ? `<ul class="lista-tareas">${[...curso].sort((a, b) => (orden[a.estado] ?? 2) - (orden[b.estado] ?? 2)).map(filaTarea).join('')}</ul>` : sinDatos(tareas.error || 'Nada en curso')}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>En directo</h2><p class="sub">Cada paso de Claude y cada cambio que se sube a la app</p></div></div>
+      ${eventos.length ? `<ul class="directo">${eventos.map(e => { const k = e.origen + e.cuando + e.texto; const nuevo = !primeraVez && !tareas.vistos.has(k); tareas.vistos.add(k); return `<li class="${nuevo ? 'nuevo' : ''}"><time datetime="${esc(e.cuando)}">${horaCorta(e.cuando)}</time><span><span class="origen ${e.origen}">${e.origen === 'commit' ? 'app' : 'claude'}</span>${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener" style="color:inherit">${esc(e.texto)}</a>` : esc(e.texto)}</span></li>`; }).join('')}</ul>` : sinDatos('Sin movimiento todavía')}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>Pendiente de resolver</h2><p class="sub">Lo que Claude ve abierto en el proyecto, por prioridad</p></div></div>
+      ${pend.length ? `<ul class="lista-tareas">${pend.map(t => `<li><span class="marca-t ${esc(t.prioridad || 'media')}" aria-hidden="true"></span><div><b>${esc(t.titulo)}</b>${t.detalle ? `<p>${esc(t.detalle)}</p>` : ''}</div><span class="lado">${esc(t.area || '')}${t.quien ? '<br>' + esc(t.quien) : ''}</span></li>`).join('')}</ul>` : sinDatos('Nada pendiente')}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>Recordatorios</h2><p class="sub">Lo que le pides a Claude que te recuerde. Con una fecha (2026-11-03) se ordena solo.</p></div><a class="boton" style="display:inline-flex;align-items:center;text-decoration:none" href="https://github.com/${REPO_PANEL}/issues/new?title=${encodeURIComponent('recuérdame: ')}" target="_blank" rel="noopener">nuevo</a></div>
+      ${rec == null ? sinDatos('Cargando…') : recOrden.length ? `<ul class="lista-tareas">${recOrden.map(i => { const f = fechaRec(i); const vencido = f && f <= hoyLocal(); return `<li><span class="marca-t ${vencido ? 'alta' : ''}" aria-hidden="true"></span><div><b><a href="${esc(i.html_url)}" target="_blank" rel="noopener">${esc(i.title.replace(/^recu[eé]rdame:\s*/i, ''))}</a></b>${i.body ? `<p>${esc(i.body.slice(0, 160))}</p>` : ''}</div><span class="lado">${f ? (vencido ? 'toca ya<br>' : '') + new Date(f + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : hace(i.created_at)}</span></li>`; }).join('')}</ul>` : sinDatos('Ninguno abierto')}
+      <p class="nota-tareas">También puedes decírselo a Claude en el chat. Para quitar uno, ciérralo en GitHub. Este repositorio es público: nada privado aquí.</p></div>
+  </div>`;
+}
+
 // ------------------------------------------------------------ eventos
 document.addEventListener('click', ev => {
   const b = ev.target.closest('[data-vista],[data-ir],[data-orden],#recargar,#ejemplo'); if (!b) return;
@@ -705,6 +808,9 @@ addEventListener('scroll', () => cab.classList.toggle('pegada', scrollY > 8), { 
 let redimension; addEventListener('resize', () => { clearTimeout(redimension); redimension = setTimeout(pintar, 150); });
 
 cargar();
+cargarTareas(true);
+setInterval(() => { if (estado.vista === 'tareas' && !document.hidden) cargarTareas(); }, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && estado.vista === 'tareas') cargarTareas(); });
 setInterval(() => { if (estado.origen === 'carpeta' || estado.origen === 'ninguno') cargar(); }, REFRESCO_MS);
 </script>
 </body>
