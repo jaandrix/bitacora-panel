@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-23T17:24:04+02:00",
+ "actualizado": "2026-10-23T17:29:34+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "revisar sugerencias"
@@ -114,15 +114,15 @@
    "id": "accesibilidad",
    "titulo": "Que se lea y se use bien por todos",
    "detalle": "",
-   "estado": "curso",
-   "cuando": "2026-10-23T17:24:04+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-23T17:29:34+02:00"
   },
   {
    "id": "ritmo-semanal",
    "titulo": "Un correo los domingos con tu semana",
-   "detalle": "",
-   "estado": "pendiente",
-   "cuando": "2026-10-23T17:21:28+02:00"
+   "detalle": "Hace falta un servicio de correo (Resend) y su clave",
+   "estado": "esperando",
+   "cuando": "2026-10-23T17:29:34+02:00"
   }
  ],
  "pendientes": [
@@ -232,6 +232,22 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-23T17:29:34+02:00",
+   "texto": "accesibilidad: de 7 tipos de fallo a 4, y los que quedan son a propósito o menores"
+  },
+  {
+   "hora": "2026-10-23T17:29:34+02:00",
+   "texto": "te espera: Un correo los domingos con tu semana"
+  },
+  {
+   "hora": "2026-10-23T17:29:34+02:00",
+   "texto": "empiezo: Un correo los domingos con tu semana"
+  },
+  {
+   "hora": "2026-10-23T17:29:34+02:00",
+   "texto": "hecho: Que se lea y se use bien por todos"
+  },
   {
    "hora": "2026-10-23T17:24:04+02:00",
    "texto": "fin de la prueba, pregunta de los 7 días y aviso de volver subidos; sigo con accesibilidad"
