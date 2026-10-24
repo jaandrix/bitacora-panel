@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Pulso del proyecto</title>
+<title>Pulso de Bitácora</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23242625'/%3E%3Cpath d='M10 36h11l5-14 9 24 6-16 4 6h9' fill='none' stroke='%23F5F6F0' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='54' cy='36' r='5' fill='%23C46B5D'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --fondo: #EEF1E8; --superficie: #F5F6F0; --superficie-2: #E4E8DF; --tinta: #242625;
   --texto-2: #6E746E; --linea: #B8BDB5; --azul: #557A8C; --coral: #C46B5D; --azul-palido: #B9D3D0;
   --coral-palido: #F1DDD8; --azul-fondo: #E3ECEB;
-  --titulo: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --titulo: "Poppins", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
-  --texto: "Inter", system-ui, sans-serif;
+  --texto: "Poppins", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--fondo); color: var(--tinta); font: 400 14px/1.45 var(--texto); }
@@ -256,12 +257,35 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
   .barra-fila .pista { grid-column: span 2; grid-row: 2; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Más limpio (24-10, con la referencia del Panorama de la app): esquinas de 12 px en botones y controles (sin
+   pastillas), tarjetas con icono en círculo y flecha, cifras grandes y textos cortos. */
+.control, .boton { border-radius: 12px; }
+.tarjeta { border-radius: 18px; }
+.kpi { min-height: 168px; gap: 18px; }
+.kpi-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.kpi-cab .etq { font: 500 13px/1.2 var(--texto); color: var(--texto-2); }
+.icono-c { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--superficie-2); color: var(--tinta); flex: none; }
+.icono-c svg { width: 20px; height: 20px; }
+.kpi.oscura .icono-c { background: rgba(255,255,255,.1); color: var(--superficie); }
+.ir-c { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--tinta); color: var(--superficie); cursor: pointer; flex: none; }
+.ir-c svg { width: 14px; height: 14px; }
+.kpi.oscura .ir-c { background: var(--superficie); color: var(--tinta); }
+.kpi .valor { font-weight: 700; }
+.chispa { display: block; width: 100%; height: 36px; margin-top: -6px; }
+.ahora-fila { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--linea); }
+.ahora-fila:last-child { border-bottom: 0; }
+.ahora-fila b { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ahora-fila .lado { font: 400 12px var(--mono); color: var(--texto-2); white-space: nowrap; }
+.tarjeta h2 { font-weight: 700; }
+.kpi .etq { font: 500 13px/1.2 var(--texto); }
+@media (max-width: 900px) { .kpi.c3 { grid-column: span 6; min-height: 0; padding: 18px; } .kpi .valor { font-size: 30px; } .rejilla { gap: 14px; } }
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="lateral" aria-label="Navegación">
-    <div class="marca"><b>Bitácora</b><span>monitor de proyecto</span></div>
+    <div class="marca"><b>bitácora.</b><span>pulso del proyecto</span></div>
     <nav class="nav" id="nav"></nav>
     <div class="estado-sync" aria-live="polite"><span class="punto" id="sync-punto"></span><span id="sync-texto">Cargando datos…</span></div>
   </aside>
@@ -269,8 +293,8 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
   <main>
     <header class="cabecera" id="cabecera">
       <div>
-        <h1 id="titulo">Pulso del proyecto</h1>
-        <p id="subtitulo">Seguimiento de publicaciones y rendimiento</p>
+        <h1 id="titulo">pulso.</h1>
+        <p id="subtitulo"></p>
       </div>
       <div class="filtros">
         <label class="vh" for="periodo">Periodo</label>
@@ -306,7 +330,14 @@ const REDES = {
   youtube: { nombre: 'YouTube', corto: 'YT', color: 'var(--coral)', trazo: '' },
   x: { nombre: 'X', corto: 'X', color: 'var(--texto-2)', trazo: '4 4' },
 };
-const VISTAS = [['resumen', 'Resumen'], ['tareas', 'Tareas'], ['uso', 'Uso de la app'], ['redes', 'Redes'], ['videos', 'Vídeos'], ['campanas', 'Campañas'], ['biblioteca', 'Biblioteca'], ['ajustes', 'Ajustes']];
+const ICONOS = {
+  web: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6a44 44 0 1 1 0 88 44 44 0 0 1 0-88zm-9 12a33 33 0 0 0-22 26h16c1-10 3-19 6-26zm18 0c3 7 5 16 6 26h16a33 33 0 0 0-22-26zM50 16c-4 7-6 17-7 28h14c-1-11-3-21-7-28zM19 56a33 33 0 0 0 22 26c-3-7-5-16-6-26zm24 0c1 11 3 21 7 28 4-7 6-17 7-28zm22 0c-1 10-3 19-6 26a33 33 0 0 0 22-26z"/></svg>',
+  personas: '<svg viewBox="0 0 100 100" fill="currentColor"><circle cx="50" cy="30" r="18"/><path d="M14 92c0-22 16-36 36-36s36 14 36 36z"/></svg>',
+  apartado: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M8 8h38v38H8zm46 0h38v38H54zM8 54h38v38H8zm46 0h38v38H54z"/></svg>',
+  fallo: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6l46 84H4zm-6 32v26h12V38zm0 32v12h12V70z"/></svg>',
+  flecha: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 14l12-12 48 48-48 48-12-12 36-36z"/></svg>',
+};
+const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
@@ -521,12 +552,12 @@ function pintar() {
 
   const r = rango(estado.periodo); const p = lista.find(x => x.id === estado.periodo);
   const etqRango = estado.periodo[0] === 'm' ? `${MESES[r[0].getMonth()][0].toUpperCase() + MESES[r[0].getMonth()].slice(1)} ${r[0].getFullYear()}` : p.etq[0].toUpperCase() + p.etq.slice(1);
-  document.getElementById('subtitulo').textContent = `Seguimiento de publicaciones y rendimiento, ${etqRango}`;
+  document.getElementById('subtitulo').textContent = etqRango;
   document.getElementById('aviso-ejemplo').classList.toggle('visible', estado.ejemplo);
 
   document.getElementById('nav').innerHTML = VISTAS.map(([id, etq]) => `<button type="button" data-vista="${id}"${id === estado.vista ? ' aria-current="page"' : ''}>${etq}</button>`).join('');
   VISTAS.forEach(([id]) => document.getElementById('vista-' + id).classList.toggle('oculto', id !== estado.vista));
-  document.getElementById('titulo').textContent = estado.vista === 'resumen' ? 'Pulso del proyecto' : VISTAS.find(v => v[0] === estado.vista)[1];
+  document.getElementById('titulo').textContent = estado.vista === 'resumen' ? 'pulso.' : VISTAS.find(v => v[0] === estado.vista)[1];
 
   const punto = document.getElementById('sync-punto');
   punto.className = 'punto ' + (estado.error ? 'aviso' : estado.origen === 'carpeta' ? 'vivo' : '');
@@ -560,27 +591,66 @@ function tarjetasKPI(r) {
     <div class="tarjeta kpi c3 oscura"><span class="etq">Mejor red</span><div class="fila">${mejor ? `<span class="valor texto">${esc(infoRed(mejor[0]).nombre)}</span><span class="extra">${compacto(mejor[1])} visitas</span>` : sinDatos()}</div></div>`;
 }
 
+function chispa(valores) {
+  if (valores.length < 2 || !valores.some(v => v)) return '';
+  const max = Math.max(1, ...valores), W = 200, H = 36;
+  const pts = valores.map((v, i) => `${(i / (valores.length - 1) * W).toFixed(1)},${(H - 2 - v / max * (H - 4)).toFixed(1)}`).join(' ');
+  return `<svg class="chispa" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--azul)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+}
+function kpi(icono, etq, cuerpo, ir, clase) {
+  return `<div class="tarjeta kpi c3 ${clase || ''}"><div class="kpi-cab"><span class="icono-c">${ICONOS[icono]}</span>${ir ? `<button type="button" class="ir-c" data-ir="${ir}" aria-label="Ver ${esc(etq)}">${ICONOS.flecha}</button>` : ''}</div><span class="etq">${etq}</span>${cuerpo}</div>`;
+}
 function pintarResumen(r) {
   const el = document.getElementById('vista-resumen');
+  const web = estado.datos.web.filter(w => dentro(w.fecha, r)), webP = estado.datos.web.filter(w => dentro(w.fecha, rangoPrevio(r)));
+  const vis = suma(web, 'visitas'), visP = suma(webP, 'visitas');
+  const dias = []; for (let d = new Date(r[0]); d <= r[1] && d <= new Date(); d.setDate(d.getDate() + 1)) dias.push(iso(d));
+  const porDia = Object.fromEntries(dias.map(k => [k, 0])); web.forEach(w => { const k = iso(w.fecha); if (k in porDia) porDia[k] += w.visitas || 0; });
+  const uso = (estado.datos.uso || []).filter(u => dentro(u.fecha, r)), usoP = (estado.datos.uso || []).filter(u => dentro(u.fecha, rangoPrevio(r)));
+  const activos = l => { const d = new Set(l.filter(u => u.ruta === 'uso/activo').map(u => iso(u.fecha))); return d.size ? l.filter(u => u.ruta === 'uso/activo').reduce((a, u) => a + (u.visitantes || 0), 0) / d.size : null; };
+  const media = activos(uso), mediaP = activos(usoP);
+  const g = {}; uso.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); g[k] = g[k] || { titulo: u.titulo || k, n: 0 }; g[k].n += u.visitantes || 0; });
+  const apartados = Object.values(g).sort((a, b) => b.n - a.n);
+  const fallos = (estado.datos.uso || []).filter(u => u.ruta.startsWith('error/') || u.ruta.startsWith('aviso/'));
+  const primera = {}; fallos.forEach(u => { if (!primera[u.ruta] || u.fecha < primera[u.ruta]) primera[u.ruta] = u.fecha; });
+  const nuevos = Object.values(primera).filter(f => Date.now() - f < 3 * 864e5).length;
+  const enPeriodo = new Set(fallos.filter(u => dentro(u.fecha, r)).map(u => u.ruta)).size;
+  const d = tareas.datos || {}, ses = d.sesion || {};
+  const reciente = d.actualizado && Date.now() - new Date(d.actualizado) < 15 * 60000;
+  const frase = !d.actualizado ? 'sin noticias de Claude todavía.' : reciente && ses.estado === 'trabajando' ? 'Claude está trabajando.' : ses.estado === 'esperando' && reciente ? 'Claude espera tu respuesta.' : 'Claude no está trabajando ahora.';
+  const curso = (d.en_curso || []).filter(t => t.estado !== 'hecho').slice(0, 4);
+  const hechasHoy = (d.en_curso || []).filter(t => t.estado === 'hecho' && t.cuando && new Date(t.cuando).toDateString() === new Date().toDateString()).length;
   el.innerHTML = `<div class="rejilla">
-    ${tarjetasKPI(r)}
-    ${bloqueWeb(r, 5, true)}
+    ${kpi('web', 'visitas a la web.', vis != null ? `<div class="fila"><span class="valor">${compacto(vis)}</span>${variacion(vis, visP)}</div>${chispa(dias.map(k => porDia[k]))}` : `<div class="fila">${sinDatos()}</div>`, 'campanas', 'oscura')}
+    ${kpi('personas', 'personas al día.', `<div class="fila">${media != null ? `<span class="valor">${nf(media, media < 10 ? 1 : 0)}</span>${variacion(media, mediaP)}` : sinDatos()}</div>`, 'uso')}
+    ${kpi('apartado', 'el más abierto.', `<div class="fila">${apartados.length ? `<span class="valor texto">${esc(apartados[0].titulo.toLowerCase())}.</span><span class="extra">${nf(apartados[0].n)}</span>` : sinDatos()}</div>`, 'uso')}
+    ${kpi('fallo', 'fallos.', `<div class="fila">${fallos.length ? `<span class="valor">${nf(enPeriodo)}</span><span class="extra">${nuevos ? `${nuevos} nuevo${nuevos > 1 ? 's' : ''}` : 'ninguno nuevo'}</span>` : `<span class="valor">0</span>`}</div>`, 'uso', nuevos ? 'atencion' : '')}
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>ahora.</h2><p class="sub">${frase}${hechasHoy ? ` ${hechasHoy} hecha${hechasHoy > 1 ? 's' : ''} hoy.` : ''}</p></div><button type="button" class="ir-c" data-ir="tareas" aria-label="Ver tareas">${ICONOS.flecha}</button></div>
+      ${curso.length ? curso.map(t => `<div class="ahora-fila"><span class="marca-t ${esc(t.estado)}" style="width:12px;height:12px;border-radius:50%;border:1.5px solid ${t.estado === 'esperando' ? 'var(--coral)' : 'var(--tinta)'};${t.estado === 'curso' ? 'background:var(--tinta)' : ''}"></span><b>${esc(t.titulo)}</b><span class="lado">${{ curso: 'en curso', esperando: 'te espera', pendiente: 'en cola' }[t.estado] || ''}</span></div>`).join('') : sinDatos('Nada en curso.')}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>uso de la app.</h2><p class="sub">Personas por apartado.</p></div><button type="button" class="ir-c" data-ir="uso" aria-label="Ver uso de la app">${ICONOS.flecha}</button></div>
+      ${apartados.length ? filasBarras(apartados.slice(0, 5).map(a => ({ nombre: a.titulo, detalle: '', valor: a.n })), v => nf(v)) : sinDatos()}</div>
+    ${bloqueOrigen(r)}
+    ${hayVideos() ? `
     <div class="tarjeta c8">
-      <div class="tarjeta-cab"><div><h2>Alcance e interacción</h2><p class="sub">Visitas acumuladas por red</p></div><div class="leyenda" id="leyenda"></div></div>
+      <div class="tarjeta-cab"><div><h2>alcance.</h2><p class="sub">Visitas acumuladas por red.</p></div><div class="leyenda" id="leyenda"></div></div>
       <div class="grafica-envoltura" id="grafica-envoltura"></div>
     </div>
-    <div class="tarjeta c4">
-      <div class="tarjeta-cab"><div><h2>Ritmo de publicación</h2><p class="sub">Publicaciones por red y semana</p></div></div>
-      <div id="ritmo"></div>
-    </div>
-    <div class="tarjeta c12">
-      <div class="tarjeta-cab"><div><h2>Vídeos recientes</h2><p class="sub">Últimas publicaciones y señales de rendimiento</p></div><button class="boton" type="button" data-ir="videos">ver todos</button></div>
-      <div id="tabla-reciente"></div>
-    </div>
+    <div class="tarjeta c4"><div class="tarjeta-cab"><div><h2>ritmo.</h2><p class="sub">Publicaciones por red y semana.</p></div></div><div id="ritmo"></div></div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>vídeos recientes.</h2></div><button class="boton" type="button" data-ir="videos">ver todos.</button></div><div id="tabla-reciente"></div></div>`
+    : `<div class="tarjeta c12" style="padding:18px 24px"><div class="ahora-fila" style="border:0;padding:0"><b style="font-weight:500">redes. <span style="color:var(--texto-2)">Sin vídeos todavía: cuando haya un videos.csv, aquí salen el alcance y el ritmo.</span></b><button class="boton" type="button" data-ir="ajustes">formato.</button></div></div>`}
   </div>`;
-  pintarGrafica(r, document.getElementById('grafica-envoltura'), document.getElementById('leyenda'));
-  pintarRitmo(r, document.getElementById('ritmo'));
-  pintarTabla(videosEn(r), document.getElementById('tabla-reciente'), 6);
+  if (hayVideos()) {
+    pintarGrafica(r, document.getElementById('grafica-envoltura'), document.getElementById('leyenda'));
+    pintarRitmo(r, document.getElementById('ritmo'));
+    pintarTabla(videosEn(r), document.getElementById('tabla-reciente'), 6);
+  }
+}
+
+function bloqueOrigen(r) {
+  const web = estado.datos.web.filter(w => dentro(w.fecha, r));
+  const g = {}; web.forEach(w => { g[w.ref] = (g[w.ref] || 0) + (w.visitas || 0); });
+  const items = Object.entries(g).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([ref, v]) => ({ nombre: ref, detalle: '', valor: v }));
+  return `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>de dónde llegan.</h2><p class="sub">Visitas a appbitacora.es por enlace (?ref=).</p></div><button type="button" class="ir-c" data-ir="campanas" aria-label="Ver campañas">${ICONOS.flecha}</button></div>${items.length ? filasBarras(items, v => compacto(v), true) : sinDatos()}</div>`;
 }
 
 function pintarGrafica(r, cont, leyenda) {
@@ -859,6 +929,7 @@ async function cargarTareas(forzar) {
     try { tareas.commits = await gh(REPO_APP + '/commits?per_page=15'); } catch (e) { /* idem */ }
   }
   if (estado.vista === 'tareas') pintarTareas();
+  else if (estado.vista === 'resumen' && estado.actualizado) pintar();
 }
 const hace = f => {
   const s = Math.round((Date.now() - new Date(f)) / 1000);
@@ -968,7 +1039,7 @@ let redimension; addEventListener('resize', () => { clearTimeout(redimension); r
 
 cargar();
 cargarTareas(true);
-setInterval(() => { if (estado.vista === 'tareas' && !document.hidden) cargarTareas(); }, 20000);
+setInterval(() => { if ((estado.vista === 'tareas' || estado.vista === 'resumen') && !document.hidden) cargarTareas(); }, 20000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && estado.vista === 'tareas') cargarTareas(); });
 setInterval(() => { if (estado.origen === 'carpeta' || estado.origen === 'ninguno') cargar(); }, REFRESCO_MS);
 </script>
