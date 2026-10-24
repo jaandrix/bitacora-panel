@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-24T11:20:21+02:00",
+ "actualizado": "2026-10-24T11:23:13+02:00",
  "sesion": {
   "estado": "trabajando",
   "titulo": "rediseño de Enlaces, Viajes, Panorama y la ficha de asignatura"
@@ -135,15 +135,15 @@
    "id": "r-viajes",
    "titulo": "Rediseño de Viajes",
    "detalle": "",
-   "estado": "curso",
-   "cuando": "2026-10-24T11:20:21+02:00"
+   "estado": "hecho",
+   "cuando": "2026-10-24T11:23:13+02:00"
   },
   {
    "id": "r-panorama",
    "titulo": "Rediseño de Panorama",
    "detalle": "",
-   "estado": "pendiente",
-   "cuando": "2026-10-24T11:15:42+02:00"
+   "estado": "curso",
+   "cuando": "2026-10-24T11:23:13+02:00"
   },
   {
    "id": "r-asignatura",
@@ -268,6 +268,18 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-24T11:23:13+02:00",
+   "texto": "Viajes rediseñado y subido; sigo con Panorama"
+  },
+  {
+   "hora": "2026-10-24T11:23:13+02:00",
+   "texto": "empiezo: Rediseño de Panorama"
+  },
+  {
+   "hora": "2026-10-24T11:23:13+02:00",
+   "texto": "hecho: Rediseño de Viajes"
+  },
   {
    "hora": "2026-10-24T11:20:21+02:00",
    "texto": "Enlaces rediseñado y subido; sigo con Viajes"
@@ -575,18 +587,6 @@
   {
    "hora": "2026-10-23T16:14:28+02:00",
    "texto": "empiezo: Móvil: editar el nombre de una tarea abre el teclado"
-  },
-  {
-   "hora": "2026-10-23T16:14:28+02:00",
-   "texto": "hecho: Conector: tareas, exámenes y trabajos sin pasar por la bandeja"
-  },
-  {
-   "hora": "2026-10-23T16:12:28+02:00",
-   "texto": "«en qué se va» ya va en tonos de la tinta y deja fuera los viajes; sigo con la bandeja del conector"
-  },
-  {
-   "hora": "2026-10-23T16:12:28+02:00",
-   "texto": "empiezo: Conector: tareas, exámenes y trabajos sin pasar por la bandeja"
   }
  ],
  "sugerencias": [
