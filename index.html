@@ -278,6 +278,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 .ahora-fila b { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ahora-fila .lado { font: 400 12px var(--mono); color: var(--texto-2); white-space: nowrap; }
 .tarjeta h2 { font-weight: 700; }
+.pasos-encuesta { margin: 0 0 18px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; line-height: 1.5; }
 .kpi .etq { font: 500 13px/1.2 var(--texto); }
 @media (max-width: 900px) { .kpi.c3 { grid-column: span 6; min-height: 0; padding: 18px; } .kpi .valor { font-size: 30px; } .rejilla { gap: 14px; } }
 </style>
@@ -308,6 +309,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 
     <section id="vista-resumen" class="vista"></section>
     <section id="vista-tareas" class="vista oculto"></section>
+    <section id="vista-encuesta" class="vista oculto"></section>
     <section id="vista-uso" class="vista oculto"></section>
     <section id="vista-redes" class="vista oculto"></section>
     <section id="vista-videos" class="vista oculto"></section>
@@ -337,7 +339,7 @@ const ICONOS = {
   fallo: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6l46 84H4zm-6 32v26h12V38zm0 32v12h12V70z"/></svg>',
   flecha: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 14l12-12 48 48-48 48-12-12 36-36z"/></svg>',
 };
-const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
+const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
@@ -402,7 +404,9 @@ function leerCSV(texto) {
   fila.push(campo); if (fila.some(x => x.trim() !== '')) filas.push(fila);
   if (!filas.length) return [];
   const cab = filas[0].map(h => h.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '_'));
-  return filas.slice(1).map(f => Object.fromEntries(cab.map((h, i) => [h, (f[i] ?? '').trim()])));
+  const res = filas.slice(1).map(f => Object.fromEntries(cab.map((h, i) => [h, (f[i] ?? '').trim()])));
+  res.cabecera = filas[0].map(h => h.trim()); res.claves = cab;
+  return res;
 }
 function numero(v) {
   if (v == null || v === '') return null;
@@ -568,7 +572,8 @@ function pintar() {
   document.getElementById('red').classList.toggle('oculto', estado.vista === 'uso');
   if (estado.vista === 'uso') document.getElementById('subtitulo').textContent = `Qué apartados se abren, de forma anónima, ${etqRango}`;
   if (estado.vista === 'tareas') { document.getElementById('subtitulo').textContent = 'Lo que Claude está haciendo para Bitácora, lo pendiente y tus recordatorios'; return pintarTareas(); }
-  ({ resumen: pintarResumen, uso: pintarUso, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
+  if (estado.vista === 'encuesta') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'Las respuestas de tu formulario, al momento.'; return pintarEncuesta(); }
+  ({ resumen: pintarResumen, encuesta: pintarEncuesta, uso: pintarUso, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
 }
 
 function hayVideos() { return estado.datos.videos.length > 0; }
@@ -629,6 +634,7 @@ function pintarResumen(r) {
       ${curso.length ? curso.map(t => `<div class="ahora-fila"><span class="marca-t ${esc(t.estado)}" style="width:12px;height:12px;border-radius:50%;border:1.5px solid ${t.estado === 'esperando' ? 'var(--coral)' : 'var(--tinta)'};${t.estado === 'curso' ? 'background:var(--tinta)' : ''}"></span><b>${esc(t.titulo)}</b><span class="lado">${{ curso: 'en curso', esperando: 'te espera', pendiente: 'en cola' }[t.estado] || ''}</span></div>`).join('') : sinDatos('Nada en curso.')}</div>
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>uso de la app.</h2><p class="sub">Personas por apartado.</p></div><button type="button" class="ir-c" data-ir="uso" aria-label="Ver uso de la app">${ICONOS.flecha}</button></div>
       ${apartados.length ? filasBarras(apartados.slice(0, 5).map(a => ({ nombre: a.titulo, detalle: '', valor: a.n })), v => nf(v)) : sinDatos()}</div>
+    ${urlEncuesta() && encuesta.filas ? `<div class="tarjeta c12" style="padding:18px 24px"><div class="ahora-fila" style="border:0;padding:0"><b>encuesta. <span style="color:var(--texto-2);font-weight:500">${nf(encuesta.filas.length)} respuestas${(() => { const kf = claveFecha(); const h = new Date(); h.setHours(0, 0, 0, 0); const n = kf ? encuesta.filas.filter(f => (fecha(f[kf]) || 0) >= h).length : 0; return n ? `, ${n} hoy` : ''; })()}.</span></b><button type="button" class="ir-c" data-ir="encuesta" aria-label="Ver la encuesta">${ICONOS.flecha}</button></div></div>` : ''}
     ${bloqueOrigen(r)}
     ${hayVideos() ? `
     <div class="tarjeta c8">
@@ -843,6 +849,91 @@ function pintarAjustes() {
   </div>`;
 }
 
+// ------------------------------------------------------------ encuesta
+// Google Forms guarda las respuestas en una hoja de cálculo; publicada como CSV (Archivo → Compartir → Publicar en
+// la web → CSV), el panel la lee cada minuto. El enlace va en ENCUESTA_CSV (o, solo en este navegador, en la propia
+// pestaña). Es público: que el formulario no pida nombres ni correos.
+const ENCUESTA_CSV = '';
+const encuesta = { filas: null, cabecera: [], claves: [], error: null, cargando: false, leida: 0 };
+const urlEncuesta = () => guardado('encuesta') || ENCUESTA_CSV;
+async function cargarEncuesta() {
+  const url = urlEncuesta();
+  if (!url || encuesta.cargando) return;
+  encuesta.cargando = true;
+  try {
+    const r = await fetch(url + (url.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    const filas = leerCSV(await r.text());
+    encuesta.filas = filas; encuesta.cabecera = filas.cabecera || []; encuesta.claves = filas.claves || []; encuesta.error = null; encuesta.leida = Date.now();
+  } catch (e) { encuesta.error = 'No se pudo leer la hoja. ¿Está publicada en la web como CSV?'; }
+  encuesta.cargando = false;
+  if (estado.vista === 'encuesta') pintarEncuesta();
+  else if (estado.vista === 'resumen' && estado.actualizado) pintar();
+}
+// Cada pregunta se enseña según lo que se responde: una escala (todo números, pocos valores) con su media, opciones
+// (pocas respuestas distintas, también las de casillas, que llegan separadas por comas) en barras, y texto libre
+// como lista de las últimas respuestas.
+function analizarPregunta(clave, filas) {
+  const vals = filas.map(f => f[clave]).filter(v => v && v.trim());
+  if (!vals.length) return { tipo: 'vacia', n: 0 };
+  const nums = vals.map(v => numero(v));
+  const distintos = new Set(vals);
+  if (nums.every(n => n != null) && distintos.size <= 11) {
+    const media = nums.reduce((a, b) => a + b, 0) / nums.length;
+    const cuenta = {}; nums.forEach(n => { cuenta[n] = (cuenta[n] || 0) + 1; });
+    return { tipo: 'escala', n: vals.length, media, filas: Object.entries(cuenta).sort((a, b) => a[0] - b[0]).map(([k, v]) => ({ nombre: k, detalle: '', valor: v })) };
+  }
+  const trozos = vals.flatMap(v => v.split(/,\s+/));
+  const distintosTrozos = new Set(trozos);
+  const opciones = distintos.size <= 12 ? vals : (distintosTrozos.size <= 15 && trozos.length > vals.length ? trozos : null);
+  if (opciones) {
+    const cuenta = {}; opciones.forEach(o => { cuenta[o] = (cuenta[o] || 0) + 1; });
+    return { tipo: 'opciones', n: vals.length, filas: Object.entries(cuenta).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ nombre: k, detalle: `${Math.round(v / vals.length * 100)} %`, valor: v })) };
+  }
+  return { tipo: 'texto', n: vals.length, ultimas: filas.filter(f => f[clave] && f[clave].trim()).slice(-12).reverse() };
+}
+function claveFecha() { return encuesta.claves.find(k => /^(marca_temporal|timestamp|fecha)/.test(k)); }
+function pintarEncuesta() {
+  const el = document.getElementById('vista-encuesta');
+  const url = urlEncuesta();
+  const pasos = `<ol class="pasos-encuesta">
+      <li>En el formulario, pestaña <b>Respuestas</b> → <b>Vincular a Hojas de cálculo</b> (crea la hoja).</li>
+      <li>En la hoja: <b>Archivo → Compartir → Publicar en la web</b>. Elige la pestaña de respuestas y <b>Valores separados por comas (.csv)</b>, y pulsa <b>Publicar</b>.</li>
+      <li>Copia el enlace y pégalo aquí. Cualquiera con el enlace puede ver las respuestas: que el formulario no pida nombres ni correos.</li></ol>`;
+  const campo = `<div class="clave-fila"><input id="encuesta-url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" value="${esc(guardado('encuesta') || '')}"><button class="boton" type="button" id="encuesta-guardar">guardar.</button></div>`;
+  if (!url) { el.innerHTML = `<div class="rejilla"><div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>conecta tu encuesta.</h2><p class="sub">Tres pasos y las respuestas salen aquí, al momento.</p></div></div>${pasos}${campo}</div></div>`; return; }
+  if (!encuesta.filas) { el.innerHTML = `<div class="rejilla"><div class="tarjeta c12">${encuesta.error ? `${sinDatos(esc(encuesta.error))}${pasos}${campo}` : sinDatos('Leyendo las respuestas…')}</div></div>`; if (!encuesta.error) cargarEncuesta(); return; }
+  const filas = encuesta.filas, kf = claveFecha();
+  const fechas = kf ? filas.map(f => fecha(f[kf])).filter(Boolean) : [];
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const deHoy = fechas.filter(f => f >= hoy).length, semana = fechas.filter(f => f >= new Date(hoy - 6 * 864e5)).length;
+  const ultima = fechas.length ? new Date(Math.max(...fechas)) : null;
+  const dias = []; if (fechas.length) for (let d = new Date(Math.min(...fechas)); d <= new Date(); d.setDate(d.getDate() + 1)) dias.push(iso(d));
+  const porDia = Object.fromEntries(dias.map(k => [k, 0])); fechas.forEach(f => { const k = iso(f); if (k in porDia) porDia[k]++; });
+  const maxDia = Math.max(1, ...Object.values(porDia));
+  const preguntas = encuesta.claves.map((k, i) => ({ k, texto: encuesta.cabecera[i] })).filter(p => p.k !== kf && p.texto);
+  el.innerHTML = `<div class="rejilla">
+    ${kpi('personas', 'respuestas.', `<div class="fila"><span class="valor">${nf(filas.length)}</span></div>`, null, 'oscura')}
+    ${kpi('web', 'hoy.', `<div class="fila"><span class="valor">${nf(deHoy)}</span></div>`)}
+    ${kpi('apartado', 'últimos 7 días.', `<div class="fila"><span class="valor">${nf(semana)}</span></div>`)}
+    ${kpi('flecha', 'la última.', `<div class="fila"><span class="valor texto">${ultima ? hace(ultima) : '–'}</span></div>`)}
+    ${dias.length > 1 ? `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>respuestas por día.</h2></div></div>
+      <div class="dias-uso" role="img" aria-label="Respuestas por día">${dias.map(k => `<i class="${porDia[k] ? '' : 'vacio'}" style="height:${porDia[k] ? Math.max(4, porDia[k] / maxDia * 100) : 2}%" title="${fechaCorta(new Date(k + 'T12:00'))}: ${porDia[k]}"></i>`).join('')}</div>
+      <div class="dias-eje"><span>${fechaCorta(new Date(dias[0] + 'T12:00'))}</span><span>${fechaCorta(new Date(dias[dias.length - 1] + 'T12:00'))}</span></div></div>` : ''}
+    ${preguntas.map(p => { const a = analizarPregunta(p.k, filas);
+      const cuerpo = a.tipo === 'escala' ? `<p class="sub" style="margin:0 0 14px">media <b style="font-size:22px;color:var(--tinta)">${nf(a.media, 1)}</b></p>${filasBarras(a.filas, v => nf(v), true)}`
+        : a.tipo === 'opciones' ? filasBarras(a.filas, v => nf(v), true)
+        : a.tipo === 'texto' ? `<ul class="directo" style="max-height:360px">${a.ultimas.map(f => `<li><time>${kf && fecha(f[kf]) ? horaCorta(fecha(f[kf])) : ''}</time><span>${esc(f[p.k])}</span></li>`).join('')}</ul>`
+        : sinDatos('Sin respuestas todavía.');
+      return `<div class="tarjeta ${a.tipo === 'texto' ? 'c12' : 'c6'}"><div class="tarjeta-cab"><div><h2>${esc(p.texto)}</h2><p class="sub">${nf(a.n)} respuesta${a.n === 1 ? '' : 's'}</p></div></div>${cuerpo}</div>`; }).join('')}
+    <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><b style="font-weight:500;color:var(--texto-2)">Se actualiza cada minuto. Leída ${encuesta.leida ? hace(encuesta.leida) : ''}.</b><button class="boton" type="button" id="encuesta-cambiar">cambiar enlace.</button></div></div>
+  </div>`;
+}
+document.addEventListener('click', ev => {
+  if (ev.target.id === 'encuesta-guardar') { const v = document.getElementById('encuesta-url').value.trim(); guardado('encuesta', v); encuesta.filas = null; encuesta.error = null; pintarEncuesta(); }
+  else if (ev.target.id === 'encuesta-cambiar') { guardado('encuesta', ''); encuesta.filas = null; pintarEncuesta(); }
+});
+
 // ------------------------------------------------------------ uso de la app
 // datos/apartados.csv: visitantes por día de cada marca que cuenta la app (GoatCounter, anónimo). «uso/activo» es
 // quien abre la app ese día; «apartado/<vista>», quien abre ese apartado. Los dispositivos del creador no cuentan.
@@ -1039,6 +1130,8 @@ let redimension; addEventListener('resize', () => { clearTimeout(redimension); r
 
 cargar();
 cargarTareas(true);
+cargarEncuesta();
+setInterval(() => { if (!document.hidden) cargarEncuesta(); }, 60000);
 setInterval(() => { if ((estado.vista === 'tareas' || estado.vista === 'resumen') && !document.hidden) cargarTareas(); }, 20000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden && estado.vista === 'tareas') cargarTareas(); });
 setInterval(() => { if (estado.origen === 'carpeta' || estado.origen === 'ninguno') cargar(); }, REFRESCO_MS);
