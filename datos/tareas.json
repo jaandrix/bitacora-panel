@@ -1,8 +1,8 @@
 {
- "actualizado": "2026-10-24T11:28:32+02:00",
+ "actualizado": "2026-10-24T11:42:48+02:00",
  "sesion": {
   "estado": "parado",
-  "titulo": "rediseño hecho"
+  "titulo": "esperando a Alejandro"
  },
  "en_curso": [
   {
@@ -151,6 +151,13 @@
    "detalle": "",
    "estado": "hecho",
    "cuando": "2026-10-24T11:28:32+02:00"
+  },
+  {
+   "id": "chatgpt",
+   "titulo": "paquete de diseño para ChatGPT y pasos manuales",
+   "detalle": "",
+   "estado": "hecho",
+   "cuando": "2026-10-24T11:42:48+02:00"
   }
  ],
  "pendientes": [
@@ -268,6 +275,14 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-24T11:42:48+02:00",
+   "texto": "hecho: paquete de diseño para ChatGPT y pasos manuales"
+  },
+  {
+   "hora": "2026-10-24T11:42:48+02:00",
+   "texto": "empiezo: paquete de diseño para ChatGPT y pasos manuales"
+  },
   {
    "hora": "2026-10-24T11:28:32+02:00",
    "texto": "los cuatro rediseños subidos"
@@ -579,14 +594,6 @@
   {
    "hora": "2026-10-23T16:32:28+02:00",
    "texto": "hecho: Saber qué apartados se usan (prioridad)"
-  },
-  {
-   "hora": "2026-10-23T16:28:42+02:00",
-   "texto": "leo tus votos: 4 aceptadas, 1 rechazada; empiezo por el uso de los apartados"
-  },
-  {
-   "hora": "2026-10-23T16:28:42+02:00",
-   "texto": "empiezo: Saber qué apartados se usan (prioridad)"
   }
  ],
  "sugerencias": [
