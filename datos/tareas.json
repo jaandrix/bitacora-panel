@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-24T11:42:48+02:00",
+ "actualizado": "2026-10-24T12:09:35+02:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -158,6 +158,13 @@
    "detalle": "",
    "estado": "hecho",
    "cuando": "2026-10-24T11:42:48+02:00"
+  },
+  {
+   "id": "classroom",
+   "titulo": "conexión con Google Classroom",
+   "detalle": "falta el ID de cliente de Google Cloud",
+   "estado": "esperando",
+   "cuando": "2026-10-24T12:09:35+02:00"
   }
  ],
  "pendientes": [
@@ -275,6 +282,14 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-24T12:09:35+02:00",
+   "texto": "te espera: conexión con Google Classroom"
+  },
+  {
+   "hora": "2026-10-24T12:09:35+02:00",
+   "texto": "empiezo: conexión con Google Classroom"
+  },
   {
    "hora": "2026-10-24T11:42:48+02:00",
    "texto": "hecho: paquete de diseño para ChatGPT y pasos manuales"
@@ -586,14 +601,6 @@
   {
    "hora": "2026-10-23T16:32:28+02:00",
    "texto": "la app ya cuenta qué apartados se abren y el pulso tiene la vista «Uso de la app»; sigo con el arranque"
-  },
-  {
-   "hora": "2026-10-23T16:32:28+02:00",
-   "texto": "empiezo: Que la app arranque más rápido"
-  },
-  {
-   "hora": "2026-10-23T16:32:28+02:00",
-   "texto": "hecho: Saber qué apartados se usan (prioridad)"
   }
  ],
  "sugerencias": [
