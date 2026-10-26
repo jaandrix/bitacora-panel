@@ -1207,7 +1207,7 @@ function bloqueMetricas() {
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>suscripciones.</h2><p class="sub">Estado de cada cuenta con fila en Stripe.</p></div></div>${barras(subs, nombresEstado)}</div>
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>perfiles.</h2><p class="sub">Lo que eligieron al empezar.</p></div></div>${barras(d.perfiles)}</div>
     <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>apartados opcionales.</h2><p class="sub">Cuántas cuentas tienen activado cada uno.</p></div></div>${barras(d.opcionales)}</div>
-    <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><span>${n(d.con_avisos)} con avisos en el móvil, ${n(d.con_conector)} con Claude o ChatGPT conectado, ${n(d.correo_domingos)} con el correo de los domingos.</span><b style="font-weight:500;color:var(--texto-2)">Leído ${hace(met.leida)}.</b></div></div>`;
+    <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><span>${n(d.con_avisos)} con avisos en el móvil, ${n(d.con_conector)} con Claude o ChatGPT conectado, ${n(d.correo_domingos)} con el correo de los domingos.${d.datos_kb ? ` Datos por cuenta: ${n(d.datos_kb.media)} KB de media, ${n(d.datos_kb.p90)} el 90 %, ${n(d.datos_kb.maxima)} la mayor (${n(d.datos_kb.maxima_sin_comprimir)} sin comprimir).` : ''}</span><b style="font-weight:500;color:var(--texto-2)">Leído ${hace(met.leida)}.</b></div></div>`;
 }
 document.addEventListener('click', ev => {
   if (ev.target.id !== 'met-guardar') return;
