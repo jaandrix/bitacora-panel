@@ -1206,10 +1206,11 @@ function pintarAuditoria() {
     <div class="tarjeta c12 aud-resumen"><div class="tarjeta-cab"><div><h2>en una frase.</h2><p class="sub">Auditoría del ${new Date(d.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}, revisada contra el código el ${new Date(d.revisada + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.</p></div></div>
       <p class="enc-texto">${esc(d.resumen)}</p>
       <p class="sub" style="margin:0">Cómo usarla: abre un punto para ver qué pasa y lo que opino, marca la casilla de lo que quieras que haga y pulsa «enviar los marcados.». Las tandas van en orden: primero la 1. Lo que es decisión tuya no lo haré sin que lo marques.</p></div>
-    ${kpi('apartado', 'hallazgos.', `<div class="fila"><span class="valor">${nf(hs.length)}</span><span class="extra">${nf(vivos.length)} siguen abiertos</span></div>`, null, 'oscura')}
+    ${kpi('apartado', 'hallazgos.', `<div class="fila"><span class="valor">${nf(hs.length)}</span><span class="extra">${nf(cuenta(h => h.estado !== 'resuelto' && h.estado !== 'parcial'))} sin empezar</span></div>`, null, 'oscura')}
+    ${kpi('web', 'solucionados.', `<div class="fila"><span class="valor">${nf(cuenta(h => h.estado === 'resuelto'))}</span><span class="extra">${nf(cuenta(h => h.estado === 'parcial'))} a medias, ${nf(enviados)} enviados</span></div>`)}
     ${kpi('flecha', 'urgentes.', `<div class="fila"><span class="valor">${nf(criticos.length)}</span><span class="extra">seguridad crítica</span></div>`)}
     ${kpi('personas', 'decisiones tuyas.', `<div class="fila"><span class="valor">${nf(cuenta(h => h.reco === 'decide'))}</span></div>`)}
-    ${kpi('web', 'enviados.', `<div class="fila"><span class="valor">${nf(enviados)}</span></div>`)}
+
     <div class="tarjeta c12" style="padding:16px 24px"><div class="aud-filtros" role="tablist">${AUD_FILTROS.map(([k, t]) => `<button type="button" class="control ${aud.filtro === k ? 'activo' : ''}" role="tab" aria-selected="${aud.filtro === k}" data-aud-filtro="${k}">${t}</button>`).join('')}</div></div>
     ${tandas || `<div class="tarjeta c12">${sinDatos('Nada con este filtro.')}</div>`}
     <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>lo que la auditoría no pudo comprobar.</h2><p class="sub">Hace falta producción, datos reales o un profesional.</p></div></div><ul class="aud-pendiente">${d.pendiente.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
