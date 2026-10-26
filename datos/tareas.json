@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-26T18:32:30+01:00",
+ "actualizado": "2026-10-26T18:35:29+01:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -281,14 +281,6 @@
    "quien": "Alejandro"
   },
   {
-   "id": "avisos-push",
-   "prioridad": "alta",
-   "area": "app",
-   "titulo": "Confirmar si llegan los avisos al iPhone",
-   "detalle": "La prueba de «tu semana» salió enviada. Si no llegó: revisar Ajustes del iPhone, Concentración y reactivar notificaciones en Bitácora",
-   "quien": "Alejandro"
-  },
-  {
    "id": "deploy-ics",
    "prioridad": "media",
    "area": "servidor",
@@ -330,6 +322,10 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-26T18:35:29+01:00",
+   "texto": "resuelto: Confirmar si llegan los avisos al iPhone"
+  },
   {
    "hora": "2026-10-26T18:32:30+01:00",
    "texto": "resuelto: Revisar las condiciones del plan fundador"
@@ -645,10 +641,6 @@
   {
    "hora": "2026-10-23T16:37:15+02:00",
    "texto": "sugerencia cerrada: Saber qué apartados se usan"
-  },
-  {
-   "hora": "2026-10-23T16:36:41+02:00",
-   "texto": "portadas por perfil publicadas: appbitacora.es/estudiantes, /profes, /finanzas y /trabajo"
   }
  ],
  "sugerencias": [
