@@ -18,15 +18,25 @@ CSV_USO = os.path.join(os.path.dirname(__file__), '..', 'datos', 'apartados.csv'
 def api(ruta, **params):
     url = f'{SITIO}/api/v0/{ruta}?{urllib.parse.urlencode(params)}'
     req = urllib.request.Request(url, headers={'Authorization': f'Bearer {TOKEN}', 'Content-Type': 'application/json'})
-    for intento in range(4):
+    # GoatCounter a veces responde 5xx o tarda: se reintenta con espera creciente. Si no hay manera, el día se salta
+    # (ver FalloDia) en vez de tumbar toda la ejecución, que mandaba un correo de fallo cada mañana.
+    ultimo = ''
+    for intento in range(5):
         try:
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r)
         except urllib.error.HTTPError as e:
-            if e.code == 429:  # límite de peticiones de la API
-                time.sleep(2 + intento * 2); continue
-            raise SystemExit(f'GoatCounter respondió {e.code} en {ruta}: {e.read()[:300]!r}')
-    raise SystemExit('GoatCounter: demasiadas peticiones seguidas')
+            ultimo = f'{e.code} en {ruta}: {e.read()[:200]!r}'
+            if e.code in (401, 403): raise SystemExit(f'GoatCounter rechaza la clave ({ultimo}): revisa el secreto GOATCOUNTER_TOKEN')
+            if e.code != 429 and e.code < 500: raise FalloDia(ultimo)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            ultimo = f'red en {ruta}: {e}'
+        time.sleep(3 + intento * 4)
+    raise FalloDia(ultimo or 'sin respuesta')
+
+
+class FalloDia(Exception):
+    pass
 
 
 def cifra(d):
@@ -78,9 +88,17 @@ def guardar_uso(dias):
             previas = [r for r in csv.DictReader(f) if r['fecha'] not in rehechos]
     nuevas = []
     for d in dias:
-        for ruta, (titulo, n) in sorted(uso_del_dia(d).items()):
+        try:
+            dia = uso_del_dia(d)
+        except FalloDia as e:
+            print(f'aviso: el uso del {d} no se pudo leer ({e}); se deja lo que había')
+            rehechos.discard(d.isoformat()); continue
+        for ruta, (titulo, n) in sorted(dia.items()):
             if n: nuevas.append({'fecha': d.isoformat(), 'ruta': ruta, 'titulo': titulo, 'visitantes': str(n)})
         time.sleep(0.3)
+    if os.path.exists(CSV_USO):
+        with open(CSV_USO, encoding='utf-8') as f:
+            previas = [r for r in csv.DictReader(f) if r['fecha'] not in rehechos]
     filas = sorted(previas + nuevas, key=lambda r: (r['fecha'], r['ruta']))
     with open(CSV_USO, 'w', encoding='utf-8', newline='') as f:
         w = csv.DictWriter(f, fieldnames=['fecha', 'ruta', 'titulo', 'visitantes'])
@@ -103,14 +121,23 @@ def main():
                 else:
                     previas.append(r)
 
-    nuevas = []
+    nuevas, fallidos = [], set()
     for d in dias:
-        for ref, n in sorted(visitas_del_dia(d).items(), key=lambda x: -x[1]):
+        try:
+            dia = visitas_del_dia(d)
+        except FalloDia as e:
+            print(f'aviso: las visitas del {d} no se pudieron leer ({e}); se deja lo que había')
+            fallidos.add(d.isoformat()); continue
+        for ref, n in sorted(dia.items(), key=lambda x: -x[1]):
             if n: nuevas.append({'fecha': d.isoformat(), 'ref': ref, 'visitas': str(n), 'altas': altas.pop((d.isoformat(), ref), '')})
         time.sleep(0.3)
     for (fecha, ref), n in altas.items():  # altas de un origen que hoy no trae visitas: no se pierden
         nuevas.append({'fecha': fecha, 'ref': ref, 'visitas': '', 'altas': n})
 
+    if fallidos:
+        with open(CSV, encoding='utf-8') as f:
+            previas += [r for r in csv.DictReader(f) if r['fecha'] in fallidos]
+        nuevas = [r for r in nuevas if r['fecha'] not in fallidos]
     filas = sorted(previas + nuevas, key=lambda r: (r['fecha'], r['ref']))
     os.makedirs(os.path.dirname(CSV), exist_ok=True)
     with open(CSV, 'w', encoding='utf-8', newline='') as f:
