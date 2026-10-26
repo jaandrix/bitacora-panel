@@ -343,6 +343,25 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 [data-aud-tanda] { white-space: nowrap; flex-shrink: 0; }
 @media (max-width: 600px) { .aud-barra { left: 12px; right: 12px; transform: translateY(140%); flex-wrap: wrap; } .aud-barra.visible { transform: none; } .aud-h { grid-template-columns: 1fr; } .aud-detalle { grid-column: 1; } }
 @media (prefers-reduced-motion: reduce) { .aud-barra { transition: none; } }
+.dec { display: flex; flex-direction: column; gap: 10px; }
+.dec h2 { margin: 0; }
+.dec-cab { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--texto-2); }
+.dec-hecha { display: inline-flex; align-items: center; gap: 6px; color: var(--azul); font-weight: 600; }
+.dec-hecha svg { width: 14px; height: 14px; }
+.dec-contexto { margin: 0; color: var(--texto-2); }
+.dec-opciones { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.dec-op { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 14px; border: 1px solid var(--linea); border-radius: 12px; background: transparent; color: var(--tinta); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease; }
+.dec-op:hover { border-color: var(--tinta); }
+.dec-op.elegida { border-color: var(--tinta); background: var(--superficie-2); }
+.dec-op-txt { display: flex; flex-direction: column; gap: 2px; font-weight: 500; }
+.dec-op-txt small { color: var(--azul); font-weight: 600; font-size: 12px; }
+.dec-esf { flex-shrink: 0; font: 500 12px var(--mono); color: var(--texto-2); }
+.dec-esf.e2 { color: var(--tinta); }
+.dec-esf.e3 { color: var(--coral); font-weight: 600; }
+.dec.decidida { opacity: .75; }
+.dec-aviso { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--superficie-2); }
+.dec-aviso.e3 { background: var(--coral-palido); }
+.dec-aviso.e3 b { color: var(--coral); }
 </style>
 </head>
 <body>
@@ -371,6 +390,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 
     <section id="vista-resumen" class="vista"></section>
     <section id="vista-tareas" class="vista oculto"></section>
+    <section id="vista-decisiones" class="vista oculto"></section>
     <section id="vista-encuesta" class="vista oculto"></section>
     <section id="vista-auditoria" class="vista oculto"></section>
     <section id="vista-uso" class="vista oculto"></section>
@@ -402,14 +422,14 @@ const ICONOS = {
   fallo: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6l46 84H4zm-6 32v26h12V38zm0 32v12h12V70z"/></svg>',
   flecha: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 14l12-12 48 48-48 48-12-12 36-36z"/></svg>',
 };
-const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['auditoria', 'auditoría.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
+const VISTAS = [['decisiones', 'decisiones.'], ['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['auditoria', 'auditoría.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
 
 const guardado = (k, v) => { try { if (v === undefined) return localStorage.getItem('panel-' + k); localStorage.setItem('panel-' + k, v); } catch (e) { return null; } };
 const estado = {
-  vista: guardado('vista') || 'resumen',
+  vista: guardado('vista') || 'decisiones',
   ejemplo: guardado('ejemplo') === '1',
   periodo: null, red: 'todas',
   orden: { campo: 'fecha', dir: 'descending' },
@@ -635,6 +655,7 @@ function pintar() {
   document.getElementById('red').classList.toggle('oculto', estado.vista === 'uso');
   if (estado.vista === 'uso') document.getElementById('subtitulo').textContent = `Qué apartados se abren, de forma anónima, ${etqRango}`;
   if (estado.vista === 'tareas') { document.getElementById('subtitulo').textContent = 'Lo que Claude está haciendo para Bitácora, lo pendiente y tus recordatorios'; return pintarTareas(); }
+  if (estado.vista === 'decisiones') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'Lo que necesito que decidas, con el esfuerzo de cada opción.'; return pintarDecisiones(); }
   if (estado.vista === 'auditoria') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'La auditoría de ChatGPT, revisada contra el código: marca lo que quieres que haga.'; return aud.datos ? pintarAuditoria() : cargarAuditoria(); }
   if (estado.vista === 'encuesta') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'Las respuestas de tu formulario, al momento.'; return pintarEncuesta(); }
   ({ resumen: pintarResumen, encuesta: pintarEncuesta, uso: pintarUso, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
@@ -1127,6 +1148,71 @@ function pintarEncuesta() {
 document.addEventListener('click', ev => {
   if (ev.target.id === 'encuesta-guardar') { const v = document.getElementById('encuesta-url').value.trim(); guardado('encuesta', v); encuesta.filas = null; encuesta.error = null; pintarEncuesta(); }
   else if (ev.target.id === 'encuesta-cambiar') { guardado('encuesta', ''); encuesta.filas = null; pintarEncuesta(); }
+});
+
+// ------------------------------------------------------------ decisiones
+// Lo que Claude necesita que decida Alejandro, en datos/decisiones.json. La elección se guarda con panel_votar
+// (la clave del panel, como las sugerencias) con id «dec-<id>» y la opción elegida en la nota: Claude la lee en
+// panel_votos_lista. Antes de confirmar se enseña el esfuerzo de la opción.
+const dec = { lista: null, error: null };
+const ESFUERZO = { ninguno: ['sin trabajo.', 0], pequeño: ['esfuerzo pequeño.', 1], medio: ['esfuerzo medio.', 2], grande: ['esfuerzo grande.', 3] };
+async function cargarDecisiones() {
+  try { const r = await fetch('datos/decisiones.json?t=' + Date.now(), { cache: 'no-store' }); dec.lista = await r.json(); dec.error = null; }
+  catch (e) { dec.error = 'No se pudo leer datos/decisiones.json.'; }
+  await cargarVotos();
+  if (estado.vista === 'decisiones') pintarDecisiones();
+}
+const decElegida = d => { const v = votos.lista['dec-' + d.id]; return v ? d.opciones.find(o => o.id === v.nota) && { o: d.opciones.find(o => o.id === v.nota), cuando: v.cuando } : null; };
+function pintarDecisiones() {
+  const el = document.getElementById('vista-decisiones');
+  if (!dec.lista) { el.innerHTML = `<div class="rejilla"><div class="tarjeta c12">${sinDatos(dec.error || 'Cargando…')}</div></div>`; if (!dec.error) cargarDecisiones(); return; }
+  const pend = dec.lista.filter(d => !decElegida(d)), hechas = dec.lista.filter(d => decElegida(d));
+  const tarjeta = d => {
+    const e = decElegida(d);
+    return `<div class="tarjeta c6 dec ${e ? 'decidida' : ''}"><div class="dec-cab"><span class="dec-area">${esc(d.area)}</span>${e ? `<span class="dec-hecha">${ICONO_SI}decidido ${hace(e.cuando)}</span>` : ''}</div>
+      <h2>${esc(d.titulo)}</h2><p class="dec-contexto">${esc(d.contexto)}</p>
+      <div class="dec-opciones">${d.opciones.map(o => `<button type="button" class="dec-op ${e?.o.id === o.id ? 'elegida' : ''}" data-dec="${esc(d.id)}" data-op="${esc(o.id)}">
+        <span class="dec-op-txt">${esc(o.texto)}${o.reco ? '<small>lo que te recomiendo.</small>' : ''}</span>
+        <span class="dec-esf e${ESFUERZO[o.esfuerzo]?.[1] ?? 0}">${ESFUERZO[o.esfuerzo]?.[0] || ''}</span></button>`).join('')}</div></div>`;
+  };
+  el.innerHTML = `<div class="rejilla">
+    ${kpi('personas', 'por decidir.', `<div class="fila"><span class="valor">${nf(pend.length)}</span></div>`, null, 'oscura')}
+    ${kpi('apartado', 'decididas.', `<div class="fila"><span class="valor">${nf(hechas.length)}</span></div>`)}
+    <div class="tarjeta c6" style="display:flex;align-items:center"><p class="sub" style="margin:0">Toca una opción para elegirla. Antes de guardar te digo cuánto trabajo supone. Puedes cambiar de idea cuando quieras: Claude lee la última elección.</p></div>
+    ${pend.length ? pend.map(tarjeta).join('') : `<div class="tarjeta c12">${sinDatos('Nada por decidir. Bien.')}</div>`}
+    ${hechas.length ? `<div class="tarjeta c12" style="padding:16px 24px"><h2 style="margin:0">ya decidido.</h2></div>${hechas.map(tarjeta).join('')}` : ''}
+    ${votos.error ? `<div class="tarjeta c12"><p class="nota-tareas">${esc(votos.error)}</p></div>` : ''}
+  </div>`;
+}
+function abrirDecision(id, op) {
+  const d = dec.lista.find(x => x.id === id), o = d?.opciones.find(x => x.id === op); if (!o) return;
+  let dlg = document.getElementById('dec-dialogo');
+  if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'dec-dialogo'; dlg.className = 'eleccion'; document.body.appendChild(dlg); dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); }); }
+  const clave = guardado('clave'), esf = ESFUERZO[o.esfuerzo] || ['', 0];
+  dlg.innerHTML = `<div class="area">${esc(d.titulo)}</div>
+    <h3>${esc(o.texto)}</h3>
+    <div class="dec-aviso e${esf[1]}"><b>${esf[1] ? 'Esto supone ' + esf[0] : 'Esto no supone trabajo.'}</b>${o.detalle ? ' ' + esc(o.detalle) : ''}</div>
+    ${clave ? '' : `<label class="etq" for="dec-clave" style="display:block;margin-top:12px">tu clave del panel</label><div class="clave-fila"><input id="dec-clave" type="password" autocomplete="current-password"></div>`}
+    <div class="botones-eleccion"><button type="button" class="boton-voto" id="dec-cancelar">cancelar</button><button type="button" class="boton-voto si" id="dec-confirmar">${ICONO_SI}elegir</button></div>
+    <div class="pie-eleccion"><span id="dec-estado"></span></div>`;
+  dlg.dataset.id = id; dlg.dataset.op = op;
+  dlg.showModal();
+}
+async function confirmarDecision() {
+  const dlg = document.getElementById('dec-dialogo'), estadoEl = document.getElementById('dec-estado');
+  const clave = guardado('clave') || document.getElementById('dec-clave')?.value || '';
+  if (!clave) { estadoEl.textContent = 'escribe tu clave del panel'; return; }
+  estadoEl.textContent = 'guardando…';
+  try {
+    const ok = await rpc('panel_votar', { p_clave: clave, p_id: 'dec-' + dlg.dataset.id, p_voto: 'si', p_nota: dlg.dataset.op });
+    if (!ok) { guardado('clave', ''); estadoEl.textContent = 'clave incorrecta'; return; }
+    guardado('clave', clave); await cargarVotos(); dlg.close(); pintarDecisiones();
+  } catch (e) { estadoEl.textContent = 'no se pudo guardar: ' + e.message; }
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-dec]'); if (b) return abrirDecision(b.dataset.dec, b.dataset.op);
+  if (ev.target.id === 'dec-confirmar') return confirmarDecision();
+  if (ev.target.id === 'dec-cancelar') return document.getElementById('dec-dialogo').close();
 });
 
 // ------------------------------------------------------------ auditoría

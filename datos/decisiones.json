@@ -1,0 +1,50 @@
+[
+ {"id": "contraste", "area": "app", "titulo": "Texto gris más legible", "contexto": "Las fechas, notas y descripciones en gris claro se leen mal en los temas claros (no llegan al mínimo de legibilidad). Se oscurecen un poco, un color por tema.",
+  "opciones": [
+   {"id": "aplicar", "texto": "Aplicarlo", "esfuerzo": "pequeño", "detalle": "Cinco colores en styles.css. Media hora con las capturas.", "reco": true},
+   {"id": "ver", "texto": "Enséñamelo antes", "esfuerzo": "pequeño", "detalle": "Te paso capturas del antes y el después y decides."},
+   {"id": "no", "texto": "Dejarlo como está", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "pantalla-dia", "area": "producto", "titulo": "Cuál es la pantalla de cada día", "contexto": "Hoy compiten Home (el calendario del mes), Panorama (tarjetas) y el Planificador (el día hora a hora). Ninguna responde claramente a «qué hago ahora».",
+  "opciones": [
+   {"id": "planificador", "texto": "El día del Planificador como entrada", "esfuerzo": "medio", "detalle": "Propuesta de DeepSeek: el día manda, Panorama y el mes quedan como hojas. Varios días de trabajo, sobre todo en móvil."},
+   {"id": "home-prioridades", "texto": "Home nuevo con tres prioridades, ahora y después", "esfuerzo": "grande", "detalle": "Propuesta de ChatGPT. Hay que decidir además cómo se eligen las tres prioridades. Una semana o más."},
+   {"id": "esperar", "texto": "Primero termina Panorama y luego decido", "esfuerzo": "ninguno", "detalle": "Panorama ya mejora mucho el resumen del día. Volvemos a esto después.", "reco": true}]},
+ {"id": "resumen-9", "area": "app", "titulo": "Resumen del día a las 9:00 siempre", "contexto": "Hoy el aviso de las 9:00 solo llega si hay algo concreto (examen, cumple, documento que caduca...). Si no, no llega nada y parece que los avisos no funcionan.",
+  "opciones": [
+   {"id": "si", "texto": "Que llegue siempre", "esfuerzo": "pequeño", "detalle": "«hoy: 3 eventos, 5 tareas; lo primero, Gimnasio a las 18:30». Cambio en la función de avisos y la despliegas tú.", "reco": true},
+   {"id": "no", "texto": "Solo cuando haya algo", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "portada", "area": "web", "titulo": "Portada nueva", "contexto": "Las dos auditorías dicen que el cerebro animado y «Tu vida, en un solo sitio» suenan a app genérica hecha con IA. Proponen enseñar pantallas reales y un titular como «Hoy sabes qué toca.».",
+  "opciones": [
+   {"id": "completa", "texto": "Rehacerla: titular nuevo, sin cerebro, pantallas reales", "esfuerzo": "grande", "detalle": "Varios días. Codex puede hacer gran parte."},
+   {"id": "titular", "texto": "Solo cambiar el titular y los textos", "esfuerzo": "pequeño", "detalle": "Una hora. El cerebro se queda.", "reco": true},
+   {"id": "no", "texto": "Dejarla como está", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "precio", "area": "negocio", "titulo": "Precio mensual", "contexto": "De cada 1,99 € te quedan unos 1,36 € tras IVA y Stripe, antes de pagar Supabase y el correo. Con 37 suscriptores cubres 50 € al mes de costes.",
+  "opciones": [
+   {"id": "199", "texto": "Mantener 1,99 €", "esfuerzo": "ninguno", "detalle": "", "reco": true},
+   {"id": "249", "texto": "Subir a 2,49 €", "esfuerzo": "pequeño", "detalle": "Precio nuevo en Stripe, textos de la web y la guía. Solo para cuentas nuevas."},
+   {"id": "299", "texto": "Subir a 2,99 €", "esfuerzo": "pequeño", "detalle": "Igual que el anterior."}]},
+ {"id": "fundador", "area": "negocio", "titulo": "Condiciones del socio fundador", "contexto": "La oferta promete cosas «para siempre». Lo prudente es decir qué incluye y qué pasa si el proyecto cambia o cierra (por ejemplo, avisar con tiempo y dar todos los datos).",
+  "opciones": [
+   {"id": "reescribir", "texto": "Reescribirlas sin «para siempre»", "esfuerzo": "pequeño", "detalle": "Te paso el texto para que lo apruebes antes de publicarlo.", "reco": true},
+   {"id": "no", "texto": "Dejarlas como están", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "enlaces-caducan", "area": "app", "titulo": "Que caduquen los enlaces que compartes", "contexto": "Desde Social puedes mandar por WhatsApp un enlace de una quedada, una invitación, una lista o un viaje a gente sin cuenta. Hoy esos enlaces funcionan hasta que los borras tú.",
+  "opciones": [
+   {"id": "caducar", "texto": "Que caduquen solos (30 días quedadas e invitaciones, 90 listas y viajes)", "esfuerzo": "medio", "detalle": "Cambio en la función del servidor y en la app. Un día."},
+   {"id": "no", "texto": "Que sigan hasta que los borre", "esfuerzo": "ninguno", "detalle": "Ya puedes borrarlos desde Social, «con un enlace.».", "reco": true}]},
+ {"id": "bandeja", "area": "app", "titulo": "Renombrar «bandeja» a «propuestas.»", "contexto": "«bandeja» es donde esperan los cambios que pide Claude o ChatGPT conectados, para que los aceptes. El nombre suena a correo.",
+  "opciones": [
+   {"id": "si", "texto": "Llamarla «propuestas.»", "esfuerzo": "pequeño", "detalle": "Textos del menú, guía y conector.", "reco": true},
+   {"id": "no", "texto": "Dejar «bandeja.»", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "bienvenida", "area": "producto", "titulo": "Bienvenida por objetivo", "contexto": "Hoy la bienvenida tiene seis pasos y pregunta apartados antes de enseñarlos. La propuesta: preguntar qué quieres conseguir y hacer una sola primera acción (tu primera tarea, tu próxima entrega, tu primer gasto...).",
+  "opciones": [
+   {"id": "si", "texto": "Cambiarla", "esfuerzo": "medio", "detalle": "Dos o tres días. Afecta a todas las cuentas nuevas."},
+   {"id": "despues", "texto": "Más adelante", "esfuerzo": "ninguno", "detalle": "", "reco": true}]},
+ {"id": "acceso", "area": "app", "titulo": "Etiquetas visibles y «mostrar contraseña» al entrar", "contexto": "En entrar y registrarse los campos solo tienen el texto gris de dentro, que desaparece al escribir. Se añadiría el nombre encima de cada campo y un botón para ver la contraseña.",
+  "opciones": [
+   {"id": "si", "texto": "Añadirlo", "esfuerzo": "pequeño", "detalle": "Unas horas. Cambia un poco cómo se ve la pantalla de entrar.", "reco": true},
+   {"id": "no", "texto": "Dejarlo", "esfuerzo": "ninguno", "detalle": ""}]},
+ {"id": "metricas", "area": "negocio", "titulo": "Métricas de uso en el pulso", "contexto": "Cuánta gente vuelve a los 7 y 30 días, cuántas pruebas acaban en pago y cuántas se cancelan. Sale de tablas que ya existen, sin datos personales y sin rastreo nuevo.",
+  "opciones": [
+   {"id": "si", "texto": "Montarlo", "esfuerzo": "medio", "detalle": "Consultas de solo lectura que ejecutas tú en Supabase y una pestaña nueva aquí. Un día.", "reco": true},
+   {"id": "no", "texto": "Todavía no", "esfuerzo": "ninguno", "detalle": ""}]}
+]
