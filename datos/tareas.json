@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-24T12:09:35+02:00",
+ "actualizado": "2026-10-26T17:51:54+01:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -278,6 +278,70 @@
    "area": "servidor",
    "titulo": "Dar de alta Resend para el correo de los domingos",
    "detalle": "Cuenta, dominio appbitacora.es en IONOS, secretos y despliegue",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "avisos-push",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Confirmar si llegan los avisos al iPhone",
+   "detalle": "La prueba de «tu semana» salió enviada. Si no llegó: revisar Ajustes del iPhone, Concentración y reactivar notificaciones en Bitácora",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "resumen-diario",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Decidir: resumen diario a las 9:00 siempre",
+   "detalle": "Hoy solo avisa si hay algo concreto (examen, cumple, documento...)",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "deploy-ics",
+   "prioridad": "media",
+   "area": "servidor",
+   "titulo": "Desplegar calendario-ics",
+   "detalle": "supabase functions deploy calendario-ics --no-verify-jwt; luego importar un .ics para probar",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "panorama-codex",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Relanzar el rediseño de Panorama con Codex",
+   "detalle": "Su cupo vuelve a las 19:35; incluye quitar el sol de la cabecera",
+   "quien": "Alejandro y Claude"
+  },
+  {
+   "id": "portada-home",
+   "prioridad": "media",
+   "area": "web",
+   "titulo": "Decidir la propuesta de portada y home",
+   "detalle": "Titular nuevo, sin cerebro, y cómo se eligen las tres prioridades (a mano, reglas o mezcla)",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "precios",
+   "prioridad": "media",
+   "area": "negocio",
+   "titulo": "Rellenar costes reales y decidir precio mensual",
+   "detalle": "Plan de Supabase y Resend en la hoja de DeepSeek; ¿subir a 2,49 o 2,99? ¿quitar «para siempre» del fundador?",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "deepseek-siguiente",
+   "prioridad": "media",
+   "area": "negocio",
+   "titulo": "Elegir qué hacer con el trabajo de DeepSeek",
+   "detalle": "Métricas con consultas de solo lectura, mapa real de proveedores para privacidad, textos de error en la app",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "legal-datos",
+   "prioridad": "baja",
+   "area": "legal",
+   "titulo": "Datos del responsable en el aviso legal",
+   "detalle": "Nombre, NIF y correo de privacidad cuando quieras publicarlos",
    "quien": "Alejandro"
   }
  ],
