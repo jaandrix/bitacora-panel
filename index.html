@@ -909,7 +909,7 @@ function analizarPregunta(clave, filas) {
   if (!vals.length) return { tipo: 'vacia', n: 0 };
   const nums = vals.map(v => numero(v));
   const distintos = new Set(vals);
-  if (vals.every(v => /^s*d+([.,]d+)?s*$/.test(v)) && distintos.size <= 11) {
+  if (vals.every(v => /^\s*\d+([.,]\d+)?\s*$/.test(v)) && distintos.size <= 11) {
     const media = nums.reduce((a, b) => a + b, 0) / nums.length;
     const cuenta = {}; nums.forEach(n => { cuenta[n] = (cuenta[n] || 0) + 1; });
     return { tipo: 'escala', n: vals.length, media, filas: Object.entries(cuenta).sort((a, b) => a[0] - b[0]).map(([k, v]) => ({ nombre: k, detalle: '', valor: v })) };
