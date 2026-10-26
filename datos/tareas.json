@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-26T18:05:35+01:00",
+ "actualizado": "2026-10-26T18:32:30+01:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -289,14 +289,6 @@
    "quien": "Alejandro"
   },
   {
-   "id": "resumen-diario",
-   "prioridad": "media",
-   "area": "app",
-   "titulo": "Decidir: resumen diario a las 9:00 siempre",
-   "detalle": "Hoy solo avisa si hay algo concreto (examen, cumple, documento...)",
-   "quien": "Alejandro"
-  },
-  {
    "id": "deploy-ics",
    "prioridad": "media",
    "area": "servidor",
@@ -313,35 +305,11 @@
    "quien": "Alejandro y Claude"
   },
   {
-   "id": "portada-home",
-   "prioridad": "media",
-   "area": "web",
-   "titulo": "Decidir la propuesta de portada y home",
-   "detalle": "Titular nuevo, sin cerebro, y cómo se eligen las tres prioridades (a mano, reglas o mezcla)",
-   "quien": "Alejandro"
-  },
-  {
-   "id": "precios",
-   "prioridad": "media",
-   "area": "negocio",
-   "titulo": "Rellenar costes reales y decidir precio mensual",
-   "detalle": "Plan de Supabase y Resend en la hoja de DeepSeek; ¿subir a 2,49 o 2,99? ¿quitar «para siempre» del fundador?",
-   "quien": "Alejandro"
-  },
-  {
    "id": "legal-datos",
    "prioridad": "baja",
    "area": "legal",
    "titulo": "Datos del responsable en el aviso legal",
    "detalle": "Nombre, NIF y correo de privacidad cuando quieras publicarlos",
-   "quien": "Alejandro"
-  },
-  {
-   "id": "decidir-dia",
-   "prioridad": "alta",
-   "area": "producto",
-   "titulo": "Decidir la pantalla de cada día",
-   "detalle": "Tres opciones en la auditoría (P1): Planificador como entrada (DeepSeek) o Home con tres prioridades (ChatGPT)",
    "quien": "Alejandro"
   },
   {
@@ -353,15 +321,35 @@
    "quien": "Alejandro"
   },
   {
-   "id": "fundador-condiciones",
-   "prioridad": "media",
-   "area": "negocio",
-   "titulo": "Revisar las condiciones del plan fundador",
-   "detalle": "Aviso si cierra el proyecto y caducidad de los códigos regalo (N3)",
+   "id": "decisiones",
+   "prioridad": "alta",
+   "area": "producto",
+   "titulo": "11 decisiones esperan en la pestaña «decisiones.»",
+   "detalle": "Cada opción dice cuánto trabajo supone",
    "quien": "Alejandro"
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-26T18:32:30+01:00",
+   "texto": "resuelto: Revisar las condiciones del plan fundador"
+  },
+  {
+   "hora": "2026-10-26T18:32:30+01:00",
+   "texto": "resuelto: Decidir la pantalla de cada día"
+  },
+  {
+   "hora": "2026-10-26T18:32:30+01:00",
+   "texto": "resuelto: Rellenar costes reales y decidir precio mensual"
+  },
+  {
+   "hora": "2026-10-26T18:32:30+01:00",
+   "texto": "resuelto: Decidir la propuesta de portada y home"
+  },
+  {
+   "hora": "2026-10-26T18:32:30+01:00",
+   "texto": "resuelto: Decidir: resumen diario a las 9:00 siempre"
+  },
   {
    "hora": "2026-10-26T18:05:35+01:00",
    "texto": "resuelto: Elegir qué hacer con el trabajo de DeepSeek"
@@ -661,26 +649,6 @@
   {
    "hora": "2026-10-23T16:36:41+02:00",
    "texto": "portadas por perfil publicadas: appbitacora.es/estudiantes, /profes, /finanzas y /trabajo"
-  },
-  {
-   "hora": "2026-10-23T16:36:41+02:00",
-   "texto": "empiezo: Primer día con ejemplo y botón «iniciar mi cuenta»"
-  },
-  {
-   "hora": "2026-10-23T16:36:41+02:00",
-   "texto": "hecho: Portadas por perfil para los vídeos"
-  },
-  {
-   "hora": "2026-10-23T16:35:06+02:00",
-   "texto": "arranque: al abrir la app ya no se vuelven a bajar los 46 archivos, y jsPDF y pdf.js se cargan solo cuando hacen falta"
-  },
-  {
-   "hora": "2026-10-23T16:35:06+02:00",
-   "texto": "empiezo: Portadas por perfil para los vídeos"
-  },
-  {
-   "hora": "2026-10-23T16:35:06+02:00",
-   "texto": "hecho: Que la app arranque más rápido"
   }
  ],
  "sugerencias": [
