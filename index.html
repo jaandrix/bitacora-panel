@@ -281,6 +281,37 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 .pasos-encuesta { margin: 0 0 18px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; line-height: 1.5; }
 .kpi .etq { font: 500 13px/1.2 var(--texto); }
 @media (max-width: 900px) { .kpi.c3 { grid-column: span 6; min-height: 0; padding: 18px; } .kpi .valor { font-size: 30px; } .rejilla { gap: 14px; } }
+.enc-lectura .tarjeta-cab { margin-bottom: 12px; }
+.enc-luz { font: 600 13px var(--titulo); padding: 6px 12px; border-radius: 10px; background: var(--superficie-2); }
+.enc-verde .enc-luz { background: var(--azul-palido); }
+.enc-rojo .enc-luz { background: var(--coral-palido); color: var(--coral); }
+.enc-texto { margin: 0 0 20px; font-size: 16px; max-width: 760px; }
+.enc-alta { display: flex; gap: 24px; align-items: center; padding-top: 18px; border-top: 1px solid var(--linea); }
+.enc-alta > div { display: flex; flex-direction: column; min-width: 150px; }
+.enc-alta .valor { font: 700 40px/1 var(--titulo); }
+.enc-alta small { color: var(--texto-2); margin-top: 6px; }
+.enc-alta p { margin: 0; color: var(--texto-2); max-width: 640px; }
+.enc-senales { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.enc-senal { display: flex; flex-direction: column; gap: 4px; }
+.enc-senal .etq { font-weight: 600; }
+.enc-senal .valor { font: 700 30px/1.1 var(--titulo); }
+.enc-senal.bajo .valor { color: var(--coral); }
+.enc-senal.falta { opacity: .5; }
+.enc-senal small { color: var(--texto-2); }
+.enc-senal > i { position: relative; display: block; height: 6px; margin-top: 8px; background: var(--superficie-2); border-radius: 3px; }
+.enc-senal > i > i { display: block; height: 100%; background: var(--azul); border-radius: 3px; }
+.enc-senal.bajo > i > i { background: var(--coral); }
+.enc-senal > i > em { position: absolute; top: -4px; width: 2px; height: 14px; background: var(--tinta); }
+.enc-fila { display: flex; align-items: baseline; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--linea); }
+.enc-fila:last-child { border-bottom: 0; }
+.enc-fila > span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.enc-fila small { color: var(--texto-2); font-size: 12px; }
+.enc-fila b { font: 600 15px var(--mono); min-width: 48px; text-align: right; }
+.enc-fila b.tenue { color: var(--texto-2); }
+.enc-fila.cab b, .enc-fila.cab span { font: 500 11px var(--texto); color: var(--texto-2); }
+.enc-tabla { overflow-x: auto; }
+.enc-tabla .enc-fila b { min-width: 58px; }
+@media (max-width: 760px) { .enc-senales { grid-template-columns: 1fr; } .enc-alta { flex-direction: column; align-items: flex-start; } }
 </style>
 </head>
 <body>
@@ -892,6 +923,136 @@ function analizarPregunta(clave, filas) {
   }
   return { tipo: 'texto', n: vals.length, ultimas: filas.filter(f => f[clave] && f[clave].trim()).slice(-12).reverse() };
 }
+// Lectura de la encuesta según la guía de interpretación (GUIA-INTERPRETACION-ENCUESTA-BITACORA.md): las preguntas se
+// reconocen por palabras de su enunciado, así que si se reescribe una y deja de encontrarse, la tarjeta lo dice.
+const ENC_PREGUNTAS = [
+  ['problema', /olvid|lleg\w* tarde/i],
+  ['utilidad', /[uú]til/i],
+  ['satisfaccion', /satisf|(punt[uú]a|valora).*sistema actual/i],
+  ['prueba', /probar|prueba|qu[eé] har[ií]as|primer[ao]s? (d[ií]as|semana)/i],
+  ['pagoPrevio', /(alguna vez|antes).*pag|has pagado/i],
+  ['gasto', /gast/i],
+  ['pago', /pag|precio|modelo|cobr/i],
+  ['confianza', /confi|privacidad|seguridad|necesitar[ií]as/i],
+  ['funciones', /valios|partes|funciones|qu[eé] (te )?(ser[ií]a|resultar[ií]a) m[aá]s/i],
+  ['perfil', /eres|situaci[oó]n|perfil|te dedicas|ocupaci/i],
+];
+const encTrozos = v => (v || '').split(/,\s+/).map(s => s.trim()).filter(Boolean);
+const encNum = v => { const m = String(v || '').match(/\d+/); return m ? Number(m[0]) : null; };
+function encColumnas(preguntas) {
+  const usadas = new Set(), col = {};
+  ENC_PREGUNTAS.forEach(([id, re]) => {
+    const p = preguntas.find(p => !usadas.has(p.k) && re.test(p.texto));
+    if (p) { usadas.add(p.k); col[id] = p; }
+  });
+  return col;
+}
+function interpretarEncuesta(filas, preguntas) {
+  const col = encColumnas(preguntas), n = filas.length;
+  const v = (f, id) => col[id] ? (f[col[id].k] || '').trim() : '';
+  const sin = id => !col[id];
+  // Cada respuesta, leída con las reglas de la guía.
+  const lect = filas.map(f => {
+    const prob = v(f, 'problema'), pn = encNum(prob);
+    const util = encNum(v(f, 'utilidad')), sat = encNum(v(f, 'satisfaccion'));
+    const prueba = v(f, 'prueba'), pago = v(f, 'pago'), gasto = v(f, 'gasto'), conf = v(f, 'confianza'), previo = v(f, 'pagoPrevio');
+    const r = {
+      problema: pn != null ? pn >= 2 : /dos|tres|cuatro|cinco|varias|m[aá]s de|muchas|casi todos/i.test(prob),
+      utilAlta: util != null && util >= 4, util,
+      insatisfecho: sat != null && sat <= 2, satisfecho: sat != null && sat >= 4,
+      pruebaReal: /datos reales|varios d[ií]as|sustitu|reemplaz|cambiar[ií]a/i.test(prueba),
+      curiosidad: /mirar|ver c[oó]mo|ejemplo|curiosidad/i.test(prueba) && !/datos reales|varios d[ií]as|sustitu/i.test(prueba),
+      sustituye: /sustitu|reemplaz/i.test(prueba),
+      aceptaPago: /[uú]nico|cuota|suscrip|depende|tiempo/i.test(pago) && !/^\s*(gratis|gratuit)/i.test(pago),
+      soloGratis: /gratu|gratis/i.test(pago) && !/[uú]nico|cuota|depende|tiempo/i.test(pago),
+      gastaAlgo: gasto ? !/^\s*(0|0\s*€|nada|ninguno|no gasto|no,|no$)/i.test(gasto) : false,
+      pagoAntes: previo ? /^s[ií]|alguna|varias|pago/i.test(previo) && !/^no/i.test(previo) : false,
+      nunca: /nunca/i.test(conf),
+      confianza: encTrozos(conf), funciones: encTrozos(v(f, 'funciones')), perfil: v(f, 'perfil'),
+    };
+    r.alta = r.utilAlta && r.pruebaReal && r.aceptaPago && !r.nunca;
+    r.muyAlta = r.alta && r.util === 5 && r.sustituye && r.gastaAlgo;
+    return r;
+  });
+  const cuenta = fn => lect.filter(fn).length, frac = fn => n ? cuenta(fn) / n : 0;
+  const ind = [
+    ['problema', 'problema frecuente.', 'olvidó algo o llegó tarde 2 o más veces en una semana', frac(r => r.problema), .4],
+    ['satisfaccion', 'insatisfacción actual.', 'puntúa su sistema de ahora con 1 o 2', frac(r => r.insatisfecho), .3],
+    ['utilidad', 'utilidad percibida.', 'puntúa la idea con 4 o 5', frac(r => r.utilAlta), .55],
+    ['prueba', 'intención de prueba real.', 'pondría datos reales, la usaría varios días o sustituiría otra herramienta', frac(r => r.pruebaReal), .35],
+    ['pago', 'acepta un modelo de pago.', 'pago único, cuota pequeña o «depende del tiempo que me ahorre»', frac(r => r.aceptaPago), .25],
+    ['gasto', 'ya gasta en herramientas.', 'gasta algo hoy en este tipo de apps', frac(r => r.gastaAlgo), .2],
+  ];
+  const alta = frac(r => r.alta), muyAlta = cuenta(r => r.muyAlta);
+  const lecturaAlta = alta < .1 ? 'Interés débil o una propuesta demasiado amplia.' : alta < .2 ? 'Hay oportunidad, pero falta enfocar el público o la promesa.' : alta < .3 ? 'Señal comercial prometedora: merece una prueba real.' : 'Señal fuerte, siempre que la muestra no sean sobre todo amigos o seguidores cercanos.';
+  const val = id => ind.find(i => i[0] === id)[3];
+  const semaforo = alta >= .2 && val('utilidad') > .55 && val('prueba') > .35 && val('pago') >= .25 ? 'verde'
+    : val('utilidad') < .35 && val('prueba') < .2 && val('pago') < .1 ? 'rojo' : 'amarillo';
+  const textoSemaforo = {
+    verde: 'Las señales se combinan bien. Toca dejar de preguntar opiniones y preparar una prueba real midiendo el uso.',
+    amarillo: 'Hay interés, pero la prueba real, el pago o el gasto actual se quedan por debajo. Puede que la propuesta sea demasiado amplia o poco urgente: separa por perfiles antes de cambiar nada.',
+    rojo: 'Este público o esta forma de explicarla no validan la propuesta actual. No quiere decir que Bitácora no tenga futuro: revisa a quién le llegó la encuesta y cómo se presentó.',
+  }[semaforo];
+  const muestra = n < 10 ? 'Con menos de 10 respuestas, úsalas solo para ver si alguna pregunta se entiende mal.' : n < 30 ? `Llevas ${n}. Hasta 30 no hay lectura útil: tómalo como una primera impresión.` : n < 50 ? `Con ${n} ya hay una primera lectura útil. Las decisiones, a partir de 50.` : `Con ${n} ya se ven tendencias. Repite los cruces cada 25 respuestas nuevas.`;
+
+  // Patrones.
+  const patrones = [
+    ['problema y demanda fuertes.', 'El grupo prioritario para una prueba de uso.', r => r.problema && r.insatisfecho && r.utilAlta && r.pruebaReal],
+    ['buen producto, cobro dudoso.', 'Le encaja y cambiaría de herramienta, pero solo quiere gratis y no gasta nada hoy.', r => r.utilAlta && r.sustituye && r.soloGratis && !r.gastaAlgo],
+    ['curiosidad sin compromiso.', 'Le gusta, pero solo miraría o usaría datos de ejemplo. No cuenta como intención.', r => r.utilAlta && r.curiosidad],
+    ['puede pagar, pero no tiene prisa.', 'Paga ya y acepta pagar, pero está contento con lo suyo y apenas falla.', r => (r.pagoAntes || r.gastaAlgo) && r.aceptaPago && r.satisfecho && !r.problema],
+    ['frenado por la confianza.', 'Le parece útil, pero pesa más la privacidad o no se fía de dar sus datos.', r => r.utilAlta && (r.nunca || r.confianza.some(c => /privac|export|estab|segur|datos/i.test(c)))],
+  ].map(([t, d, fn]) => ({ t, d, c: cuenta(fn) }));
+
+  // Funciones: votos de todos frente a votos de quien tiene alta intención.
+  const nAlta = cuenta(r => r.alta);
+  const fun = {}; lect.forEach(r => r.funciones.forEach(x => { fun[x] = fun[x] || { todos: 0, alta: 0 }; fun[x].todos++; if (r.alta) fun[x].alta++; }));
+  const funOrden = Object.entries(fun).sort((a, b) => b[1].todos - a[1].todos).slice(0, 8);
+  const top3 = new Set(funOrden.slice(0, 3).map(x => x[0]));
+  const funHtml = funOrden.map(([k, x]) => {
+    const pT = x.todos / n, pA = nAlta ? x.alta / nAlta : null;
+    const nota = top3.has(k) && pA != null && pA >= pT ? 'candidata al núcleo.' : pA != null && pA < pT * .6 ? 'buena para contarla, no para priorizarla.' : '';
+    return `<div class="enc-fila"><span>${esc(k)}${nota ? `<small>${nota}</small>` : ''}</span><b>${pct(pT, 0)}</b><b class="tenue">${pA == null ? '–' : pct(pA, 0)}</b></div>`;
+  }).join('');
+
+  // Obstáculos.
+  const obs = {}; lect.forEach(r => r.confianza.forEach(x => { obs[x] = (obs[x] || 0) + 1; }));
+  const obsHtml = Object.entries(obs).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, c]) => {
+    const p = c / n, t = /nunca/i.test(k) ? (p > .2 ? 'demasiado alto: revisa a quién llegó y cómo se explicó.' : 'aparte: no confiaría nunca.') : p < .15 ? 'secundaria.' : p < .3 ? 'resuélvela y explícala claro.' : p < .5 ? 'condición importante para que la usen.' : 'requisito central del producto y del mensaje.';
+    return `<div class="enc-fila"><span>${esc(k)}<small>${t}</small></span><b>${pct(p, 0)}</b></div>`;
+  }).join('');
+
+  // Perfiles.
+  const perfiles = {}; lect.forEach(r => r.perfil && (perfiles[r.perfil] = perfiles[r.perfil] || []).push(r));
+  const pf = Object.entries(perfiles).sort((a, b) => b[1].length - a[1].length);
+  const pfHtml = pf.length > 1 ? `<div class="enc-tabla"><div class="enc-fila cab"><span>perfil.</span><b>n</b><b>problema</b><b>útil 4-5</b><b>prueba</b><b>pago</b><b>alta</b></div>${pf.map(([k, rs]) => {
+    const f = fn => pct(rs.filter(fn).length / rs.length, 0);
+    return `<div class="enc-fila"><span>${esc(k)}${rs.length < 20 ? '<small>menos de 20: orientativo.</small>' : ''}</span><b>${rs.length}</b><b>${f(r => r.problema)}</b><b>${f(r => r.utilAlta)}</b><b>${f(r => r.pruebaReal)}</b><b>${f(r => r.aceptaPago)}</b><b>${f(r => r.alta)}</b></div>`;
+  }).join('')}</div><p class="sub" style="margin:12px 0 0">El mejor público para empezar no es el más grande: es el que junta problema frecuente, utilidad alta, ganas de probar y disposición a pagar.</p>` : '';
+
+  const faltan = ENC_PREGUNTAS.map(([id]) => id).filter(sin);
+  const nombres = { problema: 'olvidos o retrasos', utilidad: 'utilidad', satisfaccion: 'satisfacción con su sistema', prueba: 'qué haría al probarla', pagoPrevio: 'si ha pagado antes', gasto: 'gasto actual', pago: 'modelo de pago', confianza: 'confianza', funciones: 'partes más valiosas', perfil: 'perfil' };
+
+  return `<div class="tarjeta c12 enc-lectura enc-${semaforo}"><div class="tarjeta-cab"><div><h2>qué está pasando.</h2><p class="sub">${muestra}</p></div><span class="enc-luz">${semaforo}.</span></div>
+      <p class="enc-texto">${textoSemaforo}</p>
+      <div class="enc-alta"><div><span class="valor">${pct(alta, 0)}</span><small>alta intención (${cuenta(r => r.alta)} de ${n})</small></div><p>${lecturaAlta} Útil 4-5, probaría en serio, acepta algún pago y no descarta confiar sus datos.${muyAlta ? ` <b>${muyAlta}</b> con intención muy alta: útil 5, cambiaría de herramienta y ya gasta en apps.` : ''}</p></div>
+    </div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>las seis señales.</h2><p class="sub">Cada una frente a su umbral orientativo. Importa más cómo se combinan que cada una por separado.</p></div></div>
+      <div class="enc-senales">${ind.map(([id, t, d, x, u]) => `<div class="enc-senal ${sin(id) ? 'falta' : x >= u ? 'ok' : 'bajo'}"><span class="etq">${t}</span><span class="valor">${sin(id) ? '–' : pct(x, 0)}</span><small>${d}. Buena señal desde el ${nf(u * 100)} %.</small><i aria-hidden="true"><i style="width:${Math.min(100, x * 100)}%"></i><em style="left:${u * 100}%"></em></i></div>`).join('')}</div>
+    </div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>quién es quién.</h2><p class="sub">Patrones de la guía y cuánta gente encaja en cada uno.</p></div></div>
+      ${patrones.map(p => `<div class="enc-fila"><span>${p.t}<small>${p.d}</small></span><b>${p.c}</b></div>`).join('')}
+    </div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>qué construir primero.</h2><p class="sub">Porcentaje de todos frente al de quien tiene alta intención.</p></div></div>
+      ${funHtml ? `<div class="enc-fila cab"><span></span><b>todos</b><b class="tenue">alta</b></div>${funHtml}` : sinDatos(sin('funciones') ? 'No encuentro la pregunta de las partes más valiosas.' : 'Sin respuestas todavía.')}
+    </div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>lo que frena.</h2><p class="sub">Requisitos de confianza más elegidos.</p></div></div>
+      ${obsHtml || sinDatos(sin('confianza') ? 'No encuentro la pregunta de confianza.' : 'Sin respuestas todavía.')}
+    </div>
+    ${pfHtml ? `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>por perfiles.</h2><p class="sub">Para compararlos hacen falta unas 20 respuestas de cada uno.</p></div></div>${pfHtml}</div>` : ''}
+    ${faltan.length ? `<div class="tarjeta c12" style="padding:16px 24px"><p class="sub" style="margin:0">No he reconocido estas preguntas, así que lo que dependa de ellas sale vacío: ${faltan.map(id => nombres[id]).join(', ')}.</p></div>` : ''}
+    <div class="tarjeta c12" style="padding:16px 24px"><p class="sub" style="margin:0">Recuerda: que a alguien le guste no demuestra que vaya a pagar. Separa las respuestas de conocidos de las de desconocidos y apunta de qué canal vino cada tanda. Debajo, cada pregunta con sus respuestas.</p></div>`;
+}
 function claveFecha() { return encuesta.claves.find(k => /^(marca_temporal|timestamp|fecha)/.test(k)); }
 function pintarEncuesta() {
   const el = document.getElementById('vista-encuesta');
@@ -920,6 +1081,7 @@ function pintarEncuesta() {
     ${dias.length > 1 ? `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>respuestas por día.</h2></div></div>
       <div class="dias-uso" role="img" aria-label="Respuestas por día">${dias.map(k => `<i class="${porDia[k] ? '' : 'vacio'}" style="height:${porDia[k] ? Math.max(4, porDia[k] / maxDia * 100) : 2}%" title="${fechaCorta(new Date(k + 'T12:00'))}: ${porDia[k]}"></i>`).join('')}</div>
       <div class="dias-eje"><span>${fechaCorta(new Date(dias[0] + 'T12:00'))}</span><span>${fechaCorta(new Date(dias[dias.length - 1] + 'T12:00'))}</span></div></div>` : ''}
+    ${interpretarEncuesta(filas, preguntas)}
     ${preguntas.map(p => { const a = analizarPregunta(p.k, filas);
       const cuerpo = a.tipo === 'escala' ? `<p class="sub" style="margin:0 0 14px">media <b style="font-size:22px;color:var(--tinta)">${nf(a.media, 1)}</b></p>${filasBarras(a.filas, v => nf(v), true)}`
         : a.tipo === 'opciones' ? filasBarras(a.filas, v => nf(v), true)
