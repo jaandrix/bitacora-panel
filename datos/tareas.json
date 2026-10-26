@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-26T18:35:29+01:00",
+ "actualizado": "2026-10-26T19:41:04+01:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -313,15 +313,27 @@
    "quien": "Alejandro"
   },
   {
-   "id": "decisiones",
+   "id": "sql-metricas",
    "prioridad": "alta",
-   "area": "producto",
-   "titulo": "11 decisiones esperan en la pestaña «decisiones.»",
-   "detalle": "Cada opción dice cuánto trabajo supone",
+   "area": "servidor",
+   "titulo": "Ejecutar panel_metricas.sql en Supabase",
+   "detalle": "Para ver «uso real de la app.» en el resumen del pulso",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "deploy-avisos",
+   "prioridad": "alta",
+   "area": "servidor",
+   "titulo": "Desplegar avisos-diarios",
+   "detalle": "supabase functions deploy avisos-diarios --no-verify-jwt (resumen de las 9:00 todos los días)",
    "quien": "Alejandro"
   }
  ],
  "registro": [
+  {
+   "hora": "2026-10-26T19:41:04+01:00",
+   "texto": "resuelto: 11 decisiones esperan en la pestaña «decisiones.»"
+  },
   {
    "hora": "2026-10-26T18:35:29+01:00",
    "texto": "resuelto: Confirmar si llegan los avisos al iPhone"
@@ -637,10 +649,6 @@
   {
    "hora": "2026-10-23T16:37:15+02:00",
    "texto": "sugerencia cerrada: Que la app arranque más rápido"
-  },
-  {
-   "hora": "2026-10-23T16:37:15+02:00",
-   "texto": "sugerencia cerrada: Saber qué apartados se usan"
   }
  ],
  "sugerencias": [
