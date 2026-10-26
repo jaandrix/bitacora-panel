@@ -312,6 +312,37 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 .enc-tabla { overflow-x: auto; }
 .enc-tabla .enc-fila b { min-width: 58px; }
 @media (max-width: 760px) { .enc-senales { grid-template-columns: 1fr; } .enc-alta { flex-direction: column; align-items: flex-start; } }
+.aud-filtros { display: flex; flex-wrap: wrap; gap: 8px; }
+.aud-filtros .control { height: 38px; padding: 0 14px; border: 1px solid var(--linea); border-radius: 10px; background: transparent; color: var(--tinta); font: 500 13px var(--texto); cursor: pointer; }
+.aud-filtros .control.activo { background: var(--tinta); border-color: var(--tinta); color: var(--superficie); }
+.aud-lista { list-style: none; margin: 0; padding: 0; }
+.aud-h { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 0 12px; padding: 12px 0; border-bottom: 1px solid var(--linea); }
+.aud-h:last-child { border-bottom: 0; }
+.aud-h.resuelto { opacity: .5; }
+.aud-check { display: flex; align-items: flex-start; gap: 8px; padding-top: 2px; cursor: pointer; }
+.aud-check input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--tinta); cursor: pointer; }
+.aud-id { font: 600 13px var(--mono); }
+.aud-cuerpo { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.aud-titulo { font-size: 15px; font-weight: 500; line-height: 1.4; }
+.aud-cuerpo:hover .aud-titulo { text-decoration: underline; text-underline-offset: 3px; }
+.aud-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--texto-2); }
+.aud-g.alta, .aud-est.vigente { color: var(--coral); font-weight: 600; }
+.aud-reco.si { color: var(--azul); font-weight: 600; }
+.aud-reco.decide { color: var(--tinta); font-weight: 600; }
+.aud-env { color: var(--azul); font-weight: 600; }
+.aud-detalle { grid-column: 2; margin-top: 10px; padding: 14px 16px; border-radius: 12px; background: var(--superficie-2); }
+.aud-detalle p { margin: 0 0 8px; }
+.aud-detalle p:last-child { margin: 0; }
+.aud-nota { padding-top: 8px; border-top: 1px solid var(--linea); }
+.aud-pendiente { margin: 0; padding-left: 18px; color: var(--texto-2); }
+.aud-pendiente li { margin: 4px 0; }
+.aud-barra { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 140%); display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 20px; border: 1px solid var(--tinta); border-radius: 16px; background: var(--superficie); box-shadow: 0 8px 24px rgba(0, 0, 0, .12); transition: transform .22s cubic-bezier(.2, .8, .2, 1); z-index: 20; }
+.aud-barra.visible { transform: translate(-50%, 0); }
+.aud-barra span { font-weight: 600; margin-right: 6px; }
+.boton.oscuro { background: var(--tinta); color: var(--superficie); }
+[data-aud-tanda] { white-space: nowrap; flex-shrink: 0; }
+@media (max-width: 600px) { .aud-barra { left: 12px; right: 12px; transform: translateY(140%); flex-wrap: wrap; } .aud-barra.visible { transform: none; } .aud-h { grid-template-columns: 1fr; } .aud-detalle { grid-column: 1; } }
+@media (prefers-reduced-motion: reduce) { .aud-barra { transition: none; } }
 </style>
 </head>
 <body>
@@ -341,6 +372,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
     <section id="vista-resumen" class="vista"></section>
     <section id="vista-tareas" class="vista oculto"></section>
     <section id="vista-encuesta" class="vista oculto"></section>
+    <section id="vista-auditoria" class="vista oculto"></section>
     <section id="vista-uso" class="vista oculto"></section>
     <section id="vista-redes" class="vista oculto"></section>
     <section id="vista-videos" class="vista oculto"></section>
@@ -370,7 +402,7 @@ const ICONOS = {
   fallo: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6l46 84H4zm-6 32v26h12V38zm0 32v12h12V70z"/></svg>',
   flecha: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 14l12-12 48 48-48 48-12-12 36-36z"/></svg>',
 };
-const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
+const VISTAS = [['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['auditoria', 'auditoría.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
@@ -603,6 +635,7 @@ function pintar() {
   document.getElementById('red').classList.toggle('oculto', estado.vista === 'uso');
   if (estado.vista === 'uso') document.getElementById('subtitulo').textContent = `Qué apartados se abren, de forma anónima, ${etqRango}`;
   if (estado.vista === 'tareas') { document.getElementById('subtitulo').textContent = 'Lo que Claude está haciendo para Bitácora, lo pendiente y tus recordatorios'; return pintarTareas(); }
+  if (estado.vista === 'auditoria') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'La auditoría de ChatGPT, revisada contra el código: marca lo que quieres que haga.'; return aud.datos ? pintarAuditoria() : cargarAuditoria(); }
   if (estado.vista === 'encuesta') { document.querySelector('.filtros').classList.add('oculto'); document.getElementById('subtitulo').textContent = 'Las respuestas de tu formulario, al momento.'; return pintarEncuesta(); }
   ({ resumen: pintarResumen, encuesta: pintarEncuesta, uso: pintarUso, redes: pintarRedes, videos: pintarVideos, campanas: pintarCampanas, biblioteca: pintarBiblioteca, ajustes: pintarAjustes })[estado.vista](r);
 }
@@ -1094,6 +1127,153 @@ function pintarEncuesta() {
 document.addEventListener('click', ev => {
   if (ev.target.id === 'encuesta-guardar') { const v = document.getElementById('encuesta-url').value.trim(); guardado('encuesta', v); encuesta.filas = null; encuesta.error = null; pintarEncuesta(); }
   else if (ev.target.id === 'encuesta-cambiar') { guardado('encuesta', ''); encuesta.filas = null; pintarEncuesta(); }
+});
+
+// ------------------------------------------------------------ auditoría
+// La auditoría externa (ChatGPT, 24-10) describe fallos de seguridad aún abiertos y este repositorio es público: va
+// cifrada en datos/auditoria.enc (AES-GCM, clave por PBKDF2) y se descifra aquí con la clave de la auditoría, que se
+// recuerda en este navegador. Lo marcado se envía con panel_votar (la clave del panel, como las sugerencias) con id
+// «aud-<ID>»: Claude lo lee en panel_votos_lista.
+const aud = { datos: null, error: null, marcados: new Set(JSON.parse(guardado('aud-marcados') || '[]')), filtro: guardado('aud-filtro') || 'todo', abiertos: new Set() };
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function abrirAuditoria(clave) {
+  const r = await fetch('datos/auditoria.enc?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('No encuentro datos/auditoria.enc.');
+  const e = await r.json();
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(clave), 'PBKDF2', false, ['deriveKey']);
+  const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(e.sal), iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, k, b64(e.datos)))); }
+  catch (x) { throw new Error('Esa clave no abre la auditoría.'); }
+}
+async function cargarAuditoria() {
+  const clave = guardado('clave-auditoria');
+  if (!clave) return pintarAuditoria();
+  try { aud.datos = await abrirAuditoria(clave); aud.error = null; await cargarVotos(); }
+  catch (e) { aud.error = e.message; if (/clave/.test(e.message)) guardado('clave-auditoria', ''); }
+  pintarAuditoria();
+}
+const AUD_ESTADO = { vigente: 'vigente', parcial: 'a medias', resuelto: 'resuelto', 'sin comprobar': 'sin comprobar' };
+const AUD_RECO = { 'sí': 'te recomiendo hacerlo.', luego: 'bueno, pero después.', decide: 'decisión tuya.', no: 'no hace falta.' };
+const AUD_FILTROS = [['todo', 'todo.'], ['reco', 'lo que recomiendo.'], ['alta', 'gravedad alta.'], ['decide', 'decisiones tuyas.'], ['marcados', 'marcados.'], ['enviados', 'enviados.']];
+function audEnviado(id) { return votos.lista['aud-' + id]; }
+function audPasa(h) {
+  const f = aud.filtro;
+  if (f === 'reco') return h.reco === 'sí' && h.estado !== 'resuelto';
+  if (f === 'alta') return h.gravedad === 'alta' && h.estado !== 'resuelto';
+  if (f === 'decide') return h.reco === 'decide';
+  if (f === 'marcados') return aud.marcados.has(h.id);
+  if (f === 'enviados') return !!audEnviado(h.id);
+  return true;
+}
+function pintarAuditoria() {
+  const el = document.getElementById('vista-auditoria');
+  if (!aud.datos) {
+    el.innerHTML = `<div class="rejilla"><div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>abre la auditoría.</h2><p class="sub">Va cifrada porque este panel es público y la auditoría describe fallos que aún no están arreglados. La clave está en tu ordenador, en Documentos\\Bitacora-ChatGPT\\auditoria\\clave.txt. Se recuerda en este navegador.</p></div></div>
+      ${aud.error ? `<p class="nota-tareas" style="color:var(--coral)">${esc(aud.error)}</p>` : ''}
+      <div class="clave-fila"><input id="aud-clave" type="password" autocomplete="off" placeholder="clave de la auditoría"><button class="boton" type="button" id="aud-abrir">abrir.</button></div></div></div>`;
+    return;
+  }
+  const d = aud.datos, hs = d.hallazgos;
+  const vivos = hs.filter(h => h.estado !== 'resuelto');
+  const cuenta = fn => hs.filter(fn).length;
+  const criticos = vivos.filter(h => h.tanda === 1);
+  const enviados = hs.filter(h => audEnviado(h.id)).length;
+  const fila = h => {
+    const env = audEnviado(h.id), abierto = aud.abiertos.has(h.id), marc = aud.marcados.has(h.id);
+    return `<li class="aud-h ${h.estado === 'resuelto' ? 'resuelto' : ''} ${env ? 'enviado' : ''}">
+      <label class="aud-check" title="${env ? 'ya enviado' : 'marcar para hacerlo'}"><input type="checkbox" data-aud-marca="${esc(h.id)}" ${marc || env ? 'checked' : ''} ${env || h.estado === 'resuelto' ? 'disabled' : ''}><span class="aud-id">${esc(h.id)}</span></label>
+      <button type="button" class="aud-cuerpo" data-aud-abrir="${esc(h.id)}" aria-expanded="${abierto}">
+        <span class="aud-titulo">${esc(h.propuesta)}</span>
+        <span class="aud-meta"><span class="aud-g ${h.gravedad}">${h.gravedad}</span><span>esfuerzo ${h.esfuerzo}</span><span>${esc(h.area)}</span><span class="aud-est ${h.estado.replace(' ', '-')}">${AUD_ESTADO[h.estado]}</span><span class="aud-reco ${h.reco === 'sí' ? 'si' : h.reco}">${AUD_RECO[h.reco]}</span>${env ? `<span class="aud-env">enviado ${hace(env.cuando)}</span>` : ''}</span>
+      </button>
+      ${abierto ? `<div class="aud-detalle">
+        <p><b>Qué pasa.</b> ${esc(h.que)}</p>
+        <p><b>Por qué importa.</b> ${esc(h.porque)}</p>
+        ${h.evidencia ? `<p><b>Hoy en el código.</b> ${esc(h.evidencia)}</p>` : ''}
+        ${h.nota ? `<p class="aud-nota"><b>Lo que opino.</b> ${esc(h.nota)}</p>` : ''}
+        ${env?.nota ? `<p><b>Tu nota al enviarlo.</b> ${esc(env.nota)}</p>` : ''}
+      </div>` : ''}
+    </li>`;
+  };
+  const tandas = d.tandas.map(t => {
+    const items = hs.filter(h => h.tanda === t.n && audPasa(h));
+    if (!items.length) return '';
+    const pend = items.filter(h => h.estado !== 'resuelto').length;
+    return `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>${t.n}. ${esc(t.titulo)}</h2><p class="sub">${esc(t.objetivo)} ${pend} por hacer.</p></div><button class="boton" type="button" data-aud-tanda="${t.n}">marcar lo recomendado.</button></div>
+      <ul class="aud-lista">${items.map(fila).join('')}</ul></div>`;
+  }).join('');
+  el.innerHTML = `<div class="rejilla">
+    <div class="tarjeta c12 aud-resumen"><div class="tarjeta-cab"><div><h2>en una frase.</h2><p class="sub">Auditoría del ${new Date(d.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}, revisada contra el código el ${new Date(d.revisada + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}.</p></div></div>
+      <p class="enc-texto">${esc(d.resumen)}</p>
+      <p class="sub" style="margin:0">Cómo usarla: abre un punto para ver qué pasa y lo que opino, marca la casilla de lo que quieras que haga y pulsa «enviar los marcados.». Las tandas van en orden: primero la 1. Lo que es decisión tuya no lo haré sin que lo marques.</p></div>
+    ${kpi('apartado', 'hallazgos.', `<div class="fila"><span class="valor">${nf(hs.length)}</span><span class="extra">${nf(vivos.length)} siguen abiertos</span></div>`, null, 'oscura')}
+    ${kpi('flecha', 'urgentes.', `<div class="fila"><span class="valor">${nf(criticos.length)}</span><span class="extra">seguridad crítica</span></div>`)}
+    ${kpi('personas', 'decisiones tuyas.', `<div class="fila"><span class="valor">${nf(cuenta(h => h.reco === 'decide'))}</span></div>`)}
+    ${kpi('web', 'enviados.', `<div class="fila"><span class="valor">${nf(enviados)}</span></div>`)}
+    <div class="tarjeta c12" style="padding:16px 24px"><div class="aud-filtros" role="tablist">${AUD_FILTROS.map(([k, t]) => `<button type="button" class="control ${aud.filtro === k ? 'activo' : ''}" role="tab" aria-selected="${aud.filtro === k}" data-aud-filtro="${k}">${t}</button>`).join('')}</div></div>
+    ${tandas || `<div class="tarjeta c12">${sinDatos('Nada con este filtro.')}</div>`}
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>lo que la auditoría no pudo comprobar.</h2><p class="sub">Hace falta producción, datos reales o un profesional.</p></div></div><ul class="aud-pendiente">${d.pendiente.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
+    <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><b style="font-weight:500;color:var(--texto-2)">La clave se recuerda en este navegador.</b><button class="boton" type="button" id="aud-cerrar">cerrar la auditoría.</button></div></div>
+  </div>
+  <div class="aud-barra ${aud.marcados.size ? 'visible' : ''}"><span>${aud.marcados.size} marcado${aud.marcados.size === 1 ? '' : 's'}.</span><button type="button" class="boton" id="aud-limpiar">desmarcar.</button><button type="button" class="boton oscuro" id="aud-enviar">enviar los marcados a producción.</button></div>`;
+}
+function audGuardarMarcas() { guardado('aud-marcados', JSON.stringify([...aud.marcados])); }
+function audEnviar() {
+  let dlg = document.getElementById('aud-dialogo');
+  if (!dlg) { dlg = document.createElement('dialog'); dlg.id = 'aud-dialogo'; dlg.className = 'eleccion'; document.body.appendChild(dlg); dlg.addEventListener('click', ev => { if (ev.target === dlg) dlg.close(); }); }
+  const ids = [...aud.marcados];
+  const clave = guardado('clave');
+  dlg.innerHTML = `<h3>enviar ${ids.length} a producción.</h3>
+    <p>${ids.map(esc).join(', ')}. Claude los verá la próxima vez que se lo pidas y los hará por tandas, de la más urgente a la menos.</p>
+    <label class="etq" for="aud-nota" style="display:block;margin-top:14px">nota para Claude (opcional)</label>
+    <textarea id="aud-nota" placeholder="Prioridad, matices, lo que no quieres…"></textarea>
+    ${clave ? '' : `<label class="etq" for="aud-clave-panel" style="display:block;margin-top:12px">tu clave del panel (la de las sugerencias)</label><div class="clave-fila"><input id="aud-clave-panel" type="password" autocomplete="current-password"></div>`}
+    <div class="botones-eleccion"><button type="button" class="boton-voto" id="aud-cancelar">cancelar</button><button type="button" class="boton-voto si" id="aud-confirmar">${ICONO_SI}enviar</button></div>
+    <div class="pie-eleccion"><span id="aud-estado"></span></div>`;
+  dlg.showModal();
+}
+async function audConfirmar() {
+  const clave = guardado('clave') || document.getElementById('aud-clave-panel')?.value || '';
+  const estadoEl = document.getElementById('aud-estado');
+  if (!clave) { estadoEl.textContent = 'escribe tu clave del panel'; return; }
+  const nota = document.getElementById('aud-nota').value.trim() || null;
+  estadoEl.textContent = 'enviando…';
+  try {
+    for (const id of aud.marcados) {
+      const ok = await rpc('panel_votar', { p_clave: clave, p_id: 'aud-' + id, p_voto: 'si', p_nota: nota });
+      if (!ok) { guardado('clave', ''); estadoEl.textContent = 'clave del panel incorrecta'; return; }
+    }
+    guardado('clave', clave);
+    aud.marcados.clear(); audGuardarMarcas();
+    await cargarVotos();
+    document.getElementById('aud-dialogo').close();
+    pintarAuditoria();
+  } catch (e) { estadoEl.textContent = e.message.includes('intentos') ? e.message : 'no se pudo enviar: ' + e.message; }
+}
+document.addEventListener('click', async ev => {
+  const t = ev.target;
+  if (t.id === 'aud-abrir') {
+    const v = document.getElementById('aud-clave').value.trim(); if (!v) return;
+    t.textContent = 'abriendo…';
+    try { aud.datos = await abrirAuditoria(v); guardado('clave-auditoria', v); aud.error = null; await cargarVotos(); } catch (e) { aud.error = e.message; }
+    return pintarAuditoria();
+  }
+  if (t.id === 'aud-cerrar') { guardado('clave-auditoria', ''); aud.datos = null; return pintarAuditoria(); }
+  if (t.id === 'aud-enviar') return audEnviar();
+  if (t.id === 'aud-confirmar') return audConfirmar();
+  if (t.id === 'aud-cancelar') return document.getElementById('aud-dialogo').close();
+  if (t.id === 'aud-limpiar') { aud.marcados.clear(); audGuardarMarcas(); return pintarAuditoria(); }
+  const f = t.closest('[data-aud-filtro]'); if (f) { aud.filtro = f.dataset.audFiltro; guardado('aud-filtro', aud.filtro); return pintarAuditoria(); }
+  const a = t.closest('[data-aud-abrir]'); if (a) { const id = a.dataset.audAbrir; aud.abiertos.has(id) ? aud.abiertos.delete(id) : aud.abiertos.add(id); return pintarAuditoria(); }
+  const tn = t.closest('[data-aud-tanda]'); if (tn) { aud.datos.hallazgos.filter(h => h.tanda === Number(tn.dataset.audTanda) && h.reco === 'sí' && h.estado !== 'resuelto' && !audEnviado(h.id)).forEach(h => aud.marcados.add(h.id)); audGuardarMarcas(); return pintarAuditoria(); }
+});
+document.addEventListener('change', ev => {
+  const c = ev.target.closest('[data-aud-marca]'); if (!c) return;
+  c.checked ? aud.marcados.add(c.dataset.audMarca) : aud.marcados.delete(c.dataset.audMarca);
+  audGuardarMarcas();
+  const barra = document.querySelector('.aud-barra');
+  barra.classList.toggle('visible', aud.marcados.size > 0);
+  barra.firstElementChild.textContent = `${aud.marcados.size} marcado${aud.marcados.size === 1 ? '' : 's'}.`;
 });
 
 // ------------------------------------------------------------ uso de la app
