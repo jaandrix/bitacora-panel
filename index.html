@@ -19,7 +19,9 @@
   --texto: "Poppins", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; background: var(--fondo); color: var(--tinta); font: 400 14px/1.45 var(--texto); }
+html, body { margin: 0; background: var(--fondo); color: var(--tinta); font: 400 13px/1.45 var(--texto); }
+/* Todo el panel un poco más pequeño, para que quepa más información. */
+body { zoom: .92; }
 button, select, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
 .app { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: 1440px; margin: 0 auto; min-height: 100vh; gap: 24px; padding: 24px 32px; }
@@ -362,6 +364,26 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 .dec-aviso { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--superficie-2); }
 .dec-aviso.e3 { background: var(--coral-palido); }
 .dec-aviso.e3 b { color: var(--coral); }
+.aud-panel-filtros { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.aud-fila-filtro { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.aud-etq-filtro { width: 44px; font: 600 12px var(--texto); color: var(--texto-2); }
+.aud-seg { display: flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 12px; background: var(--superficie-2); }
+.aud-seg button { display: inline-flex; align-items: baseline; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; color: var(--tinta); font: 500 13px var(--texto); cursor: pointer; }
+.aud-seg button small { font: 500 11px var(--mono); color: var(--texto-2); }
+.aud-seg button:hover { background: var(--superficie); }
+.aud-seg button.activo { background: var(--tinta); color: var(--superficie); }
+.aud-seg button.activo small { color: var(--azul-palido); }
+.aud-tipos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px; }
+.aud-tipo-fila { display: grid; grid-template-columns: 110px 1fr 54px; align-items: center; gap: 12px; padding: 6px 0; border: 0; background: none; color: var(--tinta); font: 500 13px var(--texto); text-align: left; cursor: pointer; }
+.aud-tipo-fila b { font: 600 13px var(--mono); text-align: right; }
+.aud-barra-tipo { display: flex; height: 8px; border-radius: 4px; background: var(--superficie-2); overflow: hidden; }
+.aud-barra-tipo i { display: block; height: 100%; }
+.aud-barra-tipo i.r, .aud-leyenda i.r { background: var(--azul); }
+.aud-barra-tipo i.m, .aud-leyenda i.m { background: var(--azul-palido); }
+.aud-leyenda { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--texto-2); }
+.aud-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.aud-leyenda i { width: 10px; height: 10px; border-radius: 3px; background: var(--superficie-2); }
+@media (max-width: 760px) { .aud-tipos { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -422,14 +444,14 @@ const ICONOS = {
   fallo: '<svg viewBox="0 0 100 100" fill="currentColor" fill-rule="evenodd"><path d="M50 6l46 84H4zm-6 32v26h12V38zm0 32v12h12V70z"/></svg>',
   flecha: '<svg viewBox="0 0 100 100" fill="currentColor"><path d="M30 14l12-12 48 48-48 48-12-12 36-36z"/></svg>',
 };
-const VISTAS = [['decisiones', 'decisiones.'], ['resumen', 'resumen.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['auditoria', 'auditoría.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
+const VISTAS = [['resumen', 'resumen.'], ['decisiones', 'decisiones.'], ['tareas', 'tareas.'], ['encuesta', 'encuesta.'], ['auditoria', 'auditoría.'], ['uso', 'uso de la app.'], ['redes', 'redes.'], ['videos', 'vídeos.'], ['campanas', 'campañas.'], ['biblioteca', 'biblioteca.'], ['ajustes', 'ajustes.']];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const FRANJAS = [[6, 10, '6–10'], [10, 13, '10–13'], [13, 16, '13–16'], [16, 19, '16–19'], [19, 22, '19–22'], [22, 30, '22–2']];
 
 const guardado = (k, v) => { try { if (v === undefined) return localStorage.getItem('panel-' + k); localStorage.setItem('panel-' + k, v); } catch (e) { return null; } };
 const estado = {
-  vista: guardado('vista') || 'decisiones',
+  vista: guardado('vista') || 'resumen',
   ejemplo: guardado('ejemplo') === '1',
   periodo: null, red: 'todas',
   orden: { campo: 'fecha', dir: 'descending' },
@@ -1220,7 +1242,9 @@ document.addEventListener('click', ev => {
 // cifrada en datos/auditoria.enc (AES-GCM, clave por PBKDF2) y se descifra aquí con la clave de la auditoría, que se
 // recuerda en este navegador. Lo marcado se envía con panel_votar (la clave del panel, como las sugerencias) con id
 // «aud-<ID>»: Claude lo lee en panel_votos_lista.
-const aud = { datos: null, error: null, marcados: new Set(JSON.parse(guardado('aud-marcados') || '[]')), filtro: guardado('aud-filtro') || 'todo', abiertos: new Set() };
+const aud = { datos: null, error: null, marcados: new Set(JSON.parse(guardado('aud-marcados') || '[]')), filtro: guardado('aud-filtro') || 'todo', tipo: guardado('aud-tipo') || 'todos', abiertos: new Set() };
+const AUD_TIPOS = [['todos', 'todos.'], ['seguridad', 'seguridad.'], ['funcional', 'funcional.'], ['visual', 'visual.'], ['estructural', 'estructural.'], ['accesibilidad', 'accesibilidad.'], ['negocio', 'negocio.']];
+const AUD_TIPO_TEXTO = { seguridad: 'Fallos que exponen datos o permiten hacer lo que no se debe.', funcional: 'Cómo funciona y qué hace la app: flujos, nombres, navegación.', visual: 'Cómo se ve: pantallas, portada, coherencia de estilo.', estructural: 'Por dentro: código, rendimiento, sincronización. No se ve.', accesibilidad: 'Que se pueda usar con teclado, lector de pantalla o poca vista.', negocio: 'Precios, métricas, confianza y crecimiento.' };
 const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
 async function abrirAuditoria(clave) {
   const r = await fetch('datos/auditoria.enc?t=' + Date.now(), { cache: 'no-store' });
@@ -1245,6 +1269,7 @@ const AUD_FILTROS = [['todo', 'todo.'], ['reco', 'lo que recomiendo.'], ['alta',
 const AUD_LISTA = { hechos: ['resuelto'], medias: ['parcial'], sinhacer: ['vigente', 'sin comprobar'] };
 function audEnviado(id) { return votos.lista['aud-' + id]; }
 function audPasa(h) {
+  if (aud.tipo !== 'todos' && h.tipo !== aud.tipo) return false;
   const f = aud.filtro;
   if (f === 'reco') return h.reco === 'sí' && h.estado !== 'resuelto';
   if (f === 'alta') return h.gravedad === 'alta' && h.estado !== 'resuelto';
@@ -1301,7 +1326,14 @@ function pintarAuditoria() {
     ${kpi('flecha', 'urgentes.', `<div class="fila"><span class="valor">${nf(criticos.length)}</span><span class="extra">seguridad crítica</span></div>`)}
     ${kpi('personas', 'decisiones tuyas.', `<div class="fila"><span class="valor">${nf(cuenta(h => h.reco === 'decide'))}</span></div>`)}
 
-    <div class="tarjeta c12" style="padding:16px 24px"><div class="aud-filtros" role="tablist">${AUD_FILTROS.map(([k, t]) => `<button type="button" class="control ${aud.filtro === k ? 'activo' : ''}" role="tab" aria-selected="${aud.filtro === k}" data-aud-filtro="${k}">${t}</button>`).join('')}</div></div>
+    <div class="tarjeta c12 aud-panel-filtros">
+      <div class="aud-fila-filtro"><span class="aud-etq-filtro">qué.</span><div class="aud-seg" role="tablist">${AUD_FILTROS.map(([k, t]) => { const n = hs.filter(h => { const g = aud.filtro; aud.filtro = k; const r = audPasa(h); aud.filtro = g; return r; }).length; return `<button type="button" class="${aud.filtro === k ? 'activo' : ''}" role="tab" aria-selected="${aud.filtro === k}" data-aud-filtro="${k}">${t}<small>${n}</small></button>`; }).join('')}</div></div>
+      <div class="aud-fila-filtro"><span class="aud-etq-filtro">tipo.</span><div class="aud-seg" role="tablist">${AUD_TIPOS.map(([k, t]) => `<button type="button" class="${aud.tipo === k ? 'activo' : ''}" role="tab" aria-selected="${aud.tipo === k}" data-aud-tipo="${k}">${t}<small>${k === 'todos' ? hs.length : hs.filter(h => h.tipo === k).length}</small></button>`).join('')}</div></div>
+      ${aud.tipo !== 'todos' ? `<p class="sub" style="margin:10px 0 0">${AUD_TIPO_TEXTO[aud.tipo]}</p>` : ''}
+    </div>
+    <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>por tipo.</h2><p class="sub">Solucionado, a medias y sin hacer, en cada tipo de cambio.</p></div></div>
+      <div class="aud-tipos">${AUD_TIPOS.slice(1).map(([k, t]) => { const xs = hs.filter(h => h.tipo === k), r = xs.filter(h => h.estado === 'resuelto').length, m = xs.filter(h => h.estado === 'parcial').length, w = v => (v / xs.length * 100).toFixed(1); return `<button type="button" class="aud-tipo-fila" data-aud-tipo="${k}"><span>${t}</span><i class="aud-barra-tipo" aria-hidden="true"><i class="r" style="width:${w(r)}%"></i><i class="m" style="width:${w(m)}%"></i></i><b>${r}/${xs.length}</b></button>`; }).join('')}</div>
+      <div class="aud-leyenda"><span><i class="r"></i>solucionado</span><span><i class="m"></i>a medias</span><span><i></i>sin hacer</span></div></div>
     ${tandas || `<div class="tarjeta c12">${sinDatos('Nada con este filtro.')}</div>`}
     <div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>lo que la auditoría no pudo comprobar.</h2><p class="sub">Hace falta producción, datos reales o un profesional.</p></div></div><ul class="aud-pendiente">${d.pendiente.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div>
     <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><b style="font-weight:500;color:var(--texto-2)">La clave se recuerda en este navegador.</b><button class="boton" type="button" id="aud-cerrar">cerrar la auditoría.</button></div></div>
@@ -1354,6 +1386,7 @@ document.addEventListener('click', async ev => {
   if (t.id === 'aud-confirmar') return audConfirmar();
   if (t.id === 'aud-cancelar') return document.getElementById('aud-dialogo').close();
   if (t.id === 'aud-limpiar') { aud.marcados.clear(); audGuardarMarcas(); return pintarAuditoria(); }
+  const tp = t.closest('[data-aud-tipo]'); if (tp) { aud.tipo = tp.dataset.audTipo; guardado('aud-tipo', aud.tipo); return pintarAuditoria(); }
   const f = t.closest('[data-aud-filtro]'); if (f) { aud.filtro = f.dataset.audFiltro; guardado('aud-filtro', aud.filtro); return pintarAuditoria(); }
   const a = t.closest('[data-aud-abrir]'); if (a) { const id = a.dataset.audAbrir; aud.abiertos.has(id) ? aud.abiertos.delete(id) : aud.abiertos.add(id); return pintarAuditoria(); }
   const tn = t.closest('[data-aud-tanda]'); if (tn) { aud.datos.hallazgos.filter(h => h.tanda === Number(tn.dataset.audTanda) && h.reco === 'sí' && h.estado !== 'resuelto' && !audEnviado(h.id)).forEach(h => aud.marcados.add(h.id)); audGuardarMarcas(); return pintarAuditoria(); }
