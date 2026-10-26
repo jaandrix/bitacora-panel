@@ -1154,7 +1154,9 @@ async function cargarAuditoria() {
 }
 const AUD_ESTADO = { vigente: 'vigente', parcial: 'a medias', resuelto: 'resuelto', 'sin comprobar': 'sin comprobar' };
 const AUD_RECO = { 'sí': 'te recomiendo hacerlo.', luego: 'bueno, pero después.', decide: 'decisión tuya.', no: 'no hace falta.' };
-const AUD_FILTROS = [['todo', 'todo.'], ['reco', 'lo que recomiendo.'], ['alta', 'gravedad alta.'], ['decide', 'decisiones tuyas.'], ['marcados', 'marcados.'], ['enviados', 'enviados.']];
+const AUD_FILTROS = [['todo', 'todo.'], ['reco', 'lo que recomiendo.'], ['alta', 'gravedad alta.'], ['decide', 'decisiones tuyas.'], ['marcados', 'marcados.'], ['enviados', 'enviados.'], ['hechos', 'solucionados.'], ['medias', 'a medias.'], ['sinhacer', 'sin hacer.']];
+// Estos tres enseñan una sola lista, sin tandas.
+const AUD_LISTA = { hechos: ['resuelto'], medias: ['parcial'], sinhacer: ['vigente', 'sin comprobar'] };
 function audEnviado(id) { return votos.lista['aud-' + id]; }
 function audPasa(h) {
   const f = aud.filtro;
@@ -1163,6 +1165,7 @@ function audPasa(h) {
   if (f === 'decide') return h.reco === 'decide';
   if (f === 'marcados') return aud.marcados.has(h.id);
   if (f === 'enviados') return !!audEnviado(h.id);
+  if (AUD_LISTA[f]) return AUD_LISTA[f].includes(h.estado);
   return true;
 }
 function pintarAuditoria() {
@@ -1195,7 +1198,8 @@ function pintarAuditoria() {
       </div>` : ''}
     </li>`;
   };
-  const tandas = d.tandas.map(t => {
+  const enLista = AUD_LISTA[aud.filtro] && hs.filter(audPasa).sort((a, b) => a.tanda - b.tanda);
+  const tandas = enLista ? `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>${enLista.length} ${{ hechos: 'solucionados', medias: 'a medias', sinhacer: 'sin hacer' }[aud.filtro]}.</h2><p class="sub">En el orden de las tandas, de la más urgente a la menos.</p></div></div><ul class="aud-lista">${enLista.map(fila).join('')}</ul></div>` : d.tandas.map(t => {
     const items = hs.filter(h => h.tanda === t.n && audPasa(h));
     if (!items.length) return '';
     const pend = items.filter(h => h.estado !== 'resuelto').length;
