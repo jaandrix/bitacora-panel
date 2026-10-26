@@ -733,6 +733,7 @@ function pintarResumen(r) {
   const curso = (d.en_curso || []).filter(t => t.estado !== 'hecho').slice(0, 4);
   const hechasHoy = (d.en_curso || []).filter(t => t.estado === 'hecho' && t.cuando && new Date(t.cuando).toDateString() === new Date().toDateString()).length;
   el.innerHTML = `<div class="rejilla">
+    ${bloqueMetricas()}
     ${kpi('web', 'visitas a la web.', vis != null ? `<div class="fila"><span class="valor">${compacto(vis)}</span>${variacion(vis, visP)}</div>${chispa(dias.map(k => porDia[k]))}` : `<div class="fila">${sinDatos()}</div>`, 'campanas', 'oscura')}
     ${kpi('personas', 'personas al día.', `<div class="fila">${media != null ? `<span class="valor">${nf(media, media < 10 ? 1 : 0)}</span>${variacion(media, mediaP)}` : sinDatos()}</div>`, 'uso')}
     ${kpi('apartado', 'el más abierto.', `<div class="fila">${apartados.length ? `<span class="valor texto">${esc(apartados[0].titulo.toLowerCase())}.</span><span class="extra">${nf(apartados[0].n)}</span>` : sinDatos()}</div>`, 'uso')}
@@ -1170,6 +1171,48 @@ function pintarEncuesta() {
 document.addEventListener('click', ev => {
   if (ev.target.id === 'encuesta-guardar') { const v = document.getElementById('encuesta-url').value.trim(); guardado('encuesta', v); encuesta.filas = null; encuesta.error = null; pintarEncuesta(); }
   else if (ev.target.id === 'encuesta-cambiar') { guardado('encuesta', ''); encuesta.filas = null; pintarEncuesta(); }
+});
+
+// ------------------------------------------------------------ métricas de uso
+// Cifras agregadas de Supabase (panel_metricas en supabase/sql/panel_metricas.sql de la app), con la clave del
+// panel: sin ella no se leen. Nada de correos ni contenido, solo recuentos.
+const met = { datos: null, error: null, cargando: false, leida: 0 };
+async function cargarMetricas() {
+  const clave = guardado('clave');
+  if (!clave || met.cargando) return;
+  met.cargando = true;
+  try { met.datos = await rpc('panel_metricas', { p_clave: clave }); met.error = met.datos ? null : 'clave incorrecta'; met.leida = Date.now(); }
+  catch (e) { met.error = /panel_metricas/.test(e.message) || /404|not find|Could not/.test(e.message) ? 'Falta ejecutar panel_metricas.sql en Supabase.' : e.message; }
+  met.cargando = false;
+  if (estado.vista === 'resumen') pintar();
+}
+function bloqueMetricas() {
+  if (!guardado('clave')) return `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>uso real de la app.</h2><p class="sub">Altas, gente activa, suscripciones y apartados. Escribe tu clave del panel para verlo.</p></div></div><div class="clave-fila"><input id="met-clave" type="password" autocomplete="current-password" placeholder="clave del panel"><button class="boton" type="button" id="met-guardar">ver.</button></div></div>`;
+  if (!met.datos && !met.error) { if (Date.now() - met.leida > 60000) cargarMetricas(); return `<div class="tarjeta c12">${sinDatos('Leyendo las métricas…')}</div>`; }
+  if (!met.datos) return `<div class="tarjeta c12"><div class="tarjeta-cab"><div><h2>uso real de la app.</h2></div></div>${sinDatos(esc(met.error))}</div>`;
+  if (Date.now() - met.leida > 300000) cargarMetricas();
+  const d = met.datos, n = v => nf(Number(v) || 0);
+  const ret = d.cohorte_7_30 ? d.cohorte_7_30_activos / d.cohorte_7_30 : null;
+  const subs = d.suscripciones || {}, pagan = (subs.active || 0) + (subs.past_due || 0);
+  const nombresEstado = { active: 'pagando', trialing: 'prueba de Stripe', past_due: 'pago pendiente', canceled: 'canceladas', legado: 'gratis (antiguas)', sin_suscripcion: 'sin suscripción', incomplete: 'pago sin terminar', regalo: 'con código regalo' };
+  const barras = (obj, nombres) => filasBarras(Object.entries(obj || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ nombre: (nombres && nombres[k]) || k, detalle: d.usuarios ? pct(v / d.usuarios, 0) : '', valor: v })), v => nf(v), true);
+  const semanas = d.altas_semana || [], maxS = Math.max(1, ...semanas.map(x => x.n));
+  return `
+    ${kpi('personas', 'cuentas.', `<div class="fila"><span class="valor">${n(d.usuarios)}</span><span class="extra">${n(d.altas_7)} esta semana, ${n(d.altas_30)} en 30 días</span></div>`, null, 'oscura')}
+    ${kpi('web', 'activas hoy.', `<div class="fila"><span class="valor">${n(d.activos_hoy)}</span><span class="extra">${n(d.activos_7)} en 7 días, ${n(d.activos_30)} en 30</span></div>`)}
+    ${kpi('flecha', 'vuelven.', `<div class="fila"><span class="valor">${ret == null ? '–' : pct(ret, 0)}</span><span class="extra">de quien se dio de alta hace 1-4 semanas, activo esta semana</span></div>`)}
+    ${kpi('apartado', 'pagan.', `<div class="fila"><span class="valor">${n(pagan)}</span><span class="extra">${n(d.fundadores)} fundadores, ${n(d.cancelan)} cancelan al final</span></div>`)}
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>altas por semana.</h2><p class="sub">Últimas 12 semanas. ${n(d.confirmados)} de ${n(d.usuarios)} confirmaron el correo.</p></div></div>
+      <div class="dias-uso" role="img" aria-label="Altas por semana">${semanas.map(x => `<i style="height:${Math.max(4, x.n / maxS * 100)}%" title="semana del ${esc(x.semana)}: ${x.n}"></i>`).join('') || sinDatos()}</div></div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>suscripciones.</h2><p class="sub">Estado de cada cuenta con fila en Stripe.</p></div></div>${barras(subs, nombresEstado)}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>perfiles.</h2><p class="sub">Lo que eligieron al empezar.</p></div></div>${barras(d.perfiles)}</div>
+    <div class="tarjeta c6"><div class="tarjeta-cab"><div><h2>apartados opcionales.</h2><p class="sub">Cuántas cuentas tienen activado cada uno.</p></div></div>${barras(d.opcionales)}</div>
+    <div class="tarjeta c12" style="padding:16px 24px"><div class="ahora-fila" style="border:0;padding:0"><span>${n(d.con_avisos)} con avisos en el móvil, ${n(d.con_conector)} con Claude o ChatGPT conectado, ${n(d.correo_domingos)} con el correo de los domingos.</span><b style="font-weight:500;color:var(--texto-2)">Leído ${hace(met.leida)}.</b></div></div>`;
+}
+document.addEventListener('click', ev => {
+  if (ev.target.id !== 'met-guardar') return;
+  const v = document.getElementById('met-clave').value.trim(); if (!v) return;
+  guardado('clave', v); met.error = null; cargarMetricas();
 });
 
 // ------------------------------------------------------------ decisiones
