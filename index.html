@@ -884,7 +884,7 @@ function pintarAjustes() {
 // Google Forms guarda las respuestas en una hoja de cálculo; publicada como CSV (Archivo → Compartir → Publicar en
 // la web → CSV), el panel la lee cada minuto. El enlace va en ENCUESTA_CSV (o, solo en este navegador, en la propia
 // pestaña). Es público: que el formulario no pida nombres ni correos.
-const ENCUESTA_CSV = '';
+const ENCUESTA_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQCK5mGxCQOl1gbFRKFI0d6fws11PRdC2DDqAYwXTD7remDV9___QmyGrxOiZTN_TG7-B7TeLLgXqu0/pub?gid=942423448&single=true&output=csv';
 const encuesta = { filas: null, cabecera: [], claves: [], error: null, cargando: false, leida: 0 };
 const urlEncuesta = () => guardado('encuesta') || ENCUESTA_CSV;
 async function cargarEncuesta() {
@@ -914,7 +914,7 @@ function analizarPregunta(clave, filas) {
     const cuenta = {}; nums.forEach(n => { cuenta[n] = (cuenta[n] || 0) + 1; });
     return { tipo: 'escala', n: vals.length, media, filas: Object.entries(cuenta).sort((a, b) => a[0] - b[0]).map(([k, v]) => ({ nombre: k, detalle: '', valor: v })) };
   }
-  const trozos = vals.flatMap(v => v.split(/,\s+/));
+  const trozos = vals.flatMap(v => v.split(/,\s+(?=[A-ZÁÉÍÓÚÑ¿])/));
   const distintosTrozos = new Set(trozos);
   const opciones = distintos.size <= 12 ? vals : (distintosTrozos.size <= 15 && trozos.length > vals.length ? trozos : null);
   if (opciones) {
@@ -927,9 +927,9 @@ function analizarPregunta(clave, filas) {
 // reconocen por palabras de su enunciado, así que si se reescribe una y deja de encontrarse, la tarjeta lo dice.
 const ENC_PREGUNTAS = [
   ['problema', /olvid|lleg\w* tarde/i],
-  ['utilidad', /[uú]til/i],
+  ['utilidad', /utilidad/i],
   ['satisfaccion', /satisf|(punt[uú]a|valora).*sistema actual/i],
-  ['prueba', /probar|prueba|qu[eé] har[ií]as|primer[ao]s? (d[ií]as|semana)/i],
+  ['prueba', /probar|prueba|qu[eé] har[ií]as|qu[eé] sueles hacer/i],
   ['pagoPrevio', /(alguna vez|antes).*pag|has pagado/i],
   ['gasto', /gast/i],
   ['pago', /pag|precio|modelo|cobr/i],
@@ -937,7 +937,7 @@ const ENC_PREGUNTAS = [
   ['funciones', /valios|partes|funciones|qu[eé] (te )?(ser[ií]a|resultar[ií]a) m[aá]s/i],
   ['perfil', /eres|situaci[oó]n|perfil|te dedicas|ocupaci/i],
 ];
-const encTrozos = v => (v || '').split(/,\s+/).map(s => s.trim()).filter(Boolean);
+const encTrozos = v => (v || '').split(/,\s+(?=[A-ZÁÉÍÓÚÑ¿])/).map(s => s.trim()).filter(Boolean);
 const encNum = v => { const m = String(v || '').match(/\d+/); return m ? Number(m[0]) : null; };
 function encColumnas(preguntas) {
   const usadas = new Set(), col = {};
@@ -961,7 +961,7 @@ function interpretarEncuesta(filas, preguntas) {
       utilAlta: util != null && util >= 4, util,
       insatisfecho: sat != null && sat <= 2, satisfecho: sat != null && sat >= 4,
       pruebaReal: /datos reales|varios d[ií]as|sustitu|reemplaz|cambiar[ií]a/i.test(prueba),
-      curiosidad: /mirar|ver c[oó]mo|ejemplo|curiosidad/i.test(prueba) && !/datos reales|varios d[ií]as|sustitu/i.test(prueba),
+      curiosidad: /miro|mirar|ver c[oó]mo|ejemplo|curiosidad|sin crear/i.test(prueba) && !/datos reales|varios d[ií]as|sustitu/i.test(prueba),
       sustituye: /sustitu|reemplaz/i.test(prueba),
       aceptaPago: /[uú]nico|cuota|suscrip|depende|tiempo/i.test(pago) && !/^\s*(gratis|gratuit)/i.test(pago),
       soloGratis: /gratu|gratis/i.test(pago) && !/[uú]nico|cuota|depende|tiempo/i.test(pago),
