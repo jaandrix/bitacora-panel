@@ -27,6 +27,8 @@ def api(ruta, **params):
                 return json.load(r)
         except urllib.error.HTTPError as e:
             ultimo = f'{e.code} en {ruta}: {e.read()[:200]!r}'
+            # GoatCounter contesta 404 «not found» cuando en ese tramo no hay nada que contar: es un cero, no un fallo.
+            if e.code == 404: return {}
             if e.code in (401, 403): raise SystemExit(f'GoatCounter rechaza la clave ({ultimo}): revisa el secreto GOATCOUNTER_TOKEN')
             if e.code != 429 and e.code < 500: raise FalloDia(ultimo)
         except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
