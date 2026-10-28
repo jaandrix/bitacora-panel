@@ -384,6 +384,20 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
 .aud-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
 .aud-leyenda i { width: 10px; height: 10px; border-radius: 3px; background: var(--superficie-2); }
 @media (max-width: 760px) { .aud-tipos { grid-template-columns: 1fr; } }
+.uso-claude { margin: 48px 0 24px; font-size: 12.5px; color: var(--texto-2); }
+.uso-claude summary { cursor: pointer; font-weight: 600; }
+.uso-claude summary span { font-weight: 400; margin-left: 6px; }
+.uso-claude-cuerpo { margin-top: 12px; display: grid; gap: 14px; max-width: 720px; }
+.uso-claude-plan { display: grid; gap: 10px; }
+.uso-claude-plan > div { display: grid; grid-template-columns: 120px 1fr; gap: 2px 12px; align-items: center; }
+.uso-claude-plan small { grid-column: 2; }
+.uso-claude-barra { height: 6px; border-radius: 3px; background: var(--superficie-2); overflow: hidden; }
+.uso-claude-barra i { display: block; height: 100%; background: var(--tinta); }
+.uso-claude-cifras { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.uso-claude-cifras b { color: var(--tinta); }
+.uso-claude-dias { display: flex; align-items: flex-end; gap: 3px; height: 48px; }
+.uso-claude-dias i { flex: 1; background: var(--linea); border-radius: 2px 2px 0 0; }
+.uso-claude p { margin: 0; }
 </style>
 </head>
 <body>
@@ -421,6 +435,7 @@ dialog.eleccion label.etq { font: 500 12px var(--mono); color: var(--texto-2); }
     <section id="vista-campanas" class="vista oculto"></section>
     <section id="vista-biblioteca" class="vista oculto"></section>
     <section id="vista-ajustes" class="vista oculto"></section>
+    <details id="uso-claude" class="uso-claude" hidden></details>
   </main>
 </div>
 
@@ -579,7 +594,42 @@ function datosEjemplo() {
 }
 
 // ------------------------------------------------------------ carga
+// ------------------------------------------------------------ uso de claude
+// datos/uso_claude.json: tokens por día de Claude Code (de las conversaciones guardadas en el ordenador) y lo usado del
+// plan Pro, que Claude apunta al empezar y terminar cada tarea (scripts/uso_claude.py). Abajo del todo y plegado.
+async function cargarUsoClaude() {
+  const el = document.getElementById('uso-claude');
+  let u;
+  try { const r = await fetch('datos/uso_claude.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return; u = await r.json(); } catch (e) { return; }
+  const k = n => n >= 1e6 ? nf(n / 1e6, 1) + ' M' : n >= 1e3 ? nf(n / 1e3, 0) + ' mil' : nf(n);
+  const total = d => d.entrada + d.salida + d.cache_escrita + d.cache_leida;
+  const dias = u.dias || [], hoyK = new Date().toLocaleDateString('sv');
+  const hoy = dias.find(d => d.dia === hoyK) || { entrada: 0, salida: 0, cache_escrita: 0, cache_leida: 0, respuestas: 0, sesiones: 0 };
+  const semana = dias.slice(-7);
+  const sum = (l, c) => l.reduce((a, d) => a + (c ? d[c] : total(d)), 0);
+  const max = Math.max(1, ...dias.map(total));
+  const hasta = iso => { const m = (new Date(iso) - new Date()) / 60000; return m <= 0 ? 'ya renovado' : m < 60 ? `se renueva en ${Math.round(m)} min` : m < 1440 ? `se renueva en ${Math.floor(m / 60)} h ${Math.round(m % 60)} min` : `se renueva en ${Math.floor(m / 1440)} d ${Math.floor(m % 1440 / 60)} h`; };
+  const nombre = n => /5-hour/i.test(n) ? 'estas 5 horas' : /weekly/i.test(n) ? 'esta semana' + (/all models/i.test(n) ? '' : ` (${n.split('·').pop().trim()})`) : n;
+  const plan = u.plan;
+  el.hidden = false;
+  el.innerHTML = `<summary>uso de claude.${plan?.ventanas?.length ? ` <span>${plan.ventanas.map(w => `${nombre(w.nombre)}: queda ${100 - w.usado} %`).join(', ')}</span>` : ''}</summary>
+    <div class="uso-claude-cuerpo">
+      ${plan ? `<div class="uso-claude-plan">${plan.ventanas.map(w => `<div><b>${esc(nombre(w.nombre))}.</b><span class="uso-claude-barra"><i style="width:${Math.min(100, w.usado)}%"></i></span><small>${w.usado} % usado, queda ${100 - w.usado} %, ${hasta(w.renueva)}</small></div>`).join('')}
+        <p>Plan ${esc(plan.nombre || '')}${plan.extra ? ' con uso extra activado' : ', sin uso extra'}. Leído ${hace(plan.leido)}: Claude lo apunta al empezar y al terminar cada tarea, así que entre medias puede ir algo por detrás.</p></div>` : '<p>Aún no hay datos del plan.</p>'}
+      <div class="uso-claude-cifras">
+        <span><b>${k(total(hoy))}</b> tokens hoy</span>
+        <span><b>${k(sum(semana))}</b> en 7 días</span>
+        <span><b>${nf(sum(semana, 'respuestas'))}</b> respuestas</span>
+        <span><b>${k(sum(semana, 'salida'))}</b> escritos por claude</span>
+        <span><b>${sum(semana) ? pct(sum(semana, 'cache_leida') / sum(semana), 0) : '0 %'}</b> leído de la caché</span>
+      </div>
+      <div class="uso-claude-dias" role="img" aria-label="Tokens por día">${dias.map(d => `<i style="height:${Math.max(3, total(d) / max * 100)}%" title="${d.dia}: ${k(total(d))} tokens, ${d.respuestas} respuestas, ${d.sesiones} conversaciones"></i>`).join('')}</div>
+      <p>Tokens de las conversaciones de Claude Code en este ordenador, últimos ${dias.length} días. La caché leída es la parte barata: lo que Claude ya tenía de la respuesta anterior. Actualizado ${hace(u.actualizado)}.</p>
+    </div>`;
+}
+
 async function cargar() {
+  cargarUsoClaude();
   if (estado.ejemplo) {
     estado.datos = normalizar(datosEjemplo()); estado.origen = 'ejemplo'; estado.error = null; estado.actualizado = new Date();
     return pintar();
@@ -1446,6 +1496,7 @@ document.addEventListener('change', ev => {
 // ------------------------------------------------------------ uso de la app
 // datos/apartados.csv: visitantes por día de cada marca que cuenta la app (GoatCounter, anónimo). «uso/activo» es
 // quien abre la app ese día; «apartado/<vista>», quien abre ese apartado. Los dispositivos del creador no cuentan.
+const NOMBRE_VISTA = { home: 'Panorama', calendar: 'Calendario', work: 'Empleo', friends: 'Social', actualizaciones: 'Envíos', compra: 'Despensa', habits: 'Rutinas', estudiar: 'Repaso', universidad: 'Carrera', graph: 'Conexiones', studies: 'Estudios', planner: 'Planificador', finances: 'Finanzas' };
 function pintarUso(r) {
   const el = document.getElementById('vista-uso');
   const todo = estado.datos.uso || [];
@@ -1460,7 +1511,8 @@ function pintarUso(r) {
   const diasPrev = new Set(prev.filter(u => u.ruta === 'uso/activo').map(u => iso(u.fecha)));
   const mediaPrev = diasPrev.size ? de(prev, 'uso/activo') / diasPrev.size : null;
   const activos = de(act, 'uso/activo'), movil = de(act, 'uso/movil'), escritorio = de(act, 'uso/escritorio');
-  const g = {}; act.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); g[k] = g[k] || { titulo: u.titulo || k, n: 0 }; g[k].n += u.visitantes || 0; });
+  // Varios apartados cambiaron de nombre (Home es ahora Panorama y la vista calendar, Calendario): manda el nombre de hoy.
+  const g = {}; act.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); g[k] = g[k] || { titulo: k, n: 0 }; g[k].titulo = NOMBRE_VISTA[k] || u.titulo || k; g[k].n += u.visitantes || 0; });
   const gp = {}; prev.filter(u => u.ruta.startsWith('apartado/')).forEach(u => { const k = u.ruta.slice(9); gp[k] = (gp[k] || 0) + (u.visitantes || 0); });
   const orden = Object.entries(g).sort((a, b) => b[1].n - a[1].n);
   const max = Math.max(1, ...Object.values(porDia));

@@ -1,0 +1,148 @@
+{
+ "actualizado": "2026-10-28T14:25:44+01:00",
+ "plan": {
+  "nombre": "Pro",
+  "leido": "2026-10-28T14:25:44+01:00",
+  "ventanas": [
+   {
+    "nombre": "5-hour limit",
+    "usado": 10,
+    "renueva": "2026-10-28T18:10:00.378Z"
+   },
+   {
+    "nombre": "Weekly · all models",
+    "usado": 4,
+    "renueva": "2026-11-03T20:00:00.378Z"
+   }
+  ],
+  "extra": false
+ },
+ "dias": [
+  {
+   "entrada": 1084,
+   "salida": 552804,
+   "cache_escrita": 2270331,
+   "cache_leida": 301392762,
+   "respuestas": 544,
+   "dia": "2026-10-15",
+   "sesiones": 1
+  },
+  {
+   "entrada": 472,
+   "salida": 217735,
+   "cache_escrita": 1292049,
+   "cache_leida": 89095373,
+   "respuestas": 237,
+   "dia": "2026-10-16",
+   "sesiones": 1
+  },
+  {
+   "entrada": 774,
+   "salida": 408755,
+   "cache_escrita": 1686718,
+   "cache_leida": 186485086,
+   "respuestas": 386,
+   "dia": "2026-10-17",
+   "sesiones": 1
+  },
+  {
+   "entrada": 958,
+   "salida": 518674,
+   "cache_escrita": 1500019,
+   "cache_leida": 248275020,
+   "respuestas": 479,
+   "dia": "2026-10-18",
+   "sesiones": 1
+  },
+  {
+   "entrada": 410,
+   "salida": 146070,
+   "cache_escrita": 1282847,
+   "cache_leida": 100693056,
+   "respuestas": 206,
+   "dia": "2026-10-19",
+   "sesiones": 2
+  },
+  {
+   "entrada": 370,
+   "salida": 157187,
+   "cache_escrita": 1584203,
+   "cache_leida": 146694123,
+   "respuestas": 186,
+   "dia": "2026-10-20",
+   "sesiones": 1
+  },
+  {
+   "entrada": 360,
+   "salida": 240608,
+   "cache_escrita": 595294,
+   "cache_leida": 63109473,
+   "respuestas": 180,
+   "dia": "2026-10-21",
+   "sesiones": 1
+  },
+  {
+   "entrada": 442,
+   "salida": 257119,
+   "cache_escrita": 1866813,
+   "cache_leida": 141484530,
+   "respuestas": 220,
+   "dia": "2026-10-22",
+   "sesiones": 1
+  },
+  {
+   "entrada": 640,
+   "salida": 318622,
+   "cache_escrita": 1628225,
+   "cache_leida": 172563371,
+   "respuestas": 320,
+   "dia": "2026-10-23",
+   "sesiones": 1
+  },
+  {
+   "entrada": 720,
+   "salida": 403629,
+   "cache_escrita": 2257575,
+   "cache_leida": 177961321,
+   "respuestas": 360,
+   "dia": "2026-10-24",
+   "sesiones": 1
+  },
+  {
+   "entrada": 22,
+   "salida": 18302,
+   "cache_escrita": 876877,
+   "cache_leida": 9055910,
+   "respuestas": 11,
+   "dia": "2026-10-25",
+   "sesiones": 1
+  },
+  {
+   "entrada": 960,
+   "salida": 333428,
+   "cache_escrita": 2486377,
+   "cache_leida": 234998253,
+   "respuestas": 473,
+   "dia": "2026-10-26",
+   "sesiones": 2
+  },
+  {
+   "entrada": 256,
+   "salida": 66212,
+   "cache_escrita": 1004142,
+   "cache_leida": 86823055,
+   "respuestas": 108,
+   "dia": "2026-10-27",
+   "sesiones": 1
+  },
+  {
+   "entrada": 236,
+   "salida": 111796,
+   "cache_escrita": 603772,
+   "cache_leida": 29361054,
+   "respuestas": 111,
+   "dia": "2026-10-28",
+   "sesiones": 1
+  }
+ ]
+}
