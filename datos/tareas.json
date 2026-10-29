@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-10-26T19:41:04+01:00",
+ "actualizado": "2026-10-29T16:10:49+01:00",
  "sesion": {
   "estado": "parado",
   "titulo": "esperando a Alejandro"
@@ -327,6 +327,94 @@
    "titulo": "Desplegar avisos-diarios",
    "detalle": "supabase functions deploy avisos-diarios --no-verify-jwt (resumen de las 9:00 todos los días)",
    "quien": "Alejandro"
+  },
+  {
+   "id": "probar-iphone-movil",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Probar en el iPhone lo del móvil de esta semana",
+   "detalle": "Cierre de modales (la hoja baja y luego se aclara el velo, sin repintar el fondo), franja de la hora oscurecida, teclado sin segundo salto, marcar 10 compras o tareas deprisa sin que se desmarquen. Mandar window.metricasModal tras abrir unos cuantos modales.",
+   "quien": "Alejandro"
+  },
+  {
+   "id": "rehacer-saldo-otra",
+   "prioridad": "alta",
+   "area": "finanzas",
+   "titulo": "Rehacer Revolut no debe mover el saldo de partida de Ibercaja",
+   "detalle": "Al rehacer una cuenta se quitan y rehacen sus traspasos; la otra cuenta acaba con otro saldo y hay que volver a fijar su saldo de partida. Probarlo antes con sus datos en el espejo.",
+   "quien": "Claude"
+  },
+  {
+   "id": "importador-adaptadores",
+   "prioridad": "alta",
+   "area": "finanzas",
+   "titulo": "Importador: un adaptador por banco y pruebas fijas",
+   "detalle": "Revolut e Ibercaja primero, con extractos anonimizados como pruebas que se repiten en cada cambio (IMP-1, IMP-12).",
+   "quien": "Claude"
+  },
+  {
+   "id": "importador-identidad",
+   "prioridad": "alta",
+   "area": "finanzas",
+   "titulo": "Importador: identidad estable de cada movimiento del banco",
+   "detalle": "Referencia, fechas de operación y valor, divisa, lote y huella de la fila, para no depender de fecha+importe+concepto (IMP-7).",
+   "quien": "Claude"
+  },
+  {
+   "id": "importador-plan",
+   "prioridad": "media",
+   "area": "finanzas",
+   "titulo": "Importador: la vista previa es exactamente lo que se importa",
+   "detalle": "Y coincidencias por niveles: exacta (sola), probable (se propone), ambigua (no se toca) (IMP-8, IMP-9, IMP-10, IMP-11).",
+   "quien": "Claude"
+  },
+  {
+   "id": "agrupar-guardados",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Agrupar los guardados de muchos toques seguidos",
+   "detalle": "20 toques, 1 o 2 sincronizaciones (MOV2-014, FIA-3, RMP-3). Decides tú.",
+   "quien": "Alejandro decide"
+  },
+  {
+   "id": "bandeja-salida",
+   "prioridad": "alta",
+   "area": "app",
+   "titulo": "Copia local como bandeja de salida real",
+   "detalle": "Que lo cambiado se suba solo aunque iOS cierre la app a mitad (RMP-4).",
+   "quien": "Claude"
+  },
+  {
+   "id": "calendario-indexado",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Inicio del móvil más rápido: calendario indexado y zonas que cambian",
+   "detalle": "MOV2-007, MOV2-008, MOV2-009, MOV2-011, MOV2-012, RMP-10, RMP-11.",
+   "quien": "Claude"
+  },
+  {
+   "id": "carga-etapas",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Cargar los apartados al abrirlos",
+   "detalle": "Arranque con menos JavaScript; empezar por la Guía (MOV2-018, RMP-15).",
+   "quien": "Claude"
+  },
+  {
+   "id": "decisiones-movil",
+   "prioridad": "media",
+   "area": "app",
+   "titulo": "Decisiones del móvil pendientes",
+   "detalle": "Filtro gris de papel y asfalto (FIA-7), arranque sin esperar a la red (RMP-8), zoom (MOV-29), vistas completas en vez de modal (UXV-020/032, MOV2-023), barra de abajo (UXV-010/013), arranque con la marca (MOV2-026).",
+   "quien": "Alejandro decide"
+  },
+  {
+   "id": "uxv-diseno",
+   "prioridad": "baja",
+   "area": "app",
+   "titulo": "Propuestas de diseño UXV sin aplicar",
+   "detalle": "Las 34 de la tanda 12 del pulso que no se aplicaron: rediseños de apartados y decisiones visuales.",
+   "quien": "Alejandro decide"
   }
  ],
  "registro": [
