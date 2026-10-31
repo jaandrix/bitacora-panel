@@ -1,18 +1,18 @@
 {
- "actualizado": "2026-10-31T12:08:20+01:00",
+ "actualizado": "2026-10-31T12:16:22+01:00",
  "plan": {
   "nombre": "Pro",
-  "leido": "2026-10-31T12:08:20+01:00",
+  "leido": "2026-10-31T12:16:22+01:00",
   "ventanas": [
    {
     "nombre": "5-hour limit",
-    "usado": 45,
-    "renueva": "2026-10-31T11:40:00.543Z"
+    "usado": 49,
+    "renueva": "2026-10-31T11:40:00.670Z"
    },
    {
     "nombre": "Weekly · all models",
     "usado": 57,
-    "renueva": "2026-11-03T20:00:00.543Z"
+    "renueva": "2026-11-03T20:00:00.670Z"
    }
   ],
   "extra": false
@@ -136,11 +136,11 @@
    "sesiones": 1
   },
   {
-   "entrada": 8,
-   "salida": 8813,
-   "cache_escrita": 1015569,
-   "cache_leida": 333434,
-   "respuestas": 4,
+   "entrada": 24,
+   "salida": 46612,
+   "cache_escrita": 1099168,
+   "cache_leida": 1585687,
+   "respuestas": 11,
    "dia": "2026-10-31",
    "sesiones": 1
   }
