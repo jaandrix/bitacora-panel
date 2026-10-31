@@ -1,50 +1,23 @@
 {
- "actualizado": "2026-10-28T14:54:07+01:00",
+ "actualizado": "2026-10-31T12:08:20+01:00",
  "plan": {
   "nombre": "Pro",
-  "leido": "2026-10-28T14:54:07+01:00",
+  "leido": "2026-10-31T12:08:20+01:00",
   "ventanas": [
    {
     "nombre": "5-hour limit",
-    "usado": 26,
-    "renueva": "2026-10-28T18:10:00.529Z"
+    "usado": 45,
+    "renueva": "2026-10-31T11:40:00.543Z"
    },
    {
     "nombre": "Weekly · all models",
-    "usado": 7,
-    "renueva": "2026-11-03T20:00:00.530Z"
+    "usado": 57,
+    "renueva": "2026-11-03T20:00:00.543Z"
    }
   ],
   "extra": false
  },
  "dias": [
-  {
-   "entrada": 1084,
-   "salida": 552804,
-   "cache_escrita": 2270331,
-   "cache_leida": 301392762,
-   "respuestas": 544,
-   "dia": "2026-10-15",
-   "sesiones": 1
-  },
-  {
-   "entrada": 472,
-   "salida": 217735,
-   "cache_escrita": 1292049,
-   "cache_leida": 89095373,
-   "respuestas": 237,
-   "dia": "2026-10-16",
-   "sesiones": 1
-  },
-  {
-   "entrada": 774,
-   "salida": 408755,
-   "cache_escrita": 1686718,
-   "cache_leida": 186485086,
-   "respuestas": 386,
-   "dia": "2026-10-17",
-   "sesiones": 1
-  },
   {
    "entrada": 958,
    "salida": 518674,
@@ -136,12 +109,39 @@
    "sesiones": 1
   },
   {
-   "entrada": 328,
-   "salida": 153093,
-   "cache_escrita": 710126,
-   "cache_leida": 48532032,
-   "respuestas": 154,
+   "entrada": 334,
+   "salida": 155713,
+   "cache_escrita": 710539,
+   "cache_leida": 49532323,
+   "respuestas": 156,
    "dia": "2026-10-28",
+   "sesiones": 1
+  },
+  {
+   "entrada": 952,
+   "salida": 413202,
+   "cache_escrita": 1867666,
+   "cache_leida": 221232559,
+   "respuestas": 424,
+   "dia": "2026-10-29",
+   "sesiones": 1
+  },
+  {
+   "entrada": 414,
+   "salida": 285219,
+   "cache_escrita": 928726,
+   "cache_leida": 116119173,
+   "respuestas": 175,
+   "dia": "2026-10-30",
+   "sesiones": 1
+  },
+  {
+   "entrada": 8,
+   "salida": 8813,
+   "cache_escrita": 1015569,
+   "cache_leida": 333434,
+   "respuestas": 4,
+   "dia": "2026-10-31",
    "sesiones": 1
   }
  ]
