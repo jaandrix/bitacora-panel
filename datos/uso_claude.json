@@ -1,32 +1,23 @@
 {
- "actualizado": "2026-10-31T12:16:22+01:00",
+ "actualizado": "2026-11-01T12:07:58+01:00",
  "plan": {
   "nombre": "Pro",
-  "leido": "2026-10-31T12:16:22+01:00",
+  "leido": "2026-11-01T12:07:58+01:00",
   "ventanas": [
    {
     "nombre": "5-hour limit",
-    "usado": 49,
-    "renueva": "2026-10-31T11:40:00.670Z"
+    "usado": 14,
+    "renueva": "2026-11-01T11:39:59.939Z"
    },
    {
     "nombre": "Weekly · all models",
-    "usado": 57,
-    "renueva": "2026-11-03T20:00:00.670Z"
+    "usado": 70,
+    "renueva": "2026-11-03T19:59:59.939Z"
    }
   ],
   "extra": false
  },
  "dias": [
-  {
-   "entrada": 958,
-   "salida": 518674,
-   "cache_escrita": 1500019,
-   "cache_leida": 248275020,
-   "respuestas": 479,
-   "dia": "2026-10-18",
-   "sesiones": 1
-  },
   {
    "entrada": 410,
    "salida": 146070,
@@ -136,12 +127,21 @@
    "sesiones": 1
   },
   {
-   "entrada": 24,
-   "salida": 46612,
-   "cache_escrita": 1099168,
-   "cache_leida": 1585687,
-   "respuestas": 11,
+   "entrada": 80,
+   "salida": 77788,
+   "cache_escrita": 1233528,
+   "cache_leida": 6894044,
+   "respuestas": 35,
    "dia": "2026-10-31",
+   "sesiones": 1
+  },
+  {
+   "entrada": 26,
+   "salida": 44854,
+   "cache_escrita": 200080,
+   "cache_leida": 2151825,
+   "respuestas": 12,
+   "dia": "2026-11-01",
    "sesiones": 1
   }
  ]
