@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-04T20:37:38+01:00",
+ "actualizado": "2026-11-04T20:43:57+01:00",
  "sesion": {
   "estado": "esperando",
   "titulo": "esperando a Alejandro"
@@ -176,9 +176,9 @@
   {
    "id": "inversion-ficha",
    "titulo": "Ficha de inversión y correo de MyInvestor",
-   "detalle": "falta desplegar el conector",
+   "detalle": "conector desplegado; falta lanzar el volcado del histórico",
    "estado": "esperando",
-   "cuando": "2026-11-04T20:37:38+01:00"
+   "cuando": "2026-11-04T20:43:57+01:00"
   }
  ],
  "pendientes": [
@@ -432,6 +432,10 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-11-04T20:43:57+01:00",
+   "texto": "te espera: Ficha de inversión y correo de MyInvestor"
+  },
   {
    "hora": "2026-11-04T20:37:38+01:00",
    "texto": "te espera: Ficha de inversión y correo de MyInvestor"
@@ -747,10 +751,6 @@
   {
    "hora": "2026-10-23T16:46:25+02:00",
    "texto": "sugerencia cerrada: Un primer día que no empiece en blanco"
-  },
-  {
-   "hora": "2026-10-23T16:46:25+02:00",
-   "texto": "hecho: Primer día con ejemplo"
   }
  ],
  "sugerencias": [
