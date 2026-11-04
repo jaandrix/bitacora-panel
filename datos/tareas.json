@@ -1,7 +1,7 @@
 {
- "actualizado": "2026-11-01T12:08:16+01:00",
+ "actualizado": "2026-11-04T18:24:55+01:00",
  "sesion": {
-  "estado": "parado",
+  "estado": "trabajando",
   "titulo": "esperando a Alejandro"
  },
  "en_curso": [
@@ -165,6 +165,13 @@
    "detalle": "falta el ID de cliente de Google Cloud",
    "estado": "esperando",
    "cuando": "2026-10-24T12:09:35+02:00"
+  },
+  {
+   "id": "fin-resumen",
+   "titulo": "Finanzas: panel resumen nuevo con previsión, activos, ahorro y suscripciones",
+   "detalle": "",
+   "estado": "curso",
+   "cuando": "2026-11-04T18:24:55+01:00"
   }
  ],
  "pendientes": [
@@ -418,6 +425,10 @@
   }
  ],
  "registro": [
+  {
+   "hora": "2026-11-04T18:24:55+01:00",
+   "texto": "empiezo: Finanzas: panel resumen nuevo con previsión, activos, ahorro y suscripciones"
+  },
   {
    "hora": "2026-11-01T12:08:16+01:00",
    "texto": "Finanzas: pruebas del importador con extractos anonimizados"
@@ -733,10 +744,6 @@
   {
    "hora": "2026-10-23T16:37:15+02:00",
    "texto": "sugerencia cerrada: Una prueba automática antes de cada subida"
-  },
-  {
-   "hora": "2026-10-23T16:37:15+02:00",
-   "texto": "sugerencia cerrada: Portadas por perfil para los vídeos"
   }
  ],
  "sugerencias": [
